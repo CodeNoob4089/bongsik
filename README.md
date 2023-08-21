@@ -18,7 +18,7 @@
 
 ## 깃 플로우 전략
 
-- master
+- main
 - develop
 - feature
 
