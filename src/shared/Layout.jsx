@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom'
 
-const Layout : any = () => {
+function Layout () {
   return (
     <div>
       <Outlet />
