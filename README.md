@@ -1,46 +1,157 @@
-# Getting Started with Create React App
+## 맛집 기록 사이트
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+리액트를 이용해 칵테일 레시피 추천 및 공유 사이트 구현 (react-query, react-route-dom, firebase 사용)
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 팀구성
 
-### `npm start`
+| 김채현 | 신윤식 | 김혜민 | 정봉호 |
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+---
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 기술 스택
 
-### `npm test`
+<img src="https://img.shields.io/badge/react-61DAFB?style=for-the-badge&logo=react&logoColor=black"><img src="https://img.shields.io/badge/Creact React App-09D3AC?style=for-the-badge&logo=CreactReactApp&logoColor=white"><img src="https://img.shields.io/badge/firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=white"><img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white"><img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white"><img src="https://img.shields.io/badge/fontawesome-339AF0?style=for-the-badge&logo=fontawesome&logoColor=white">
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## 깃 플로우 전략
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- master
+- develop
+- feature
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 커밋 컨벤션
 
-### `npm run eject`
+- feat : 새로운 기능 추가
+- fix : 버그 수정
+- docs : 문서 변경
+- style : styled-components 수정, layout 수정 등 스타일 관련 변경
+- refactor : 코드 리팩토링 (변수명 변경 등)
+- chore : 설정 변경, 기타 변경사항
+- hotfix : 긴급 수정사항
+- test : 테스트 커밋
+- init : 초기설정
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+---
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 코드 컨벤션
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### 폴더, 파일명
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+컴포넌트 파일명은 파스칼 케이스(PascalCase)를 사용한다.
 
-## Learn More
+```js
+MainComponent.jsx;
+Route.jsx;
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+컴포넌트를 제외한 폴더, 파일명은 카멜 케이스(camelCase)를 사용한다.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```js
+components;
+modules;
+configStore.js;
+```
+
+### 함수
+
+함수명은 카멜 케이스(camelCase)를 원칙으로 한다.
+
+```js
+function nameOfFunction() {
+  // ...some logic
+}
+```
+
+### 변수명
+
+상수는 모두 대문자로 쓰며 띄어쓰기는 \_로 처리하며, 객체타입의 경우 카멜 케이스를 적용한다.
+
+```javascript
+const SOME_VALUE = 1;
+
+const people = {
+  name: "김자바",
+  age: "26",
+};
+```
+
+### 클래스명
+
+클래스명은 케밥 케이스(kebab-case)를 원칙으로 한다.
+
+```html
+<h1 class="main-title">오늘 메뉴 추천</h1>
+```
+
+---
+
+### 변수명 컨벤션
+
+```javascript
+회원가입: signUp;
+로그인: logIn;
+로그아웃: logOut;
+비밀번호수정: updatePassword;
+
+최신글불러오기: getBoard;
+내가쓴글불러오기: getMyBoard;
+좋아요목록불러오기: getLikedBoardList;
+
+새글등록: addBoard;
+글수정: editBoard;
+글삭제: deleteBoard;
+
+좋아요누르기: pressLike;
+좋아요취소: cancelLike;
+```
+
+---
+
+### 스타일 코드 순서 (styled-components)
+
+스타일 코드의 순서는 아래와 같이 작성한다.
+
+```css
+.sample {
+  /* position 관련 */
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  /* display 관련 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* size 관련 */
+  width: auto;
+  height: auto;
+
+  /* margin, padding */
+  margin: 0 auto;
+  padding: 12px;
+
+  /* background 관련 */
+  background-color: #ffffff;
+
+  /* border 관련 */
+  border: 1px solid #ffffff;
+  border-radius: 12px;
+
+  /* font 관련 */
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+
+  /* animation 관련 */
+  transform: translate(10px, 100%);
+  transition: 300ms;
+}
+```
+
+#
