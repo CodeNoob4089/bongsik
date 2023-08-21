@@ -1,6 +1,6 @@
 ## 맛집 기록 사이트
 
-리액트를 이용해 칵테일 레시피 추천 및 공유 사이트 구현 (react-query, react-route-dom, firebase 사용)
+나만의 맛집 기록 사이트 (react-query, react-route-dom, firebase 사용)
 
 ---
 
