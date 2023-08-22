@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom';
 
-const {kakao} = window;
+const { kakao } = window;
 
 function Map() {
   let markers = [];
@@ -275,7 +275,7 @@ function Map() {
   )
   }
 
-export default Map
+export default Map;
 
 const MapArea = styled.div`
   width: 67vw;
