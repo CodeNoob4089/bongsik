@@ -3,6 +3,7 @@ import Map from "../components/Map";
 import { auth } from "../firebase";
 import useAuthStore from "../store/auth";
 import { signOut } from "firebase/auth";
+import MyList from "../components/MyList"
 
 function Main() {
   const user = useAuthStore((state) => state.user);
@@ -19,6 +20,7 @@ function Main() {
   return (
     <div>
       <Map />
+      <MyList/>
 
       {user !== null ? (
         <>
