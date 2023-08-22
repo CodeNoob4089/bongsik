@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
-import { useNavigate } from 'react-router-dom';
+import { faMagnifyingGlass} from '@fortawesome/free-solid-svg-icons'
 
 const { kakao } = window;
 
@@ -25,8 +24,8 @@ function Map() {
         window.kakao.maps.load(() => {
           const container = document.getElementById("map");
           const options = {
-            center: new window.kakao.maps.LatLng(33.450701, 126.570667),
-            level: 3,
+            center: new window.kakao.maps.LatLng(35.6636959, 128.556153),
+            level: 2,
           };
           const map = new kakao.maps.Map(container, options)
           const ps = new kakao.maps.services.Places();
@@ -122,9 +121,9 @@ function Map() {
 
     const el = document.createElement('li');
     let itemStr = `
-        <div class="info">
-          <span class="marker marker_${index+1}">
-            📍${index+1}
+        <div style="line-height:23px;" class="info">
+          <span style="font-weight:bold;" class="marker marker_${index+1}">
+          🍱 ${index+1}
           </span>
           <button style="margin-left:90px;" class="add-button">추가하기</button>
           <a style="text-decoration:none;color:black;" href="${places.place_url}">
@@ -134,16 +133,13 @@ function Map() {
               ? `<span class="info-item road-address-name">
                   ${places.road_address_name}
                 </span>
-                <br/>
-                <span class="info-item address-name">
-                  ${places.address_name}
-                  </span>`
+                  `
               : `<span class="info-item address-name">
                   ${places.address_name}
                 </span>`
             }
             <br/>
-            <span class="info-item tel">
+            <span style="color:green;font-size:14px;" class="info-item tel">
               ${places.phone}
             </span>
           </a>
@@ -321,8 +317,10 @@ const SearchResult = styled.div`
   position: fixed;
   z-index: 3;
   background-color:rgba(255, 255, 255, 0.6);
-  width:15rem;
-  height: 70vh;
+  border-radius: 15px;
+  width: 15rem;
+  height: auto;
+  max-height: 70vh;
   padding: 0.7rem;
   margin-left: 20px;
   overflow: scroll;
@@ -336,14 +334,12 @@ const PageNumber = styled.div`
   justify-content: center;
 
   a{
-    font-weight: bold;
     font-size: 17px;
     color: #696969;
     margin-right: 20px;
   }
 
   .on{
-    font-weight: bold;
     color: black;
   }
 `
