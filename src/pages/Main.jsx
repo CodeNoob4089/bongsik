@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import Map from "../components/Map";
+import KakaoMap from "../components/KakaoMap";
 import { auth } from "../firebase";
 import useAuthStore from "../store/auth";
 import { signOut } from "firebase/auth";
@@ -19,7 +19,7 @@ function Main() {
   };
   return (
     <div>
-      <Map />
+      <KakaoMap />
       <MyList/>
 
       {user !== null ? (
