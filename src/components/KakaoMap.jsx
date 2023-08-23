@@ -131,12 +131,6 @@ function KakaoMap() {
 
 export default KakaoMap;
 
-const MapArea = styled.div`
-  width: 67vw;
-  height: 86vh;
-  margin: 7vh 4vw;
-  position: fixed;
-`
 const SearchArea = styled.div`
   position: absolute;
   margin: 6vh 4vw 0vh 4vw;
@@ -152,13 +146,13 @@ const SearchForm = styled.form`
 
 const SearchMapInput = styled.input`
   position: absolute;
-  z-index: 3;
-  color: #696969;
-  cursor: pointer;
-  background: none;
-  border: none;
-  font-size: 18px;
-  margin: 0.4rem 0 0 14rem;
+  font-size: 17px;
+  z-index: 2;
+  padding-left: 1rem;
+  width: 16.5rem;
+  height: 2.2rem;
+  border: 1.2px solid #696969;
+  border-radius: 30px;
 `
 
 const SearchButton = styled.button`

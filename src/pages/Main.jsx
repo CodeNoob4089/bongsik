@@ -14,29 +14,6 @@ function Main() {
     <Container>
       <KakaoMap />
       <MyList/>
-
-      {user !== null ? (
-        <>
-          <button onClick={handleLogout}>로그아웃</button>
-        </>
-      ) : (
-        <>
-          <button
-            onClick={() => {
-              navigate("/signin");
-            }}
-          >
-            로그인
-          </button>
-          <button
-            onClick={() => {
-              navigate("/signup");
-            }}
-          >
-            회원가입
-          </button>
-        </>
-      )}
     </Container>
   );
 }
