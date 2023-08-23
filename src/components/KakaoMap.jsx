@@ -70,9 +70,9 @@ function KakaoMap() {
         }}
         style={{
           width: "67vw",
-          height: "86vh",
-          margin: "7vh 4vw",
-          position: "fixed",
+          height: "80vh",
+          margin: "5vh 4vw",
+          position: "relative",
         }}
         level={3}
         onCreate={setMap}
@@ -140,8 +140,8 @@ const MapArea = styled.div`
 const SearchArea = styled.div`
   position: absolute;
   margin: 6vh 4vw 0vh 4vw;
-  top: 1.2rem;
-  right: 24vw;
+  top: 6rem;
+  right: 23rem;
   width: 18rem;
 `
 
@@ -151,14 +151,14 @@ const SearchForm = styled.form`
 `
 
 const SearchMapInput = styled.input`
-  position: fixed;
-  font-size: 17px;
-  z-index: 2;
-  padding-left: 1rem;
-  width: 16.5rem;
-  height: 2.2rem;
-  border: 1.2px solid #696969;
-  border-radius: 30px;
+  position: absolute;
+  z-index: 3;
+  color: #696969;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 18px;
+  margin: 0.4rem 0 0 14rem;
 `
 
 const SearchButton = styled.button`
@@ -172,11 +172,13 @@ const SearchButton = styled.button`
   margin: 0.4rem 0 0 14rem;
 `
 const SearchResult = styled.div`
-  position: fixed;
+  position: absolute;
   z-index: 3;
-  background-color:rgba(255, 255, 255, 0.6);
-  width:15rem;
-  height: 70vh;
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 15px;
+  width: 15rem;
+  height: auto;
+  max-height: 70vh;
   padding: 0.7rem;
   margin-left: 20px;
   overflow: scroll;
