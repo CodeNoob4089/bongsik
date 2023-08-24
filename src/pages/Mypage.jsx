@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import Mypost from "./Mypost";
+
 function Mypage() {
   const [currentTab, setCurrentTab] = useState();
   const tabs = [
@@ -19,6 +21,7 @@ function Mypage() {
       id: 3,
       tabTitle: "나의 맛 기록",
       title: "title",
+      component: <Mypost />,
       content: "Mypost",
     },
     {
@@ -44,12 +47,7 @@ function Mypage() {
         </UserInfo>
         <TabsBox>
           {tabs.map((tab) => (
-            <TabButton
-              key={tab.id}
-              id={tab.id}
-              disabled={currentTab === `${tab.id}`}
-              onClick={TabClickHandler}
-            >
+            <TabButton key={tab.id} id={tab.id} disabled={currentTab === `${tab.id}`} onClick={TabClickHandler}>
               {tab.tabTitle}
             </TabButton>
           ))}
@@ -61,7 +59,7 @@ function Mypage() {
             {currentTab === `${tab.id}` && (
               <div>
                 <TabTitle>{tab.title}</TabTitle>
-                <p>{tab.content}</p>
+                <div>{tab.component}</div>
               </div>
             )}
           </React.Fragment>
@@ -70,8 +68,9 @@ function Mypage() {
     </Container>
   );
 }
-
 export default Mypage;
+
+//스타일컴포넌트
 const Container = styled.div``;
 
 const TabsArea = styled.div`
