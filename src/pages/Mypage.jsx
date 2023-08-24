@@ -1,18 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getBadgeData } from "../store/BadgeData";
+import { getUserBadges } from "../store/UserService";
+import useAuthStore from "../store/auth";
+import useBadgeStore from "../shared/BadgeStore";
 import styled from "styled-components";
+import Main from "./Main";
+import Badge from "../components/Badge";
 function Mypage() {
   const [currentTab, setCurrentTab] = useState();
+  const user = useAuthStore((state) => state.user);
+  const badges = useBadgeStore((state) => state.badges);
+  const ownedBadges = useBadgeStore((state) => state.ownedBadges);
+  const setBadges = useBadgeStore((state) => state.setBadges);
+  const setOwnedBadges = useBadgeStore((state) => state.setOwnedBadges);
+
+  useEffect(() => {
+    const fetchBadges = async () => {
+      const fetchedBadges = await getBadgeData();
+      setBadges(fetchedBadges);
+    };
+
+    const fetchUserBadges = async () => {
+      if (!user) return;
+      console.log(user.uid);
+      const fetchedUserBadges = await getUserBadges(user.uid);
+      console.log(fetchedUserBadges);
+      const ownedBadgesArray = Object.keys(fetchedUserBadges).filter(
+        (badgeId) => fetchedUserBadges[badgeId].isOwned
+      );
+      setOwnedBadges(ownedBadgesArray);
+    };
+
+    fetchBadges();
+    if (user) {
+      fetchUserBadges();
+    }
+  }, [user, setBadges, setOwnedBadges]);
+
   const tabs = [
     {
       id: 1,
       tabTitle: "스크랩 보기",
       title: "title",
+      component: <Main />,
       content: "scrap",
     },
     {
       id: 2,
       tabTitle: "뱃지 보러가기",
       title: "title",
+      component: <Badge badges={badges} ownedBadges={ownedBadges} />,
       content: "badge",
     },
     {
@@ -28,6 +65,7 @@ function Mypage() {
       content: "post",
     },
   ];
+  console.log(ownedBadges);
 
   const TabClickHandler = (e) => {
     setCurrentTab(e.target.id);
@@ -35,38 +73,44 @@ function Mypage() {
 
   return (
     <Container>
-      <TabsArea>
-        <UserInfo>
-          <ProfileCircle>
-            <ProfileImage src="사진_이미지_경로" alt="프로필 사진" />
-          </ProfileCircle>
-          <Nickname>nickname님의 마이페이지</Nickname>
-        </UserInfo>
-        <TabsBox>
-          {tabs.map((tab) => (
-            <TabButton
-              key={tab.id}
-              id={tab.id}
-              disabled={currentTab === `${tab.id}`}
-              onClick={TabClickHandler}
-            >
-              {tab.tabTitle}
-            </TabButton>
-          ))}
-        </TabsBox>
-      </TabsArea>
-      <TabContent>
-        {tabs.map((tab) => (
-          <React.Fragment key={tab.id}>
-            {currentTab === `${tab.id}` && (
-              <div>
-                <TabTitle>{tab.title}</TabTitle>
-                <p>{tab.content}</p>
-              </div>
-            )}
-          </React.Fragment>
-        ))}
-      </TabContent>
+      {user ? (
+        <>
+          <TabsArea>
+            <UserInfo>
+              <ProfileCircle>
+                <ProfileImage src={user.photoURL} alt="프로필 사진" />
+              </ProfileCircle>
+              <Nickname>{user.displayName}님의 마이페이지</Nickname>
+            </UserInfo>
+            <TabsBox>
+              {tabs.map((tab) => (
+                <TabButton
+                  key={tab.id}
+                  id={tab.id}
+                  disabled={currentTab === `${tab.id}`}
+                  onClick={TabClickHandler}
+                >
+                  {tab.tabTitle}
+                </TabButton>
+              ))}
+            </TabsBox>
+          </TabsArea>
+          <TabContent>
+            {tabs.map((tab) => (
+              <React.Fragment key={tab.id}>
+                {currentTab === `${tab.id}` && (
+                  <div>
+                    <TabTitle>{tab.title}</TabTitle>
+                    <div>{tab.component}</div>
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+          </TabContent>
+        </>
+      ) : (
+        <>Loading...</>
+      )}
     </Container>
   );
 }
@@ -124,5 +168,3 @@ const TabContent = styled.div`
   height: 700px;
 `;
 const TabTitle = styled.p``;
-
-// 푸쉬 신윤식 멍청이
