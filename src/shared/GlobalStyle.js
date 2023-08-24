@@ -37,6 +37,10 @@ body {
   line-height: 1;
 }
 
+body.active {
+  overflow: hidden;
+}
+
 menu, ol, ul {
   list-style: none;
 }
