@@ -6,6 +6,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
 import { useParams } from "react-router-dom";
 import { styled } from "styled-components";
+
 function Layout() {
   const authStore = useAuthStore();
   const { id } = useParams();
@@ -24,7 +25,7 @@ function Layout() {
   };
 
   return (
-    <>
+    <LayoutContainer>
       <Header>
         <LogoContent>
           <LogoImg
@@ -67,14 +68,20 @@ function Layout() {
           </div>
         )}
       </Header>
-
       <Outlet />
-      <Footer></Footer>
-    </>
+      <Footer>
+        <FooterContent>김봉식 푸터</FooterContent>
+      </Footer>
+    </LayoutContainer>
   );
 }
 
 export default Layout;
+
+const LayoutContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 
 const Button = styled.button`
   border: none;
@@ -82,9 +89,8 @@ const Button = styled.button`
   width: 120px;
   font-size: 20px;
 `;
-const NavigationBar = styled.div`
-  float: right;
-`;
+const NavigationBar = styled.div``;
+
 const Header = styled.div`
   background: #eeeeee;
   display: flex;
@@ -100,20 +106,22 @@ const LogoContent = styled.div`
   align-items: center;
 `;
 const LogoImg = styled.div`
-  /* margin: 20px auto; */
   width: 60px;
   height: 60px;
   background-image: url(https://th.bing.com/th/id/R.e771e69269a626ef5992a25680a45757?rik=h%2bS0NU8p17%2fbZg&riu=http%3a%2f%2fstorage.enuri.info%2fpic_upload%2fknowbox2%2f202012%2f0107315902020121547c1dd11-700c-4145-96e7-fea4a8ebdd84.jpg&ehk=mV9W4RCJGw3YKTF5kXGHpqIib2%2fIL93yy%2fyYbcKHhu8%3d&risl=&pid=ImgRaw&r=0);
   background-size: cover;
 `;
+
 const Footer = styled.div`
-  position: relative;
   bottom: 0;
-  padding: 5px 0;
   background: #eeeeee;
   width: 100%;
-  height: 130px;
+  height: 100px;
   display: flex;
   justify-content: center;
   align-items: center;
+`
+
+const FooterContent = styled.div`
+  /* max-width: 1200px; */
 `;

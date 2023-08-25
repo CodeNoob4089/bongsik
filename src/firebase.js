@@ -19,9 +19,9 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 
-export const firebaseSignUp = async ({ name, email, password, photo }) => {
-  // 2. email, password로 유저를 만든다.
-  const { user } = await createUserWithEmailAndPassword(auth, email, password);
-  await updateProfile(auth.currentUser, { displayName: name, photoURL: photo });
-  return { name: user.displayName, email: user.email, photoURL: user.photoURL };
-};
+// export const firebaseSignUp = async ({ name, email, password, photo }) => {
+//   // 2. email, password로 유저를 만든다.
+//   const { user } = await createUserWithEmailAndPassword(auth, email, password);
+//   await updateProfile(auth.currentUser, { displayName: name, photoURL: photo });
+//   return { name: user.displayName, email: user.email, photoURL: user.photoURL };
+// };

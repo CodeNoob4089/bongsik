@@ -32,11 +32,12 @@ function MyList() {
 export default MyList;
 
 const ListCardsContainer = styled.div`
-  position: absolute;
+  /* position: absolute; */
   width: 17vw;
   height: auto;
-  top: 7vh;
-  right: 10vw;
+  margin: 5vh auto;
+  /* top: 7vh; */
+  /* right: 10vw; */
 `;
 const ListTitle = styled.h1`
   font-size: 40px;
