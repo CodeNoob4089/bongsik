@@ -95,90 +95,180 @@ function SignUp() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>
-          닉네임
-          <input
-            type="text"
-            name="name"
-            value={state.name}
-            onChange={handleChange}
-            required
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          이메일
-          <input
-            type="email"
-            name="email"
-            value={state.email}
-            onChange={handleEmailChange}
-          />
-        </label>
-        {state.emailError && <ErrorArea>{state.emailError}</ErrorArea>}
-      </div>
-      <div>
-        <label>
-          비밀번호
-          <input
-            type="password"
-            name="password"
-            value={state.password}
-            onChange={(e) => {
-              handleChange(e);
-              state.passwordError = "";
-            }}
-            onBlur={(e) => {
-              if (e.target.value.length < 6 || e.target.value.length > 20) {
-                setState({
-                  ...state,
-                  passwordError: "비밀번호는 6~20자리로 입력해주세요.",
-                });
-              } else {
-                state.passwordError = "";
-              }
-            }}
-          />
-        </label>
-        {state.passwordError && <ErrorArea>{state.passwordError}</ErrorArea>}
-      </div>
-      <div>
-        <label>
-          비밀번호 확인
-          <input
-            type="password"
-            name="confirmPassword"
-            value={state.confirmPassword}
-            onChange={(e) => {
-              handleChange(e);
-              state.confirmPasswordError = "";
-            }}
-            onBlur={(e) => {
-              if (e.target.value !== state.password) {
-                setState({
-                  ...state,
-                  confirmPasswordError: "비밀번호가 일치하지 않습니다.",
-                });
-              } else {
-                state.confirmPasswordError = "";
-              }
-            }}
-          />
-        </label>
-        {state.confirmPasswordError && (
-          <ErrorArea>{state.confirmPasswordError}</ErrorArea>
-        )}
-      </div>
-      <button type="submit">회원가입</button>
-    </form>
+    <SignUpContainer>
+      <SignUpBox>
+        <InputContainer>
+          <StyledForm onSubmit={handleSubmit}>
+            <StyledInputDiv>
+              <StyledLabel>Name</StyledLabel>
+              <StyledInput
+                type="text"
+                name="name"
+                value={state.name}
+                onChange={handleChange}
+                required
+              />
+            </StyledInputDiv>
+            <StyledInputDiv>
+              <StyledLabel>Email</StyledLabel>
+              <StyledInput
+                type="email"
+                name="email"
+                value={state.email}
+                onChange={handleEmailChange}
+              />
+
+              {state.emailError && <ErrorArea>{state.emailError}</ErrorArea>}
+            </StyledInputDiv>
+            <StyledInputDiv>
+              <StyledLabel>Password</StyledLabel>
+              <StyledInput
+                type="password"
+                name="password"
+                value={state.password}
+                onChange={(e) => {
+                  handleChange(e);
+                  setState((prevState) => ({
+                    ...prevState,
+                    passwordError: "",
+                  }));
+                }}
+                onBlur={(e) => {
+                  if (e.target.value.length < 6 || e.target.value.length > 20) {
+                    setState({
+                      ...state,
+                      passwordError: "비밀번호는 6~20자리로 입력해주세요.",
+                    });
+                  } else {
+                    setState((prevState) => ({
+                      ...prevState,
+                      passwordError: "",
+                    }));
+                  }
+                }}
+              />
+
+              {state.passwordError && (
+                <ErrorArea>{state.passwordError}</ErrorArea>
+              )}
+            </StyledInputDiv>
+            <StyledInputDiv>
+              <StyledLabel>Retype Password</StyledLabel>
+              <StyledInput
+                type="password"
+                name="confirmPassword"
+                value={state.confirmPassword}
+                onChange={(e) => {
+                  handleChange(e);
+                  state.confirmPasswordError = "";
+                }}
+                onBlur={(e) => {
+                  if (e.target.value !== state.password) {
+                    setState({
+                      ...state,
+                      confirmPasswordError: "비밀번호가 일치하지 않습니다.",
+                    });
+                  } else {
+                    state.confirmPasswordError = "";
+                  }
+                }}
+              />
+
+              {state.confirmPasswordError && (
+                <ErrorArea>{state.confirmPasswordError}</ErrorArea>
+              )}
+            </StyledInputDiv>
+            <SignUpButton type="submit">Sign Up</SignUpButton>
+            <GoogleSignUpButton type="button">
+              Sign up with Google
+            </GoogleSignUpButton>
+          </StyledForm>
+        </InputContainer>
+        <ImageContainer>이미지 영역</ImageContainer>
+      </SignUpBox>
+    </SignUpContainer>
   );
 }
 
 export default SignUp;
 
 export const ErrorArea = styled.span`
+  display: block;
   color: red;
+`;
+export const SignUpContainer = styled.div`
+  display: flex;
+  background-color: #d9d9d9;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 20px);
+`;
+
+export const SignUpBox = styled.div`
+  display: flex;
+  width: calc(100% - 60px);
+  max-width: calc(1000px - 60px);
+  height: 700px;
+`;
+
+export const InputContainer = styled.div`
+  background-color: #ffffff;
+  flex-basis: 50%;
+  padding-right: 20px;
+`;
+
+export const ImageContainer = styled.div`
+  flex-basis: 50%;
+  background-color: #f0f0f0;
+`;
+export const StyledForm = styled.form`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const StyledInputDiv = styled.div`
+  margin-top: 20px;
+  margin-bottom: 10px;
+`;
+export const StyledLabel = styled.label`
+  display: block;
+  font-size: 14px;
+  margin-bottom: 5px;
+`;
+export const StyledInput = styled.input`
+  border-radius: 5px;
+  width: 20rem;
+  border: 1px solid gray;
+  height: 40px;
+  margin-bottom: 10px;
+`;
+export const SignUpButton = styled.button`
+  background-color: #ff4e50;
+  color: white;
+  border: none;
+  width: 20rem;
+  border-radius: 5px;
+  padding: 10px 20px;
+  margin-top: 20px;
+  cursor: pointer;
+  :hover {
+    background-color: #ff2e30;
+  }
+`;
+export const GoogleSignUpButton = styled.button`
+  background-color: #ffffff;
+  color: black;
+  width: 20rem;
+  border-top: 1px solid #000000;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 20px;
+  cursor: pointer;
+  :hover {
+    color: #4285f4;
+  }
 `;
