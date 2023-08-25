@@ -7,6 +7,7 @@ import styled from "styled-components";
 import Main from "./Main";
 import Badge from "../components/Badge";
 import Mypost from "./Mypost";
+
 function Mypage() {
   const [currentTab, setCurrentTab] = useState();
   const user = useAuthStore((state) => state.user);
@@ -26,7 +27,10 @@ function Mypage() {
       console.log(user.uid);
       const fetchedUserBadges = await getUserBadges(user.uid);
       console.log(fetchedUserBadges);
-      const ownedBadgesArray = Object.keys(fetchedUserBadges).filter((badgeId) => fetchedUserBadges[badgeId].isOwned);
+      const ownedBadgesArray = Object.keys(fetchedUserBadges).filter(
+        (badgeId) => fetchedUserBadges[badgeId].isOwned
+      );
+
       setOwnedBadges(ownedBadgesArray);
     };
 
@@ -84,7 +88,12 @@ function Mypage() {
             </UserInfo>
             <TabsBox>
               {tabs.map((tab) => (
-                <TabButton key={tab.id} id={tab.id} disabled={currentTab === `${tab.id}`} onClick={TabClickHandler}>
+                <TabButton
+                  key={tab.id}
+                  id={tab.id}
+                  disabled={currentTab === `${tab.id}`}
+                  onClick={TabClickHandler}
+                >
                   {tab.tabTitle}
                 </TabButton>
               ))}
