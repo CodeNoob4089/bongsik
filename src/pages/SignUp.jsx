@@ -4,9 +4,12 @@ import {
   sendEmailVerification,
   updateProfile,
 } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { getBadgeData } from "../store/BadgeData";
+import { updateUserDoc } from "../store/UserService";
+import { arrayUnion, doc, setDoc } from "firebase/firestore";
 
 const initialState = {
   name: "",
@@ -40,7 +43,27 @@ function SignUp() {
         photoURL: photo,
       });
       await sendEmailVerification(auth.currentUser);
+      const badges = await getBadgeData();
+
+      const userBadgeData = badges.reduce((badgeObj, badge) => {
+        badgeObj[badge.id] = {
+          isOwned: false,
+        };
+        return badgeObj;
+      }, {});
+      if (
+        !updateUserDoc(auth.currentUser.uid, { ownedBadges: userBadgeData })
+      ) {
+        throw new Error(
+          "파이어스토어에 사용자 정보를 저장하는 도중 문제가 발생했습니다."
+        );
+      }
       alert("회원가입 완료! 이메일을 인증해주세요.");
+      await setDoc(doc(db, "users", auth.currentUser.uid), {
+        myTags: [],
+        userLikes: [],
+        ownedBadges: userBadgeData,
+      });
       navigate("/");
     } catch ({ code, message }) {
       alert(code);

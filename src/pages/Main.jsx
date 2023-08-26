@@ -1,20 +1,26 @@
-import { useNavigate } from "react-router-dom";
 import KakaoMap from "../components/KakaoMap";
-import { auth } from "../firebase";
 import useAuthStore from "../store/auth";
-import { signOut } from "firebase/auth";
 import MyList from "../components/MyList";
 import { styled } from "styled-components";
+import PostAddModal from "../components/PostAddModal";
+import { useState } from "react";
 
 function Main() {
   const user = useAuthStore((state) => state.user);
-  const navigate = useNavigate();
+  const [modalOpen, setModalOpen] = useState(false);
 
+  const showModal = () => {
+    setModalOpen(true);
+  };
+  
   return (
-    <Container>
-      <KakaoMap />
+    <>
+    {modalOpen && <PostAddModal modalOpen={modalOpen} setModalOpen={setModalOpen}/>}
+    <Container modalOpen={modalOpen}>
+      <KakaoMap showModal={showModal} />
       <MyList/>
     </Container>
+    </>
   );
 }
 

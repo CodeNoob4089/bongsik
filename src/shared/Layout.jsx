@@ -6,6 +6,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
 import { useParams } from "react-router-dom";
 import { styled } from "styled-components";
+
 function Layout() {
   const authStore = useAuthStore();
   const { id } = useParams();
@@ -82,7 +83,6 @@ export default Layout;
 const LayoutContainer = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
 `;
 
 const Button = styled.button`
@@ -122,7 +122,7 @@ const Footer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-`;
+`
 
 const FooterContent = styled.div`
   /* max-width: 1200px; */

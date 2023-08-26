@@ -1,13 +1,32 @@
-import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import RestaurantPost from "../components/RestaurantPost";
 import CafePost from "../components/CafePost";
 import BarPost from "../components/BarPost";
+
 function Community() {
   const [currentTab, setCurrentTab] = useState(1);
+  const [isTopVisible, setIsTopVisible] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+
+  // 페이지 상단으로 부드럽게 스크롤하는 함수
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // 스크롤 이벤트 리스너를 등록
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+  //"Top" 버튼
+  const handleScroll = () => {
+    setIsTopVisible(window.scrollY > 300);
+  };
 
   const tabs = [
     {
@@ -76,6 +95,7 @@ function Community() {
           <MonthlyContent></MonthlyContent>
         </MonthlyPost>
       </CommunityRight>
+      {isTopVisible && <TopButton onClick={scrollToTop}>TOP</TopButton>}
     </Container>
   );
 }
@@ -168,4 +188,20 @@ const MonthlyContent = styled.div`
 const MonthlyTitle = styled.p`
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
+`;
+const TopButton = styled.button`
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background: url("/image/top-button.gif") no-repeat center center;
+  background-size: cover;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  z-index: 4;
+  color: #fff;
+  font-size: large;
+  font-weight: bold;
 `;
