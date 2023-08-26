@@ -6,7 +6,6 @@ import PostAddModal from "../components/PostAddModal";
 import { useState } from "react";
 
 function Main() {
-  const user = useAuthStore((state) => state.user);
   const [modalOpen, setModalOpen] = useState(false);
 
   const showModal = () => {
@@ -18,7 +17,7 @@ function Main() {
     {modalOpen && <PostAddModal modalOpen={modalOpen} setModalOpen={setModalOpen}/>}
     <Container modalOpen={modalOpen}>
       <KakaoMap showModal={showModal} />
-      <MyList/>
+      <MyList />
     </Container>
     </>
   );

@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { Map, MapMarker } from 'react-kakao-maps-sdk';
-import { Link } from 'react-router-dom';
 import useMapDataStore from '../store/mapdata';
 import useClickedDataStore from '../store/moduledata';
 import useAuthStore from '../store/auth';
@@ -16,7 +15,6 @@ function KakaoMap({showModal}) {
   const [info, setInfo] = useState();
   const [markers, setMarkers] = useState([]);
   const [map, setMap] = useState();
-  // const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({});
 
   const data = useMapDataStore((state) => state.data)
@@ -60,7 +58,7 @@ function KakaoMap({showModal}) {
         // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
         map.setBounds(bounds)
       } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
-        setData([])
+        setData(null)
         alert('검색 결과가 존재하지 않습니다.');
         return;
       } else if (status === kakao.maps.services.Status.ERROR) {
@@ -82,6 +80,7 @@ function KakaoMap({showModal}) {
           height: "80vh",
           margin: "5vh 4vw",
           position: "relative",
+          borderRadius: "15px",
         }}
         level={1}
         onCreate={setMap}
@@ -117,9 +116,9 @@ function KakaoMap({showModal}) {
           { searchKeyword }&nbsp;
         검색 결과
         </ResultText>
-        {data.map((d) => (
+        {data?.map((d, index) => (
           <ResultList key={d.id}>
-          <span>{data.indexOf(d)+1}</span>
+          <span>{index+1}</span>
           <div onClick={() => {
             if(user === null){return alert("글을 작성하려면 로그인해주세요!")}
             if(d.category_group_name === "음식점" || d.category_group_name === "카페")
