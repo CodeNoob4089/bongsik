@@ -90,6 +90,9 @@ const Button = styled.button`
   height: 60px;
   width: 120px;
   font-size: 20px;
+  :hover {
+    cursor: pointer;
+  }
 `;
 const NavigationBar = styled.div``;
 
@@ -122,7 +125,7 @@ const Footer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-`
+`;
 
 const FooterContent = styled.div`
   /* max-width: 1200px; */

@@ -6,6 +6,8 @@ import useBadgeStore from "../shared/BadgeStore";
 import styled from "styled-components";
 import Main from "./Main";
 import Badge from "../components/Badge";
+import Mypost from "./Mypost";
+
 function Mypage() {
   const [currentTab, setCurrentTab] = useState();
   const user = useAuthStore((state) => state.user);
@@ -28,6 +30,7 @@ function Mypage() {
       const ownedBadgesArray = Object.keys(fetchedUserBadges).filter(
         (badgeId) => fetchedUserBadges[badgeId].isOwned
       );
+
       setOwnedBadges(ownedBadgesArray);
     };
 
@@ -56,6 +59,7 @@ function Mypage() {
       id: 3,
       tabTitle: "나의 맛 기록",
       title: "title",
+      component: <Mypost />,
       content: "Mypost",
     },
     {
@@ -114,8 +118,9 @@ function Mypage() {
     </Container>
   );
 }
-
 export default Mypage;
+
+//스타일컴포넌트
 const Container = styled.div``;
 
 const TabsArea = styled.div`
