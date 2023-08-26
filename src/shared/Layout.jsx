@@ -69,7 +69,9 @@ function Layout() {
           </div>
         )}
       </Header>
-      <Outlet />
+      <MainContent>
+        <Outlet />
+      </MainContent>
       <Footer>
         <FooterContent>김봉식 푸터</FooterContent>
       </Footer>
@@ -90,6 +92,9 @@ const Button = styled.button`
   height: 60px;
   width: 120px;
   font-size: 20px;
+  :hover {
+    cursor: pointer;
+  }
 `;
 const NavigationBar = styled.div``;
 
@@ -122,8 +127,12 @@ const Footer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-`
+`;
 
 const FooterContent = styled.div`
   /* max-width: 1200px; */
+  margin: 0 auto;
+`;
+const MainContent = styled.div`
+  flex: 1;
 `;
