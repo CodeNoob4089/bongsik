@@ -68,7 +68,9 @@ function Layout() {
           </div>
         )}
       </Header>
-      <Outlet />
+      <MainContent>
+        <Outlet />
+      </MainContent>
       <Footer>
         <FooterContent>김봉식 푸터</FooterContent>
       </Footer>
@@ -127,4 +129,8 @@ const Footer = styled.div`
 
 const FooterContent = styled.div`
   /* max-width: 1200px; */
+  margin: 0 auto;
+`;
+const MainContent = styled.div`
+  flex: 1;
 `;
