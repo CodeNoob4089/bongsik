@@ -94,7 +94,7 @@ const people = {
 
 ```javascript
 회원가입: signUp;
-로그인: logIn;
+로그인: signin;
 로그아웃: logOut;
 비밀번호수정: updatePassword;
 
