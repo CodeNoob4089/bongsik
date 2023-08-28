@@ -58,6 +58,7 @@ function SignUp() {
       await setDoc(doc(db, "users", auth.currentUser.uid), {
         myTags: [],
         userLikes: [],
+        userComments: [],
         ownedBadges: userBadgeData,
       });
     } catch ({ code, message }) {
@@ -81,8 +82,7 @@ function SignUp() {
     );
   };
 
-
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!handleErrorCheck()) {
       joinWithVerification(
