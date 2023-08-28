@@ -7,6 +7,7 @@ import styled from "styled-components";
 import Main from "./Main";
 import Badge from "../components/Badge";
 import Mypost from "./Mypost";
+import MyLikePost from "../components/MyLikePost";
 
 function Mypage() {
   const [currentTab, setCurrentTab] = useState();
@@ -45,7 +46,7 @@ function Mypage() {
       id: 1,
       tabTitle: "스크랩 보기",
       title: "title",
-      component: <Main />,
+      component: <MyLikePost />,
       content: "scrap",
     },
     {
@@ -65,6 +66,7 @@ function Mypage() {
     {
       id: 4,
       tabTitle: "맛 도장 깨기",
+      component: <MyLikePost />,
       title: "title",
       content: "post",
     },
