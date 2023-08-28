@@ -16,7 +16,6 @@ function KakaoMap({ showModal }) {
   const [info, setInfo] = useState();
   const [markers, setMarkers] = useState([]);
   const [map, setMap] = useState();
-  // const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({});
 
   const data = useMapDataStore((state) => state.data);
@@ -60,8 +59,8 @@ function KakaoMap({ showModal }) {
         // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
         map.setBounds(bounds);
       } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
-        setData([]);
-        alert("검색 결과가 존재하지 않습니다.");
+        setData(null)
+        alert('검색 결과가 존재하지 않습니다.');
         return;
       } else if (status === kakao.maps.services.Status.ERROR) {
         alert("검색 결과 중 오류가 발생했습니다.");
@@ -82,6 +81,7 @@ function KakaoMap({ showModal }) {
           height: "80vh",
           margin: "5vh 4vw",
           position: "relative",
+          borderRadius: "15px",
         }}
         level={1}
         onCreate={setMap}
@@ -97,58 +97,50 @@ function KakaoMap({ showModal }) {
             )}
           </MapMarker>
         ))}
-      </Map>
-      <SearchArea>
-        <SearchForm onSubmit={submitKeyword}>
-          <SearchMapInput
-            value={inputValue}
-            onChange={keywordInputChange}
-            placeholder="검색어를 입력해주세요"
-          />
-          <SearchButton>
-            <FontAwesomeIcon icon={faMagnifyingGlass} />
-          </SearchButton>
-        </SearchForm>
-        {!searchKeyword ? null : (
-          <SearchResult id="result-wrapper">
-            <ResultText className="result-keyword">
-              {searchKeyword}&nbsp; 검색 결과
-            </ResultText>
-            {data.map((d) => (
-              <ResultList key={d.id}>
-                <span>{data.indexOf(d) + 1}</span>
-                <div
-                  onClick={() => {
-                    if (user === null) {
-                      return alert("글을 작성하려면 로그인해주세요!");
-                    }
-                    if (
-                      d.category_group_name === "음식점" ||
-                      d.category_group_name === "카페"
-                    ) {
-                      setClickedData(d);
-                      showModal();
-                    } else {
-                      alert("해당 장소는 음식점이 아닙니다!");
-                    }
-                  }}
-                >
-                  <PlaceData>{d.place_name}</PlaceData>
-                  <PlaceData>{d.address_name}</PlaceData>
-                  <PhoneNum>{d.phone}</PhoneNum>
-                </div>
-                <ButtonContainer>
-                  <PlaceLinkButton
-                    onClick={() => window.open(`${d.place_url}`, "_blank")}
-                  >
-                    가게 정보
-                  </PlaceLinkButton>
-                </ButtonContainer>
-              </ResultList>
-            ))}
-            <PageNumber id="pagination">{console.log(pagination)}</PageNumber>
-          </SearchResult>
-        )}
+    </Map>
+    <SearchArea>
+      <SearchForm
+      onSubmit={submitKeyword}
+      >
+        <SearchMapInput
+        value={inputValue}
+        onChange={keywordInputChange}
+        placeholder="검색어를 입력해주세요"
+        />
+        <SearchButton>
+          <FontAwesomeIcon icon={faMagnifyingGlass} />
+        </SearchButton>
+      </SearchForm>
+      {!searchKeyword? null :(
+        <SearchResult id="result-wrapper">
+        <ResultText className="result-keyword">
+          { searchKeyword }&nbsp;
+        검색 결과
+        </ResultText>
+        {data?.map((d, index) => (
+          <ResultList key={d.id}>
+          <span>{index+1}</span>
+          <div onClick={() => {
+            if(user === null){return alert("글을 작성하려면 로그인해주세요!")}
+            if(d.category_group_name === "음식점" || d.category_group_name === "카페")
+            { setClickedData(d)
+              showModal()
+            } else {alert("해당 장소는 음식점이 아닙니다!")}
+          }}>
+            <PlaceData>{d.place_name}</PlaceData>
+            <PlaceData>{d.address_name}</PlaceData>
+            <PhoneNum>{d.phone}</PhoneNum>
+          </div>
+          <ButtonContainer>
+          <PlaceLinkButton onClick={() => window.open(`${d.place_url}`, '_blank')}>가게 정보</PlaceLinkButton>
+          </ButtonContainer>
+          </ResultList>
+        ))}
+        <PageNumber id="pagination">
+          {console.log(pagination)}
+        </PageNumber>
+        </SearchResult>
+      )}
       </SearchArea>
     </>
   );
@@ -255,4 +247,4 @@ const PageNumber = styled.div`
     font-weight: bold;
     color: black;
   }
-`;
+`
