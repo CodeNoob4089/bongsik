@@ -2,7 +2,7 @@ import { faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { addDoc, collection } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import React, { useState } from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
 import { db, storage } from '../firebase';
 import useAuthStore from '../store/auth';
@@ -19,10 +19,11 @@ function PostAddModal({modalOpen, setModalOpen}) {
   const [inputValue, setInputValue] = useState({
     place: clickedData,
     content: "",
-    userId: user.uid,
+    uid: user.uid,
     star: 0,
     photo: "",
     isPublic: false,
+    collectionTag: "",
   })
 
   const selectImage = async(e) => {
@@ -100,8 +101,8 @@ function PostAddModal({modalOpen, setModalOpen}) {
 export default PostAddModal
 
 const ModalContainer = styled.div`
-width: 100%;
-height: 100%;
+width: 100vw;
+height: 100vh;
 position: absolute;
 z-index: 50;
 background-color: rgba(0,0,0,0.8);
@@ -213,15 +214,18 @@ const SelectBox = styled.div`
   border-radius: 10px;
   background-color: #F2F2F5;
   border: none;
+  cursor: pointer;
 `
 const PublicSelect = styled.select`
   border: none;
+  outline: none;
   background-color: #F2F2F5;
   height: 100%;
   border-radius: 10px;
   font-weight: bold;
   color: gray;
   text-align: center;
+  cursor: pointer;
 `
 
 const AddButton = styled.button`
