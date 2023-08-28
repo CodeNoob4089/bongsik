@@ -69,8 +69,6 @@ function Mypage() {
       content: "post",
     },
   ];
-  console.log(ownedBadges);
-
   const TabClickHandler = (e) => {
     setCurrentTab(e.target.id);
   };

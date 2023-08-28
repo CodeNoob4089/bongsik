@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { getBadgeData } from "../store/BadgeData";
 import { updateUserDoc } from "../store/UserService";
 import { arrayUnion, doc, setDoc } from "firebase/firestore";
+import { signOut } from "firebase/auth";
 
 const initialState = {
   name: "",
@@ -51,20 +52,14 @@ function SignUp() {
         };
         return badgeObj;
       }, {});
-      if (
-        !updateUserDoc(auth.currentUser.uid, { ownedBadges: userBadgeData })
-      ) {
-        throw new Error(
-          "파이어스토어에 사용자 정보를 저장하는 도중 문제가 발생했습니다."
-        );
-      }
       alert("회원가입 완료! 이메일을 인증해주세요.");
+      navigate("/");
+      signOut(auth);
       await setDoc(doc(db, "users", auth.currentUser.uid), {
         myTags: [],
         userLikes: [],
         ownedBadges: userBadgeData,
       });
-      navigate("/");
     } catch ({ code, message }) {
       alert(code);
     }
@@ -261,7 +256,7 @@ export const SignUpButton = styled.button`
   padding: 10px 20px;
   margin-top: 20px;
   cursor: pointer;
-  :hover {
+  &:hover {
     background-color: #ff2e30;
   }
 `;
@@ -274,7 +269,7 @@ export const GoogleSignUpButton = styled.button`
   padding: 10px;
   margin-top: 20px;
   cursor: pointer;
-  :hover {
+  &:hover {
     color: #4285f4;
   }
 `;

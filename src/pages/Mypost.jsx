@@ -10,7 +10,7 @@ function Mypost() {
 
   const getPosts = async () => {
     const postsRef = collection(db, "posts");
-    const q = query(postsRef, where("uid", "==", user.uid));
+    const q = query(postsRef, where("userId", "==", user.uid));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map((doc) => ({
       ...doc.data(),
@@ -28,7 +28,7 @@ function Mypost() {
           <div key={post.id}>
             <div>{post.title}</div>
             <div>{post.content}</div>
-            <img src={post.imgUrl} />
+            <img src={post.photo} />
           </div>
         );
       })}
