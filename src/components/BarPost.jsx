@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import styled from "styled-components";
 import {
   CommunityPosting,
   PostImgBox,
@@ -8,9 +7,12 @@ import {
   PostBottomBar,
   Button,
   ButtonSet,
+  Like,
 } from "../components/TabPostStyled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import { faComment } from "@fortawesome/free-regular-svg-icons";
+import { faArrowUpFromBracket } from "@fortawesome/free-solid-svg-icons";
 import {
   collection,
   getDocs,
@@ -21,32 +23,11 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { db, auth } from "../firebase";
-import useAuthStore from "../store/auth";
 import { useQuery } from "react-query";
-
-const getPublicPosts = async () => {
-  const postsCollectionRef = collection(db, "posts");
-
-  const querySnapshot = await getDocs(
-    query(postsCollectionRef, where("isPublic", "==", true))
-  );
-
-  const PublicPosts = querySnapshot.docs.map((postDoc) => {
-    const data = postDoc.data();
-
-    return {
-      postId: postDoc.id,
-      imageUrl: data.photo,
-      content: data.content,
-      category: data.place.category_name,
-    };
-  });
-  console.log(PublicPosts);
-  return PublicPosts;
-};
+import PostingModal from "./CommentsModal";
 
 function BarPost() {
-  const authStore = useAuthStore();
+  const userId = auth.currentUser.uid;
   //모달
   const [openModal, setOpenModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
@@ -54,42 +35,62 @@ function BarPost() {
 
   //모달 열기
   const handlePostClick = (post) => {
+    // 배경 페이지 스크롤 막기
+    document.body.style.overflow = "hidden";
     setSelectedPost(post);
     setSelectedPostId(post.postId);
     setOpenModal(true);
   };
+  //공개 게시물 가져오기
+  const getPublicPosts = async () => {
+    const postsCollectionRef = collection(db, "posts");
 
-  //모달 닫기
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setSelectedPostId(null);
+    const querySnapshot = await getDocs(
+      query(postsCollectionRef, where("isPublic", "==", true))
+    );
+
+    const PublicPosts = querySnapshot.docs.map((postDoc) => {
+      const data = postDoc.data();
+
+      return {
+        postId: postDoc.id,
+        imageUrl: data.photo,
+        content: data.content,
+        category: data.place.category_name,
+      };
+    });
+    return PublicPosts;
   };
 
   const { data: PublicPosts } = useQuery("fetchPublicPosts", getPublicPosts);
   const filterdPosts = PublicPosts?.filter(
     (post) =>
       post.category === "음식점 > 술집" ||
-      post.category == "음식점 > 술집 > 호프,요리주점"
+      post.category === "음식점 > 술집 > 호프,요리주점"
   );
-  //찜하기 전 유저 정보 가져오기
-  const getUserLikes = async () => {
-    const userId = auth.currentUser.uid;
+  //유저 좋아요, 댓글 정보 가져오기
+  const getUserData = async () => {
     const userDocRef = doc(db, "users", userId);
 
     const docSnapshot = await getDoc(userDocRef);
     if (docSnapshot.exists()) {
       const userData = docSnapshot.data();
-      return userData.userLikes || [];
+      return {
+        userLikes: userData.userLikes || [],
+        userComments: userData.userComments || [],
+      };
     } else {
-      return [];
+      return {
+        userLikes: [],
+        userComments: [],
+      };
     }
   };
 
-  const { data: userLikes } = useQuery("fetchUserLikes", getUserLikes);
+  const { data: userData } = useQuery("fetchUserData", getUserData);
   // 찜하기
   const clickHeart = async (postId) => {
-    const userId = auth.currentUser.uid;
-    const alreadyLikedUser = userLikes.find(
+    const alreadyLikedUser = userData.userLikes?.find(
       (like) => like.likePostId === postId
     );
 
@@ -97,11 +98,13 @@ function BarPost() {
 
     if (alreadyLikedUser) {
       await updateDoc(userDocRef, {
-        userLikes: userLikes.filter((like) => like.likePostId !== postId),
+        userLikes: userData.userLikes.filter(
+          (like) => like.likePostId !== postId
+        ),
       });
     } else {
       await updateDoc(userDocRef, {
-        userLikes: [...userLikes, { likePostId: postId }],
+        userLikes: [...userData.userLikes, { likePostId: postId }],
       });
     }
   };
@@ -116,31 +119,6 @@ function BarPost() {
                 <PostImgBox>
                   <PostImgUrl src={item.imageUrl}></PostImgUrl>
                 </PostImgBox>
-                <PostContent>
-                  <h2>{item.title}</h2>
-                  <p>{item.content}</p>
-                  <Button onClick={() => handlePostClick(item)}>
-                    자세히 보기
-                  </Button>
-                </PostContent>
-                <PostBottomBar>
-                  <ButtonSet>
-                    <Button>조회수</Button>
-                    <Like
-                      isLiked={userLikes?.some(
-                        (like) => like.likePostId === item.postId
-                      )}
-                      onClick={() => {
-                        clickHeart(item.postId);
-                        alert("찜");
-                      }}
-                    >
-                      <FontAwesomeIcon icon={faHeart} size="lg" />
-                    </Like>
-                    <Button>댓글</Button>
-                    <Button>공유</Button>
-                  </ButtonSet>
-                </PostBottomBar>
               </>
             ) : (
               <>
@@ -148,68 +126,49 @@ function BarPost() {
                   {/* <PostImgUrl src={}> </PostImgUrl> */}
                   무슨 사진 넣을지 고민중
                 </PostImgBox>
-                <PostContent>
-                  <h2>{item.title}</h2>
-                  <p>{item.content}</p>
-                </PostContent>
-                <PostBottomBar>
-                  <Button>조회수</Button>
-                  <Button>찜</Button>
-                  <Button>댓글</Button>
-                  <Button>공유</Button>
-                </PostBottomBar>
               </>
             )}
+            <PostContent>
+              <h2>{item.title}</h2>
+              <p>{item.content}</p>
+            </PostContent>
+            <PostBottomBar>
+              <ButtonSet>
+                <Like
+                  isLiked={userData?.userLikes?.some(
+                    (like) => like.likePostId === item.postId
+                  )}
+                  onClick={() => {
+                    clickHeart(item.postId);
+                    alert("찜");
+                  }}
+                >
+                  <FontAwesomeIcon icon={faHeart} size="lg" />
+                </Like>
+                <Button
+                  onClick={() => {
+                    handlePostClick(item);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faComment} size="lg" />
+                </Button>
+                <Button>
+                  <FontAwesomeIcon icon={faArrowUpFromBracket} size="lg" />
+                </Button>
+              </ButtonSet>
+            </PostBottomBar>
           </div>
         </CommunityPosting>
       ))}
-      {openModal && selectedPost && (
-        <ModalWrapper>
-          <ModalContent>
-            {selectedPost && <img src={selectedPost.imageUrl} alt="Post" />}
-            <h2>{selectedPost.title}</h2>
-            <p>{selectedPost.content}</p>
-            <Button onClick={handleCloseModal}>닫기</Button>
-          </ModalContent>
-        </ModalWrapper>
-      )}
+      <PostingModal
+        userData={userData}
+        Button={Button}
+        selectedPost={selectedPost}
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+        setSelectedPostId={setSelectedPost}
+      />
     </>
   );
 }
 export default BarPost;
-const ModalWrapper = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 5;
-`;
-
-const ModalContent = styled.div`
-  background-color: white;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-
-  h2 {
-    margin-bottom: 10px;
-  }
-
-  img {
-    width: 60vw;
-    height: 70vh;
-    margin-bottom: 10px;
-  }
-`;
-const Like = styled.button`
-  background-color: #fff;
-  padding: 0.5rem;
-  border-radius: 100%;
-  cursor: pointer;
-  color: ${(props) => (props.isLiked ? "red" : "black")};
-`;
