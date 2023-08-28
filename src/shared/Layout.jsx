@@ -23,7 +23,6 @@ function Layout() {
       alert("로그아웃 도중 에러가 발생했습니다.", error);
     }
   };
-  
 
   return (
     <LayoutContainer>
@@ -72,9 +71,9 @@ function Layout() {
       <MainContent>
         <Outlet />
       </MainContent>
-      <Footer>
+      {/* <Footer>
         <FooterContent>김봉식 푸터</FooterContent>
-      </Footer>
+      </Footer> */}
     </LayoutContainer>
   );
 }
@@ -84,7 +83,7 @@ export default Layout;
 const LayoutContainer = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: #F2F2F5;
+  background-color: #f2f2f5;
 `;
 
 const Button = styled.button`
