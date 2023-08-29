@@ -6,6 +6,7 @@ import Layout from "./Layout";
 import Signin from "../pages/Signin";
 import Mypage from "../pages/Mypage";
 import Community from "../pages/Community";
+import Admin from "../pages/Admin";
 
 function Router() {
   return (
@@ -17,6 +18,7 @@ function Router() {
           <Route path="/community" element={<Community />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signin" element={<Signin />} />
+          <Route path="/admin" element={<Admin />} />
         </Route>
       </Routes>
     </BrowserRouter>

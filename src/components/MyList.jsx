@@ -17,13 +17,13 @@ const queryClient = useQueryClient();
 const user = useAuthStore((state) => state.user)
 
 
-const addImageInput = React.useRef(null);
-const [addActive, setAddActive] = useState(false);
-const [collectionInput, setCollectionInput] = useState({
-  coverImage: "",
-  title: "",
-  collectionID: nanoid(),
-})
+  const addImageInput = React.useRef(null);
+  const [addActive, setAddActive] = useState(false);
+  const [collectionInput, setCollectionInput] = useState({
+    coverImage: "",
+    title: "",
+    collectionID: nanoid(),
+  });
 
 const { data : myTags } = useQuery(GET_MY_TAGS, getMyTags)
 
@@ -36,17 +36,19 @@ const mutation = useMutation(async() => {
 });
 
 
-const addMyCollection = () => {
-  if(!auth.currentUser){
-    alert("로그인 후 이용해주세요!")
-  } else {setAddActive(true)}
-}
-const onImageUploadButtonClick = () => {
-  addImageInput.current.click();
-}
+  const addMyCollection = () => {
+    if (!auth.currentUser) {
+      alert("로그인 후 이용해주세요!");
+    } else {
+      setAddActive(true);
+    }
+  };
+  const onImageUploadButtonClick = () => {
+    addImageInput.current.click();
+  };
 
-const onSelectImage = async(e)=> {
-  const image = e.target.files[0];
+  const onSelectImage = async (e) => {
+    const image = e.target.files[0];
     if (image !== undefined) {
       const imageRef = ref(storage, `${auth.currentUser.email}/${image.name}`);
       await uploadBytes(imageRef, image);
@@ -54,7 +56,7 @@ const onSelectImage = async(e)=> {
       console.log(downloadURL);
       setCollectionInput({ ...collectionInput, coverImage: downloadURL });
     }
-}
+  };
 
 const onSubmit = async(e) => {
   e.preventDefault();
@@ -149,7 +151,7 @@ const ListTop = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-`
+`;
 
 const ListTitle = styled.h1`
   font-size: 20px;
@@ -186,7 +188,7 @@ const ButtonBox = styled.div`
   flex-direction: column;
   height: 100%;
   justify-content: space-between;
-`
+`;
 
 const ToggleButton = styled.button`
   font-size: 18px;
@@ -212,23 +214,23 @@ const AddButton = styled.button`
   font-weight: bold;
   font-size: 15px;
   padding: 10px 15px;
-  background-color: #FF4E50;
+  background-color: #ff4e50;
   color: white;
   border: none;
   border-radius: 50%;
   outline: none;
   cursor: pointer;
   &:hover {
-    background-color:  #ff7337;
+    background-color: #ff7337;
   }
-`
+`;
 const NewCollectionCover = styled.div`
   width: 80px;
   height: 80px;
   background-color: #c8c8c8;
   border-radius: 15px;
   background-image: url(${(props) => props.img});
-`
+`;
 
 const NewCollectionForm = styled.form`
   padding: 10px;
@@ -237,14 +239,14 @@ const NewCollectionForm = styled.form`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-`
+`;
 const CollectionTitleInput = styled.input`
   text-align: center;
   width: 80%;
   height: 30px;
   border: 1px solid #c8c8c8;
   border-radius: 10px;
-`
+`;
 
 const ImageUploadButton = styled.button`
   width: 80%;
@@ -255,4 +257,4 @@ const ImageUploadButton = styled.button`
   cursor: pointer;
   font-weight: bold;
   color: gray;
-`
+`;
