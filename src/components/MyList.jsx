@@ -27,9 +27,20 @@ const user = useAuthStore((state) => state.user)
 
 const { data : myTags } = useQuery(GET_MY_TAGS, getMyTags)
 
-const mutation = useMutation(async() => {
+const addMutation = useMutation(async() => {
   const usersRef = doc(db, "users", user.uid);
   await updateDoc(usersRef, { myTags: arrayUnion(collectionInput)})
+},{ onSuccess: () => {
+    queryClient.invalidateQueries(GET_MY_TAGS)
+  }
+});
+
+const deleteMutation = useMutation(async(key) => {
+  const usersRef = doc(db, "users", user.uid);
+    await updateDoc(usersRef, {
+      myTags: myTags.filter((tag) => tag.collectionID !== key),
+    });
+    alert("컬렉션이 삭제되었습니다!")
 },{ onSuccess: () => {
     queryClient.invalidateQueries(GET_MY_TAGS)
   }
@@ -63,7 +74,7 @@ const onSubmit = async(e) => {
   if(collectionInput.title === ""){
     alert("컬렉션 제목을 입력해주세요!")
   }else{
-  mutation.mutate();
+  addMutation.mutate();
   setCollectionInput({
   coverImage: "",
   title: "",
@@ -76,13 +87,8 @@ const onSubmit = async(e) => {
 
 const onDeleteButtonClick = async(key) => {
   if(window.confirm("컬렉션을 삭제하시겠습니까?")){
-    const usersRef = doc(db, "users", user.uid);
-    await updateDoc(usersRef, {
-      myTags: myTags.filter((tag) => tag.collectionID !== key),
-    });
-    alert("컬렉션이 삭제되었습니다!")
+    deleteMutation.mutate(key);
   } else return
- 
 }
 
   return (
