@@ -7,10 +7,11 @@ import { useQuery } from "react-query";
 
 function Mypost() {
   const user = useAuthStore((state) => state.user);
+  console.log(user.uid);
 
   const getPosts = async () => {
     const postsRef = collection(db, "posts");
-    const q = query(postsRef, where("userId", "==", user.uid));
+    const q = query(postsRef, where("uid", "==", user.uid));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map((doc) => ({
       ...doc.data(),

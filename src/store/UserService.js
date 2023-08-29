@@ -6,21 +6,8 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { db } from "../firebase";
-
-export const updateUserDoc = async (userId, data) => {
-  try {
-    const usersCollection = collection(db, "users");
-    await addDoc(usersCollection, {
-      uid: userId,
-      ...data,
-    });
-    return true;
-  } catch (error) {
-    console.error("Error in updating user doc:", error);
-    return false;
-  }
-};
+import { db, storage } from "../firebase";
+import { uploadBytesResumable, ref, getDownloadURL } from "firebase/storage";
 
 export const getUserBadges = async (userId) => {
   const usersRef = collection(db, "users");
@@ -33,4 +20,31 @@ export const getUserBadges = async (userId) => {
   });
 
   return userData.ownedBadges || [];
+};
+
+export const addBadge = async (badgeData) => {
+  const badgesRef = collection(db, "badges");
+
+  await addDoc(badgesRef, badgeData);
+};
+
+export const uploadImage = async (file) => {
+  const storageRef = ref(storage, "badges/" + file.name);
+
+  const uploadTask = uploadBytesResumable(storageRef, file);
+
+  return new Promise((resolve, reject) => {
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {},
+      (error) => {
+        reject(error);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          resolve(downloadURL);
+        });
+      }
+    );
+  });
 };
