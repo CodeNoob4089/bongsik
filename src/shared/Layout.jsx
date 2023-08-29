@@ -71,9 +71,16 @@ function Layout() {
       <MainContent>
         <Outlet />
       </MainContent>
-      {/* <Footer>
+      <Footer>
         <FooterContent>김봉식 푸터</FooterContent>
-      </Footer> */}
+        <Button
+          onClick={() => {
+            navigate("/admin");
+          }}
+        >
+          어드민
+        </Button>
+      </Footer>
     </LayoutContainer>
   );
 }
