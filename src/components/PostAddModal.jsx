@@ -1,20 +1,23 @@
 import { faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, doc, increment, updateDoc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { useState } from 'react'
+import { useQuery } from 'react-query';
 import styled from 'styled-components'
+import { getMyTags } from '../api/collection';
 import { db, storage } from '../firebase';
 import useAuthStore from '../store/auth';
 import useClickedDataStore from '../store/moduledata';
 
 function PostAddModal({modalOpen, setModalOpen}) {
 
+  const { data : myTags } = useQuery('getMyTags', getMyTags)
+
+
   const clickedData = useClickedDataStore((state) => state.clickedData);
   const setClickedData = useClickedDataStore((state) => state.setClickedData);
   const user = useAuthStore((state) => state.user)
-  console.log("user=",user);
-  console.log(clickedData)
 
   const [inputValue, setInputValue] = useState({
     place: clickedData,
@@ -44,7 +47,10 @@ function PostAddModal({modalOpen, setModalOpen}) {
   }
 
   const onAddButtonClick = async() => {
-    try{const docRef = await addDoc(collection(db, "posts"), inputValue)
+    try{
+      const usersRef = doc(db, "users", user.uid);
+      await addDoc(collection(db, "posts"), inputValue)
+      await updateDoc(usersRef, { postCounts: increment(1)})
     } catch(e){
       console.error("문서 추가 실패 오류:", e)
     }
@@ -63,7 +69,7 @@ function PostAddModal({modalOpen, setModalOpen}) {
         <ModalTitle>
         <StoreInfo>
         <span>가게 이름: {clickedData.place_name}</span>
-        <span>주소: {clickedData.address_name}</span>
+        <span>주소: {clickedData.road_address_name?clickedData.road_address_name:clickedData.address_name}</span>
         </StoreInfo>
         <CategoryDiv>카테고리: {clickedData.category_name} </CategoryDiv>
         </ModalTitle>
@@ -89,6 +95,14 @@ function PostAddModal({modalOpen, setModalOpen}) {
         <option value="private">비공개</option>
         <option value="public">공개</option>
       </PublicSelect>
+      </SelectBox>
+      <SelectBox>
+        <select onChange={(e) => setInputValue({...inputValue, collectionTag: e.target.value})}>
+         <option value="">선택안함</option>
+          {myTags.map((tag) =>
+          <option key={tag.collectionID} value={tag.title}>{tag.title}</option>
+          )}
+        </select>
       </SelectBox>
       <AddButton onClick={onAddButtonClick}>기록하기</AddButton>
       </ModalBottom>

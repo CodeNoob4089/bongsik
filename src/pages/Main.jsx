@@ -15,7 +15,7 @@ function Main() {
   return (
     <>
     {modalOpen && <PostAddModal modalOpen={modalOpen} setModalOpen={setModalOpen}/>}
-    <Container modalOpen={modalOpen}>
+    <Container>
       <KakaoMap showModal={showModal} />
       <MyList />
     </Container>
