@@ -60,7 +60,7 @@ function SignUp() {
         userLikes: [],
         userComments: [],
         ownedBadges: userBadgeData,
-        postCounts:0,
+        postCounts: 0,
       });
     } catch ({ code, message }) {
       alert(code);

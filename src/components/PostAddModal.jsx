@@ -2,16 +2,17 @@ import { faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { addDoc, collection, doc, increment, updateDoc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { nanoid } from 'nanoid';
 import { useState } from 'react'
-import { useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import styled from 'styled-components'
-import { getMyTags } from '../api/collection';
+import { getMyTags, getPosts } from '../api/collection';
 import { db, storage } from '../firebase';
 import useAuthStore from '../store/auth';
 import useClickedDataStore from '../store/moduledata';
 
 function PostAddModal({modalOpen, setModalOpen}) {
-
+  const queryClient = useQueryClient();
   const { data : myTags } = useQuery('getMyTags', getMyTags)
 
 
@@ -27,6 +28,7 @@ function PostAddModal({modalOpen, setModalOpen}) {
     photo: "",
     isPublic: false,
     collectionTag: "",
+    postID: nanoid(),
   })
 
   const selectImage = async(e) => {
@@ -46,11 +48,18 @@ function PostAddModal({modalOpen, setModalOpen}) {
     setClickedData({})
   }
 
+  const mutation = useMutation(async() => {
+    const usersRef = doc(db, "users", user.uid);
+    await addDoc(collection(db, "posts"), inputValue)
+    await updateDoc(usersRef, { postCounts: increment(1)})
+  },{ onSuccess: () => {
+      queryClient.invalidateQueries(getPosts)
+    }
+  });
+
   const onAddButtonClick = async() => {
     try{
-      const usersRef = doc(db, "users", user.uid);
-      await addDoc(collection(db, "posts"), inputValue)
-      await updateDoc(usersRef, { postCounts: increment(1)})
+     mutation.mutate();
     } catch(e){
       console.error("문서 추가 실패 오류:", e)
     }
@@ -100,7 +109,7 @@ function PostAddModal({modalOpen, setModalOpen}) {
         <select onChange={(e) => setInputValue({...inputValue, collectionTag: e.target.value})}>
          <option value="">선택안함</option>
           {myTags.map((tag) =>
-          <option key={tag.collectionID} value={tag.title}>{tag.title}</option>
+          <option key={tag.collectionID} value={tag.collectionID}>{tag.title}</option>
           )}
         </select>
       </SelectBox>
