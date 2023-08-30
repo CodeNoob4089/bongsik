@@ -5,6 +5,7 @@ import {
   collection,
   doc,
   increment,
+  getDoc,
   updateDoc,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
@@ -56,6 +57,35 @@ function PostAddModal({ modalOpen, setModalOpen }) {
       const usersRef = doc(db, "users", user.uid);
       await addDoc(collection(db, "posts"), inputValue);
       await updateDoc(usersRef, { postCounts: increment(1) });
+      const userDoc = await getDoc(usersRef);
+
+      if (
+        userDoc.data().postCounts >= 5 &&
+        !userDoc.data().ownedBadges?.HUx94whUV9Ya1iBwbj4J.isOwned
+      ) {
+        await updateDoc(usersRef, {
+          [`ownedBadges.HUx94whUV9Ya1iBwbj4J`]: { isOwned: true },
+        });
+        alert("게시글 5개작성에 대한 뱃지를 획득하였습니다!");
+      }
+      if (
+        userDoc.data().postCounts >= 10 &&
+        !userDoc.data().ownedBadges?.ZMfzvBXCERSFSIB7gNT5.isOwned
+      ) {
+        await updateDoc(usersRef, {
+          [`ownedBadges.ZMfzvBXCERSFSIB7gNT5`]: { isOwned: true },
+        });
+        alert("게시글 10개작성에 대한 뱃지를 획득하였습니다!");
+      }
+      if (
+        userDoc.data().postCounts >= 20 &&
+        !userDoc.data().ownedBadges?.qk0NnvYfoJVTUvnBBQ4x.isOwned
+      ) {
+        await updateDoc(usersRef, {
+          [`ownedBadges.qk0NnvYfoJVTUvnBBQ4x`]: { isOwned: true },
+        });
+        alert("게시글 20개작성에 대한 뱃지를 획득하였습니다!");
+      }
     } catch (e) {
       console.error("문서 추가 실패 오류:", e);
     }
