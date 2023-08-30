@@ -56,13 +56,13 @@ export const ModalWrapper = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
+  width: 100vw;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 5;
-  max-height: 100%;
+  z-index: 100;
+  max-height: 100vh;
   overflow-y: auto; // 모달 스크롤 표시
 `;
 
@@ -72,7 +72,6 @@ export const ModalContent = styled.div`
   border-radius: 5px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
   max-width: 64vw;
-
   h2 {
     margin-bottom: 10px;
     text-align: center;
@@ -118,4 +117,10 @@ export const Like = styled.span`
   border-radius: 100%;
   cursor: pointer;
   color: ${(props) => (props.isLiked ? "red" : "black")};
+`;
+export const LikeCount = styled.div`
+  width: 0.6rem;
+  margin-top: 0.6rem;
+  margin-right: 0.3rem;
+  color: #7c7c89;
 `;

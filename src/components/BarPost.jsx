@@ -7,24 +7,24 @@ import {
   PostBottomBar,
   Button,
   ButtonSet,
-  Like,
+  LikeCount,
 } from "../components/TabPostStyled";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart } from "@fortawesome/free-solid-svg-icons";
-import { faComment } from "@fortawesome/free-regular-svg-icons";
-import { faArrowUpFromBracket } from "@fortawesome/free-solid-svg-icons";
 import {
   collection,
   getDocs,
   query,
   where,
-  updateDoc,
   doc,
   getDoc,
 } from "firebase/firestore";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import { faComment } from "@fortawesome/free-regular-svg-icons";
+import { faArrowUpFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { db, auth } from "../firebase";
 import { useQuery } from "react-query";
 import PostingModal from "./CommentsModal";
+import Heart from "./Heart";
 
 function BarPost() {
   const userId = auth.currentUser.uid;
@@ -41,6 +41,7 @@ function BarPost() {
     setSelectedPostId(post.postId);
     setOpenModal(true);
   };
+
   //공개 게시물 가져오기
   const getPublicPosts = async () => {
     const postsCollectionRef = collection(db, "posts");
@@ -57,6 +58,7 @@ function BarPost() {
         imageUrl: data.photo,
         content: data.content,
         category: data.place.category_name,
+        likeCount: data.likeCount,
       };
     });
     return PublicPosts;
@@ -68,6 +70,7 @@ function BarPost() {
       post.category === "음식점 > 술집" ||
       post.category === "음식점 > 술집 > 호프,요리주점"
   );
+
   //유저 좋아요, 댓글 정보 가져오기
   const getUserData = async () => {
     const userDocRef = doc(db, "users", userId);
@@ -77,37 +80,14 @@ function BarPost() {
       const userData = docSnapshot.data();
       return {
         userLikes: userData.userLikes || [],
-        userComments: userData.userComments || [],
       };
     } else {
       return {
         userLikes: [],
-        userComments: [],
       };
     }
   };
-
   const { data: userData } = useQuery("fetchUserData", getUserData);
-  // 찜하기
-  const clickHeart = async (postId) => {
-    const alreadyLikedUser = userData.userLikes?.find(
-      (like) => like.likePostId === postId
-    );
-
-    const userDocRef = doc(db, "users", userId);
-
-    if (alreadyLikedUser) {
-      await updateDoc(userDocRef, {
-        userLikes: userData.userLikes.filter(
-          (like) => like.likePostId !== postId
-        ),
-      });
-    } else {
-      await updateDoc(userDocRef, {
-        userLikes: [...userData.userLikes, { likePostId: postId }],
-      });
-    }
-  };
 
   return (
     <>
@@ -134,17 +114,8 @@ function BarPost() {
             </PostContent>
             <PostBottomBar>
               <ButtonSet>
-                <Like
-                  isLiked={userData?.userLikes?.some(
-                    (like) => like.likePostId === item.postId
-                  )}
-                  onClick={() => {
-                    clickHeart(item.postId);
-                    alert("찜");
-                  }}
-                >
-                  <FontAwesomeIcon icon={faHeart} size="lg" />
-                </Like>
+                <Heart userData={userData} item={item} />
+                <LikeCount>{item.likeCount}</LikeCount>
                 <Button
                   onClick={() => {
                     handlePostClick(item);
