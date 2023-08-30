@@ -1,19 +1,10 @@
 import React, { useState } from "react";
 import { Like } from "../components/TabPostStyled";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  updateDoc,
-  doc,
-  getDoc,
-} from "firebase/firestore";
-import { FieldValue } from "firebase/firestore";
+import { updateDoc, doc, getDoc } from "firebase/firestore";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { db, auth } from "../firebase";
-import { useQuery } from "react-query";
 function Heart({ userData, item }) {
   const userId = auth.currentUser?.uid;
   const [isClickProcessing, setIsClickProcessing] = useState(false);

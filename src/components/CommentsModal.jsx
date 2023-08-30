@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { db, auth } from "../firebase";
 import {
@@ -6,7 +7,9 @@ import {
   where,
   query,
   getDocs,
-  orderBy,
+  deleteDoc,
+  doc,
+  updateDoc,
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
@@ -18,7 +21,11 @@ import {
   InputBox,
   Form,
   CommentWrap,
+  CommentButton,
+  CloseButton,
+  CommentInput,
 } from "./TabPostStyled";
+import { nanoid } from "nanoid";
 function PostingModal({
   Button,
   openModal,
@@ -32,7 +39,9 @@ function PostingModal({
   const userId = auth.currentUser?.uid;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-
+  // 댓글 수정
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editedComment, setEditedComment] = useState("");
   //모달 닫기
   const handleCloseModal = () => {
     // 배경 페이지 스크롤 활성화
@@ -56,6 +65,7 @@ function PostingModal({
     });
     return PostComments;
   };
+
   const { data: PostComments } = useQuery(
     "fetchPostComments",
     () => getPostComments(selectedPost.postId),
@@ -63,13 +73,13 @@ function PostingModal({
       enabled: !!selectedPost?.postId,
     }
   );
-
+  console.log("postComments", PostComments);
+  // 댓글 추가
   const addCommentMutation = useMutation(async (newComment) => {
     const commentsCollectionRef = collection(db, "postComments");
     await addDoc(commentsCollectionRef, newComment);
     queryClient.invalidateQueries("fetchPostComments");
   });
-
   //  댓글 작성 버튼 핸들러
   const handleSubmit = async (e, postId) => {
     e.preventDefault();
@@ -92,13 +102,68 @@ function PostingModal({
       userId: userId,
       comment: comment,
       date: new Date().toISOString(),
+      commentId: nanoid(),
     };
 
     await addCommentMutation.mutateAsync(newComment);
 
     commentInput.value = "";
   };
+  // 댓글 삭제
+  const deleteCommentMutation = useMutation(
+    async (commentId) => {
+      const commentsCollectionRef = collection(db, "postComments");
+      const querySnapshot = await getDocs(
+        query(commentsCollectionRef, where("commentId", "==", commentId))
+      );
+      if (!querySnapshot.empty) {
+        const commentDocRef = doc(db, "postComments", querySnapshot.docs[0].id);
+        await deleteDoc(commentDocRef);
+      }
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("fetchPostComments");
+      },
+    }
+  );
 
+  // 댓글 수정
+  const handleEdit = (commentId, currentComment) => {
+    setEditingCommentId(commentId);
+    setEditedComment(currentComment);
+  };
+
+  const handleSaveEdit = async (commentId, postId) => {
+    const commentsCollectionRef = collection(db, "postComments");
+
+    // 댓글의 commentId를 사용하여 해당 댓글 문서를 찾음
+    const querySnapshot = await getDocs(
+      query(commentsCollectionRef, where("commentId", "==", commentId))
+    );
+
+    if (!querySnapshot.empty) {
+      const commentDocRef = querySnapshot.docs[0].ref; // 첫 번째 문서의 참조를 가져옴
+
+      const updatedComment = {
+        nickName: displayName,
+        postId: postId,
+        userId: userId,
+        comment: editedComment,
+        commentId: commentId,
+        date: new Date().toISOString(),
+      };
+
+      // 업데이트할 필드의 경로를 지정하여 업데이트 수행
+      await updateDoc(commentDocRef, updatedComment);
+
+      queryClient.invalidateQueries("fetchPostComments");
+
+      // 수정 완료 후 상태 초기화
+      setEditingCommentId(null);
+      setEditedComment("");
+    }
+  };
   // 댓글 시간
   const elapsedTime = (date) => {
     const start = new Date(date);
@@ -133,15 +198,65 @@ function PostingModal({
             {PostComments?.map(
               (comment) =>
                 comment.postId === selectedPost.postId && (
-                  <CommentWrap>
-                    <div key={comment.id}>
-                      <span>{comment.nickName}:&nbsp;</span> {comment.comment}
-                      <span>{elapsedTime(comment.date)}</span>
+                  <CommentWrap key={comment.commentId}>
+                    <div>
+                      <span>{comment.nickName}:&nbsp;</span>
+                      {editingCommentId === comment.commentId ? (
+                        <>
+                          <CommentInput
+                            type="text"
+                            value={editedComment}
+                            onChange={(e) => setEditedComment(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                if (editingCommentId === comment.commentId) {
+                                  handleSaveEdit(
+                                    comment.commentId,
+                                    comment.postId
+                                  );
+                                }
+                              }
+                            }}
+                          />
+                          <CommentButton
+                            onClick={() => {
+                              handleSaveEdit(comment.commentId, comment.postId);
+                            }}
+                          >
+                            저장
+                          </CommentButton>
+                        </>
+                      ) : (
+                        <>
+                          {comment.comment}&nbsp;
+                          <span>{elapsedTime(comment.date)}</span>
+                          {comment.userId === userId && (
+                            <>
+                              <CommentButton
+                                onClick={() =>
+                                  handleEdit(comment.commentId, comment.comment)
+                                }
+                              >
+                                수정
+                              </CommentButton>
+                              <CommentButton
+                                onClick={() =>
+                                  deleteCommentMutation.mutate(
+                                    comment.commentId
+                                  )
+                                }
+                              >
+                                삭제
+                              </CommentButton>
+                            </>
+                          )}
+                        </>
+                      )}
                     </div>
                   </CommentWrap>
                 )
             )}
-            <Button onClick={handleCloseModal}>닫기</Button>
+            <CloseButton onClick={handleCloseModal}>X</CloseButton>
           </ModalContent>
         </ModalWrapper>
       )}
