@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Like } from "../components/TabPostStyled";
 import { updateDoc, doc, getDoc } from "firebase/firestore";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { db, auth } from "../firebase";
