@@ -10,6 +10,7 @@ import {
   deleteDoc,
   doc,
   updateDoc,
+  getDoc,
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
@@ -24,6 +25,7 @@ import {
   CommentButton,
   CloseButton,
   CommentInput,
+  ContentArea,
 } from "./TabPostStyled";
 import { nanoid } from "nanoid";
 function PostingModal({
@@ -42,6 +44,8 @@ function PostingModal({
   // 댓글 수정
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editedComment, setEditedComment] = useState("");
+  // 댓글 세기
+  const [commentCount, setCommentCount] = useState(0);
   //모달 닫기
   const handleCloseModal = () => {
     // 배경 페이지 스크롤 활성화
@@ -71,14 +75,26 @@ function PostingModal({
     () => getPostComments(selectedPost.postId),
     {
       enabled: !!selectedPost?.postId,
+      onSuccess: () => {
+        setCommentCount(0); // 초기 댓글 개수 0으로 설정
+      },
     }
   );
   console.log("postComments", PostComments);
+
   // 댓글 추가
   const addCommentMutation = useMutation(async (newComment) => {
     const commentsCollectionRef = collection(db, "postComments");
     await addDoc(commentsCollectionRef, newComment);
     queryClient.invalidateQueries("fetchPostComments");
+
+    // 해당 게시물의 commentCount 업데이트
+    const postDocRef = doc(db, "posts", selectedPost.postId);
+    const postSnapshot = await getDoc(postDocRef);
+    const currentCommentCount = postSnapshot.data().commentCount;
+    await updateDoc(postDocRef, {
+      commentCount: currentCommentCount + 1,
+    });
   });
   //  댓글 작성 버튼 핸들러
   const handleSubmit = async (e, postId) => {
@@ -110,23 +126,25 @@ function PostingModal({
     commentInput.value = "";
   };
   // 댓글 삭제
-  const deleteCommentMutation = useMutation(
-    async (commentId) => {
-      const commentsCollectionRef = collection(db, "postComments");
-      const querySnapshot = await getDocs(
-        query(commentsCollectionRef, where("commentId", "==", commentId))
-      );
-      if (!querySnapshot.empty) {
-        const commentDocRef = doc(db, "postComments", querySnapshot.docs[0].id);
-        await deleteDoc(commentDocRef);
-      }
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries("fetchPostComments");
-      },
+  const deleteCommentMutation = useMutation(async (commentId) => {
+    const commentsCollectionRef = collection(db, "postComments");
+    const querySnapshot = await getDocs(
+      query(commentsCollectionRef, where("commentId", "==", commentId))
+    );
+    if (!querySnapshot.empty) {
+      const commentDocRef = doc(db, "postComments", querySnapshot.docs[0].id);
+      await deleteDoc(commentDocRef);
     }
-  );
+
+    queryClient.invalidateQueries("fetchPostComments");
+    // 해당 게시물의 commentCount 업데이트
+    const postDocRef = doc(db, "posts", selectedPost.postId);
+    const postSnapshot = await getDoc(postDocRef);
+    const currentCommentCount = postSnapshot.data().commentCount;
+    await updateDoc(postDocRef, {
+      commentCount: currentCommentCount - 1,
+    });
+  });
 
   // 댓글 수정
   const handleEdit = (commentId, currentComment) => {
@@ -178,7 +196,13 @@ function PostingModal({
     if (days < 7) return `${Math.floor(days)}일 전`;
     return `${start.toLocaleDateString()}`;
   };
-
+  // // 댓글 수 가져오기
+  // const getPostCommentCount = async (postId) => {
+  //   const postDocRef = doc(db, "posts", postId);
+  //   const postSnapshot = await getDoc(postDocRef);
+  //   const postData = postSnapshot.data();
+  //   return postData ? postData.commentCount : 0;
+  // };
   return (
     <>
       {openModal && selectedPost && (
@@ -186,7 +210,7 @@ function PostingModal({
           <ModalContent>
             {selectedPost && <img src={selectedPost.imageUrl} alt="Post" />}
             <h2>{selectedPost.title}</h2>
-            <p>{selectedPost.content}</p>
+            <ContentArea>{selectedPost.content}</ContentArea>
 
             <Form onSubmit={(e) => handleSubmit(e, selectedPost.postId)}>
               <InputBox

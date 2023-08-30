@@ -8,6 +8,7 @@ import {
   Button,
   ButtonSet,
   LikeCount,
+  ContentArea,
 } from "../components/TabPostStyled";
 import {
   collection,
@@ -53,6 +54,7 @@ function CafePost() {
         content: data.content,
         category: data.place.category_group_name,
         likeCount: data.likeCount,
+        commentCount: data.commentCount,
       };
     });
     return PublicPosts;
@@ -99,7 +101,7 @@ function CafePost() {
             )}
             <PostContent>
               <h2>{item.title}</h2>
-              <p>{item.content}</p>
+              <ContentArea>{item.content}</ContentArea>
             </PostContent>
             <PostBottomBar>
               <ButtonSet>
@@ -112,6 +114,7 @@ function CafePost() {
                 >
                   <FontAwesomeIcon icon={faComment} size="lg" />
                 </Button>
+                <LikeCount>{item.commentCount}</LikeCount>
                 <Button>
                   <FontAwesomeIcon icon={faArrowUpFromBracket} size="lg" />
                 </Button>

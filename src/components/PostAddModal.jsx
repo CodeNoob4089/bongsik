@@ -32,6 +32,7 @@ function PostAddModal({ modalOpen, setModalOpen }) {
     isPublic: false,
     collectionTag: "",
     likeCount: 0,
+    commentCount: 0,
   });
 
   const selectImage = async (e) => {
