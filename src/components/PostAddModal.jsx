@@ -4,19 +4,22 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   increment,
   updateDoc,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { nanoid } from "nanoid";
 import { useState } from "react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import styled from "styled-components";
-import { getMyTags } from "../api/collection";
+import { getMyTags, getPosts } from "../api/collection";
 import { db, storage } from "../firebase";
 import useAuthStore from "../store/auth";
 import useClickedDataStore from "../store/moduledata";
 
 function PostAddModal({ modalOpen, setModalOpen }) {
+  const queryClient = useQueryClient();
   const { data: myTags } = useQuery("getMyTags", getMyTags);
 
   const clickedData = useClickedDataStore((state) => state.clickedData);
@@ -32,6 +35,7 @@ function PostAddModal({ modalOpen, setModalOpen }) {
     isPublic: false,
     collectionTag: "",
     likeCount: 0,
+    postID: nanoid(),
     commentCount: 0,
   });
 
@@ -52,11 +56,51 @@ function PostAddModal({ modalOpen, setModalOpen }) {
     setClickedData({});
   };
 
-  const onAddButtonClick = async () => {
-    try {
+  const mutation = useMutation(
+    async () => {
       const usersRef = doc(db, "users", user.uid);
       await addDoc(collection(db, "posts"), inputValue);
       await updateDoc(usersRef, { postCounts: increment(1) });
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(getPosts);
+      },
+    }
+  );
+
+  const onAddButtonClick = async () => {
+    try {
+      const usersRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(usersRef);
+      mutation.mutate();
+      if (
+        userDoc.data().postCounts >= 5 &&
+        !userDoc.data().ownedBadges?.HUx94whUV9Ya1iBwbj4J.isOwned
+      ) {
+        await updateDoc(usersRef, {
+          [`ownedBadges.HUx94whUV9Ya1iBwbj4J`]: { isOwned: true },
+        });
+        alert("게시글 5개작성에 대한 뱃지를 획득하였습니다!");
+      }
+      if (
+        userDoc.data().postCounts >= 10 &&
+        !userDoc.data().ownedBadges?.ZMfzvBXCERSFSIB7gNT5.isOwned
+      ) {
+        await updateDoc(usersRef, {
+          [`ownedBadges.ZMfzvBXCERSFSIB7gNT5`]: { isOwned: true },
+        });
+        alert("게시글 10개작성에 대한 뱃지를 획득하였습니다!");
+      }
+      if (
+        userDoc.data().postCounts >= 20 &&
+        !userDoc.data().ownedBadges?.qk0NnvYfoJVTUvnBBQ4x.isOwned
+      ) {
+        await updateDoc(usersRef, {
+          [`ownedBadges.qk0NnvYfoJVTUvnBBQ4x`]: { isOwned: true },
+        });
+        alert("게시글 20개작성에 대한 뱃지를 획득하였습니다!");
+      }
     } catch (e) {
       console.error("문서 추가 실패 오류:", e);
     }
@@ -125,7 +169,7 @@ function PostAddModal({ modalOpen, setModalOpen }) {
             >
               <option value="">선택안함</option>
               {myTags.map((tag) => (
-                <option key={tag.collectionID} value={tag.title}>
+                <option key={tag.collectionID} value={tag.collectionID}>
                   {tag.title}
                 </option>
               ))}

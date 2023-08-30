@@ -25,9 +25,9 @@ function Mypage() {
 
     const fetchUserBadges = async () => {
       if (!user) return;
-      console.log(user.uid);
       const fetchedUserBadges = await getUserBadges(user.uid);
       console.log(fetchedUserBadges);
+
       const ownedBadgesArray = Object.keys(fetchedUserBadges).filter(
         (badgeId) => fetchedUserBadges[badgeId].isOwned
       );
