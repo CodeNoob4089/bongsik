@@ -59,6 +59,7 @@ function SignUp() {
         myTags: [],
         userLikes: [],
         ownedBadges: userBadgeData,
+        postCounts:0,
       });
     } catch ({ code, message }) {
       alert(code);

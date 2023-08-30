@@ -1,23 +1,26 @@
 import {
   arrayUnion,
-  collection,
+  deleteDoc,
   doc,
-  getDoc,
-  getDocs,
+  query,
   setDoc,
   updateDoc,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import React, { useEffect, useState, useClickOutside } from "react";
-import { useQuery } from "react-query";
+import React, { useState, useClickOutside } from "react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import styled from "styled-components";
 import { auth, db, storage } from "../firebase";
 import useAuthStore from "../store/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { nanoid } from "nanoid";
+import { getMyTags } from "../api/collection";
+
+const GET_MY_TAGS = "getMyTags";
 
 function MyList() {
+  const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);
 
   const addImageInput = React.useRef(null);
@@ -28,12 +31,34 @@ function MyList() {
     collectionID: nanoid(),
   });
 
-  const getMyTags = async () => {
-    const tagRef = doc(db, "users", user?.uid);
-    const tagSnap = await getDoc(tagRef);
-    return tagSnap.data().myTags;
-  };
-  const { data: myTags } = useQuery("getMyTags", getMyTags);
+  const { data: myTags } = useQuery(GET_MY_TAGS, getMyTags);
+
+  const addMutation = useMutation(
+    async () => {
+      const usersRef = doc(db, "users", user.uid);
+      await updateDoc(usersRef, { myTags: arrayUnion(collectionInput) });
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(GET_MY_TAGS);
+      },
+    }
+  );
+
+  const deleteMutation = useMutation(
+    async (key) => {
+      const usersRef = doc(db, "users", user.uid);
+      await updateDoc(usersRef, {
+        myTags: myTags.filter((tag) => tag.collectionID !== key),
+      });
+      alert("컬렉션이 삭제되었습니다!");
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(GET_MY_TAGS);
+      },
+    }
+  );
 
   const addMyCollection = () => {
     if (!auth.currentUser) {
@@ -59,16 +84,23 @@ function MyList() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const usersRef = doc(db, "users", user.uid);
-    await updateDoc(usersRef, { myTags: arrayUnion(collectionInput) });
+    if (collectionInput.title === "") {
+      alert("컬렉션 제목을 입력해주세요!");
+    } else {
+      addMutation.mutate();
+      setCollectionInput({
+        coverImage: "",
+        title: "",
+        collectionID: nanoid(),
+      });
+      setAddActive(false);
+    }
   };
 
-  const onDeleteButtonClick = (e) => {
-    e.preventDefault();
-    const usersRef = doc(db, "users", user.uid);
-    // await updateDoc(usersRef, {
-    //   myTags:
-    // })
+  const onDeleteButtonClick = async (key) => {
+    if (window.confirm("컬렉션을 삭제하시겠습니까?")) {
+      deleteMutation.mutate(key);
+    } else return;
   };
 
   return (
@@ -100,20 +132,25 @@ function MyList() {
                 ref={addImageInput}
                 onChange={onSelectImage}
               />
-              <ImageUploadButton onClick={onImageUploadButtonClick}>
+              <ImageUploadButton
+                type="button"
+                onClick={onImageUploadButtonClick}
+              >
                 커버 이미지 선택
               </ImageUploadButton>
             </NewCollectionForm>
           </ListCard>
         ) : null}
         {myTags?.map((tag) => (
-          <ListCard key={tag.nanoid}>
+          <ListCard key={tag.collectionID}>
             <ImageBox img={tag.coverImage}></ImageBox>
             <CardTitle>
               {tag.title}
               <ButtonBox>
                 <ToggleButton>▼</ToggleButton>
-                <DeleteButton onClick={onDeleteButtonClick}>
+                <DeleteButton
+                  onClick={() => onDeleteButtonClick(tag.collectionID)}
+                >
                   <FontAwesomeIcon icon={faTrashCan} />
                 </DeleteButton>
               </ButtonBox>
@@ -193,7 +230,7 @@ const ToggleButton = styled.button`
 `;
 
 const DeleteButton = styled.button`
-  font-size: 18px;
+  font-size: 14px;
   width: 30px;
   margin-left: 15px;
   border: none;
