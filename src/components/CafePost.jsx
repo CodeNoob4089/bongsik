@@ -18,7 +18,6 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
 import { faArrowUpFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { db, auth } from "../firebase";
@@ -27,7 +26,7 @@ import PostingModal from "./CommentsModal";
 import Heart from "./Heart";
 function CafePost() {
   const userId = auth.currentUser?.uid;
-  console.log(userId);
+
   //모달
   const [openModal, setOpenModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
