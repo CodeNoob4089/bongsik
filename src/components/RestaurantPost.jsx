@@ -7,44 +7,24 @@ import {
   PostBottomBar,
   Button,
   ButtonSet,
-  Like,
+  LikeCount,
 } from "../components/TabPostStyled";
-import { useQuery } from "react-query";
 import {
   collection,
   getDocs,
   query,
   where,
-  updateDoc,
   doc,
   getDoc,
 } from "firebase/firestore";
-import { db, auth } from "../firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart } from "@fortawesome/free-solid-svg-icons";
+// import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
 import { faArrowUpFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { db, auth } from "../firebase";
+import { useQuery } from "react-query";
 import PostingModal from "./CommentsModal";
-const getPublicPosts = async () => {
-  const postsCollectionRef = collection(db, "posts");
-
-  const querySnapshot = await getDocs(
-    query(postsCollectionRef, where("isPublic", "==", true))
-  );
-
-  const PublicPosts = querySnapshot.docs.map((postDoc) => {
-    const data = postDoc.data();
-
-    return {
-      postId: postDoc.id,
-      imageUrl: data.photo,
-      content: data.content,
-      category: data.place.category_group_name,
-    };
-  });
-  console.log(PublicPosts);
-  return PublicPosts;
-};
+import Heart from "./Heart";
 
 function RestaurantPost() {
   const userId = auth.currentUser?.uid;
@@ -52,7 +32,6 @@ function RestaurantPost() {
   const [openModal, setOpenModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [selectedPostId, setSelectedPostId] = useState(null);
-
   //모달 열기
   const handlePostClick = (post) => {
     // 배경 페이지 스크롤 막기
@@ -61,53 +40,48 @@ function RestaurantPost() {
     setSelectedPostId(post.postId);
     setOpenModal(true);
   };
+  const getPublicPosts = async () => {
+    const postsCollectionRef = collection(db, "posts");
 
-  const { data: PublicPosts } = useQuery("fetchPublicPosts", getPublicPosts);
-  const filterdPosts = PublicPosts?.filter(
-    (post) => post?.category === "음식점"
-  );
+    const querySnapshot = await getDocs(
+      query(postsCollectionRef, where("isPublic", "==", true))
+    );
 
-  //유저 좋아요, 댓글 정보 가져오기
+    const PublicPosts = querySnapshot.docs.map((postDoc) => {
+      const data = postDoc.data();
+
+      return {
+        postId: postDoc.id,
+        imageUrl: data.photo,
+        content: data.content,
+        category: data.place.category_group_name,
+        likeCount: data.likeCount,
+      };
+    });
+    return PublicPosts;
+  };
+
+  //유저 좋아요 정보 가져오기
   const getUserData = async () => {
     const userDocRef = doc(db, "users", userId);
-
     const docSnapshot = await getDoc(userDocRef);
     if (docSnapshot.exists()) {
       const userData = docSnapshot.data();
       return {
         userLikes: userData.userLikes || [],
-        userComments: userData.userComments || [],
       };
     } else {
       return {
         userLikes: [],
-        userComments: [],
       };
     }
   };
 
   const { data: userData } = useQuery("fetchUserData", getUserData);
-  // 찜하기
-  const clickHeart = async (postId) => {
-    const alreadyLikedUser = userData.userLikes?.find(
-      (like) => like.likePostId === postId
-    );
-
-    const userDocRef = doc(db, "users", userId);
-
-    if (alreadyLikedUser) {
-      await updateDoc(userDocRef, {
-        userLikes: userData.userLikes.filter(
-          (like) => like.likePostId !== postId
-        ),
-      });
-    } else {
-      await updateDoc(userDocRef, {
-        userLikes: [...userData.userLikes, { likePostId: postId }],
-      });
-    }
-  };
-
+  const { data: PublicPosts } = useQuery("fetchPublicPosts", getPublicPosts);
+  const filterdPosts = PublicPosts?.filter(
+    (post) => post?.category === "음식점"
+  );
   return (
     <>
       {filterdPosts?.map((item) => (
@@ -123,7 +97,7 @@ function RestaurantPost() {
               <>
                 <PostImgBox>
                   {/* <PostImgUrl src={}> </PostImgUrl> */}
-                  사진 없을 때 무슨 사진 넣을지 고민중
+                  무슨 사진 넣을지 고민중
                 </PostImgBox>
               </>
             )}
@@ -133,17 +107,8 @@ function RestaurantPost() {
             </PostContent>
             <PostBottomBar>
               <ButtonSet>
-                <Like
-                  isLiked={userData?.userLikes?.some(
-                    (like) => like.likePostId === item.postId
-                  )}
-                  onClick={() => {
-                    clickHeart(item.postId);
-                    alert("찜");
-                  }}
-                >
-                  <FontAwesomeIcon icon={faHeart} size="lg" />
-                </Like>
+                <Heart userData={userData} item={item} />
+                <LikeCount>{item.likeCount}</LikeCount>
                 <Button
                   onClick={() => {
                     handlePostClick(item);

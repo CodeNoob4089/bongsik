@@ -1,4 +1,11 @@
-import { arrayUnion, deleteDoc, doc, query, setDoc, updateDoc } from "firebase/firestore";
+import {
+  arrayUnion,
+  deleteDoc,
+  doc,
+  query,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useState, useClickOutside } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
@@ -10,12 +17,11 @@ import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { nanoid } from "nanoid";
 import { getMyTags } from "../api/collection";
 
-const GET_MY_TAGS = 'getMyTags'
+const GET_MY_TAGS = "getMyTags";
 
 function MyList() {
-const queryClient = useQueryClient();
-const user = useAuthStore((state) => state.user)
-
+  const queryClient = useQueryClient();
+  const user = useAuthStore((state) => state.user);
 
   const addImageInput = React.useRef(null);
   const [addActive, setAddActive] = useState(false);
@@ -25,27 +31,34 @@ const user = useAuthStore((state) => state.user)
     collectionID: nanoid(),
   });
 
-const { data : myTags } = useQuery(GET_MY_TAGS, getMyTags)
+  const { data: myTags } = useQuery(GET_MY_TAGS, getMyTags);
 
-const addMutation = useMutation(async() => {
-  const usersRef = doc(db, "users", user.uid);
-  await updateDoc(usersRef, { myTags: arrayUnion(collectionInput)})
-},{ onSuccess: () => {
-    queryClient.invalidateQueries(GET_MY_TAGS)
-  }
-});
+  const addMutation = useMutation(
+    async () => {
+      const usersRef = doc(db, "users", user.uid);
+      await updateDoc(usersRef, { myTags: arrayUnion(collectionInput) });
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(GET_MY_TAGS);
+      },
+    }
+  );
 
-const deleteMutation = useMutation(async(key) => {
-  const usersRef = doc(db, "users", user.uid);
-    await updateDoc(usersRef, {
-      myTags: myTags.filter((tag) => tag.collectionID !== key),
-    });
-    alert("컬렉션이 삭제되었습니다!")
-},{ onSuccess: () => {
-    queryClient.invalidateQueries(GET_MY_TAGS)
-  }
-});
-
+  const deleteMutation = useMutation(
+    async (key) => {
+      const usersRef = doc(db, "users", user.uid);
+      await updateDoc(usersRef, {
+        myTags: myTags.filter((tag) => tag.collectionID !== key),
+      });
+      alert("컬렉션이 삭제되었습니다!");
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(GET_MY_TAGS);
+      },
+    }
+  );
 
   const addMyCollection = () => {
     if (!auth.currentUser) {
@@ -69,73 +82,83 @@ const deleteMutation = useMutation(async(key) => {
     }
   };
 
-const onSubmit = async(e) => {
-  e.preventDefault();
-  if(collectionInput.title === ""){
-    alert("컬렉션 제목을 입력해주세요!")
-  }else{
-  addMutation.mutate();
-  setCollectionInput({
-  coverImage: "",
-  title: "",
-  collectionID: nanoid(),
-  })
-  setAddActive(false)
-}
-}
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    if (collectionInput.title === "") {
+      alert("컬렉션 제목을 입력해주세요!");
+    } else {
+      addMutation.mutate();
+      setCollectionInput({
+        coverImage: "",
+        title: "",
+        collectionID: nanoid(),
+      });
+      setAddActive(false);
+    }
+  };
 
-
-const onDeleteButtonClick = async(key) => {
-  if(window.confirm("컬렉션을 삭제하시겠습니까?")){
-    deleteMutation.mutate(key);
-  } else return
-}
+  const onDeleteButtonClick = async (key) => {
+    if (window.confirm("컬렉션을 삭제하시겠습니까?")) {
+      deleteMutation.mutate(key);
+    } else return;
+  };
 
   return (
     <>
-    <ListCardsContainer>
-      <ListTop>
-      <ListTitle>나의 리스트</ListTitle>
-      <AddButton onClick={addMyCollection}>+</AddButton>
-      </ListTop>
-      {addActive?
-      <ListCard>
-        <NewCollectionCover img={collectionInput.coverImage}></NewCollectionCover>
-        <NewCollectionForm
-         onSubmit={onSubmit}
-        >
-          <CollectionTitleInput
-          placeholder="컬렉션 제목"
-          value={collectionInput.title}
-          onChange={(e) => {
-            setCollectionInput({... collectionInput, title: e.target.value})
-          }}
-          />
-          <input
-          type="file"
-          style={{display: "none"}}
-          ref={addImageInput}
-          onChange={onSelectImage}
-          />
-          <ImageUploadButton type="button" onClick={onImageUploadButtonClick}>커버 이미지 선택</ImageUploadButton>  
-        </NewCollectionForm>
-      </ListCard>
-      : null}
-      {myTags?.map((tag) => 
-        <ListCard key={tag.collectionID}>
-        <ImageBox img={tag.coverImage}></ImageBox>
-          <CardTitle>{tag.title}
-          <ButtonBox>
-          <ToggleButton>▼</ToggleButton>
-          <DeleteButton onClick={() => onDeleteButtonClick(tag.collectionID)}>
-          <FontAwesomeIcon icon={faTrashCan} />
-          </DeleteButton>
-          </ButtonBox>
-          </CardTitle>
-          {/* <CardContent>카드 내용</CardContent> */}
-      </ListCard>
-      )}
-    </ListCardsContainer>
+      <ListCardsContainer>
+        <ListTop>
+          <ListTitle>나의 리스트</ListTitle>
+          <AddButton onClick={addMyCollection}>+</AddButton>
+        </ListTop>
+        {addActive ? (
+          <ListCard>
+            <NewCollectionCover
+              img={collectionInput.coverImage}
+            ></NewCollectionCover>
+            <NewCollectionForm onSubmit={onSubmit}>
+              <CollectionTitleInput
+                placeholder="컬렉션 제목"
+                value={collectionInput.title}
+                onChange={(e) => {
+                  setCollectionInput({
+                    ...collectionInput,
+                    title: e.target.value,
+                  });
+                }}
+              />
+              <input
+                type="file"
+                style={{ display: "none" }}
+                ref={addImageInput}
+                onChange={onSelectImage}
+              />
+              <ImageUploadButton
+                type="button"
+                onClick={onImageUploadButtonClick}
+              >
+                커버 이미지 선택
+              </ImageUploadButton>
+            </NewCollectionForm>
+          </ListCard>
+        ) : null}
+        {myTags?.map((tag) => (
+          <ListCard key={tag.collectionID}>
+            <ImageBox img={tag.coverImage}></ImageBox>
+            <CardTitle>
+              {tag.title}
+              <ButtonBox>
+                <ToggleButton>▼</ToggleButton>
+                <DeleteButton
+                  onClick={() => onDeleteButtonClick(tag.collectionID)}
+                >
+                  <FontAwesomeIcon icon={faTrashCan} />
+                </DeleteButton>
+              </ButtonBox>
+            </CardTitle>
+            {/* <CardContent>카드 내용</CardContent> */}
+          </ListCard>
+        ))}
+      </ListCardsContainer>
     </>
   );
 }
@@ -204,7 +227,7 @@ const ToggleButton = styled.button`
   background-color: white;
   color: gray;
   cursor: pointer;
-`
+`;
 
 const DeleteButton = styled.button`
   font-size: 14px;
@@ -214,7 +237,7 @@ const DeleteButton = styled.button`
   background-color: white;
   color: gray;
   cursor: pointer;
-`
+`;
 
 const AddButton = styled.button`
   font-weight: bold;

@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../store/auth";
 import { Outlet } from "react-router-dom";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
 import { useParams } from "react-router-dom";
 import { styled } from "styled-components";

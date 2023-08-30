@@ -1,7 +1,15 @@
 import { useMutation, useQueryClient } from "react-query";
 import { db, auth } from "../firebase";
-import { updateDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  where,
+  query,
+  getDocs,
+  orderBy,
+} from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "react-query";
 import useAuthStore from "../store/auth";
 import {
   ModalWrapper,
@@ -12,7 +20,6 @@ import {
   CommentWrap,
 } from "./TabPostStyled";
 function PostingModal({
-  userData,
   Button,
   openModal,
   setOpenModal,
@@ -33,13 +40,34 @@ function PostingModal({
     setOpenModal(false);
     setSelectedPostId(null);
   };
-  const addCommentMutation = useMutation(async (newComment) => {
-    const userDocRef = doc(db, "users", userId);
-    await updateDoc(userDocRef, {
-      userComments: [...userData.userComments, newComment],
+
+  // //게시물 댓글 가져오기
+  const getPostComments = async (postId) => {
+    const commentsCollectionRef = collection(db, "postComments");
+
+    const querySnapshot = await getDocs(
+      query(commentsCollectionRef, where("postId", "==", postId))
+    );
+    const PostComments = querySnapshot.docs.map((commentsDoc) => {
+      const data = commentsDoc.data();
+      return {
+        ...data,
+      };
     });
-    // Refetch user data after adding a comment
-    queryClient.invalidateQueries("fetchUserData");
+    return PostComments;
+  };
+  const { data: PostComments } = useQuery(
+    "fetchPostComments",
+    () => getPostComments(selectedPost.postId),
+    {
+      enabled: !!selectedPost?.postId,
+    }
+  );
+
+  const addCommentMutation = useMutation(async (newComment) => {
+    const commentsCollectionRef = collection(db, "postComments");
+    await addDoc(commentsCollectionRef, newComment);
+    queryClient.invalidateQueries("fetchPostComments");
   });
 
   //  댓글 작성 버튼 핸들러
@@ -61,11 +89,13 @@ function PostingModal({
     const newComment = {
       nickName: displayName,
       postId: postId,
+      userId: userId,
       comment: comment,
       date: new Date().toISOString(),
     };
 
-    await addCommentMutation.mutate(newComment);
+    await addCommentMutation.mutateAsync(newComment);
+
     commentInput.value = "";
   };
 
@@ -100,7 +130,7 @@ function PostingModal({
               ></InputBox>
               <SubmitButton type="submit">작성</SubmitButton>
             </Form>
-            {userData?.userComments?.map(
+            {PostComments?.map(
               (comment) =>
                 comment.postId === selectedPost.postId && (
                   <CommentWrap>
@@ -111,7 +141,6 @@ function PostingModal({
                   </CommentWrap>
                 )
             )}
-
             <Button onClick={handleCloseModal}>닫기</Button>
           </ModalContent>
         </ModalWrapper>

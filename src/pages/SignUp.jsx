@@ -58,7 +58,6 @@ function SignUp() {
       await setDoc(doc(db, "users", auth.currentUser.uid), {
         myTags: [],
         userLikes: [],
-        userComments: [],
         ownedBadges: userBadgeData,
         postCounts:0,
       });
