@@ -2,7 +2,7 @@ import {
   addDoc,
   collection,
   doc,
-  getDocs,
+  getDoc,
   query,
   where,
 } from "firebase/firestore";
@@ -10,16 +10,15 @@ import { db, storage } from "../firebase";
 import { uploadBytesResumable, ref, getDownloadURL } from "firebase/storage";
 
 export const getUserBadges = async (userId) => {
-  const usersRef = collection(db, "users");
-  const q = query(usersRef, where("uid", "==", userId));
-  const querySnapshot = await getDocs(q);
+  const userRef = doc(db, "users", userId);
+  const userDoc = await getDoc(userRef);
 
-  let userData = {};
-  querySnapshot.forEach((doc) => {
-    userData = doc.data();
-  });
-
-  return userData.ownedBadges || [];
+  if (userDoc.exists()) {
+    return userDoc.data().ownedBadges || [];
+  } else {
+    console.log("No such document!");
+    return [];
+  }
 };
 
 export const addBadge = async (badgeData) => {

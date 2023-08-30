@@ -1,4 +1,11 @@
-import { arrayUnion, deleteDoc, doc, query, setDoc, updateDoc } from "firebase/firestore";
+import {
+  arrayUnion,
+  deleteDoc,
+  doc,
+  query,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useState, useClickOutside } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
@@ -10,12 +17,11 @@ import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { nanoid } from "nanoid";
 import { getMyTags, getPosts } from "../api/collection";
 
-const GET_MY_TAGS = 'getMyTags'
+const GET_MY_TAGS = "getMyTags";
 
 function MyList() {
-const queryClient = useQueryClient();
-const user = useAuthStore((state) => state.user)
-
+  const queryClient = useQueryClient();
+  const user = useAuthStore((state) => state.user);
 
   const addImageInput = React.useRef(null);
   const [addActive, setAddActive] = useState(false);
@@ -29,13 +35,17 @@ const user = useAuthStore((state) => state.user)
 const { data : myTags } = useQuery(GET_MY_TAGS, getMyTags)
 const { data: postData } = useQuery(`fetchPostData`, getPosts);
 
-const addMutation = useMutation(async() => {
-  const usersRef = doc(db, "users", user.uid);
-  await updateDoc(usersRef, { myTags: arrayUnion(collectionInput)})
-},{ onSuccess: () => {
-    queryClient.invalidateQueries(GET_MY_TAGS)
-  }
-});
+  const addMutation = useMutation(
+    async () => {
+      const usersRef = doc(db, "users", user.uid);
+      await updateDoc(usersRef, { myTags: arrayUnion(collectionInput) });
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(GET_MY_TAGS);
+      },
+    }
+  );
 
 const deleteMutation = useMutation(async(key) => {
   const usersRef = doc(db, "users", user.uid);
@@ -70,20 +80,20 @@ const deleteMutation = useMutation(async(key) => {
     }
   };
 
-const onSubmit = async(e) => {
-  e.preventDefault();
-  if(collectionInput.title === ""){
-    alert("컬렉션 제목을 입력해주세요!")
-  }else{
-  addMutation.mutate();
-  setCollectionInput({
-  coverImage: "",
-  title: "",
-  collectionID: nanoid(),
-  })
-  setAddActive(false)
-}
-}
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    if (collectionInput.title === "") {
+      alert("컬렉션 제목을 입력해주세요!");
+    } else {
+      addMutation.mutate();
+      setCollectionInput({
+        coverImage: "",
+        title: "",
+        collectionID: nanoid(),
+      });
+      setAddActive(false);
+    }
+  };
 
 const onToggleOpenButtonClick = (tagID) => {
   setToggleOpen(tagID)
@@ -269,7 +279,7 @@ const DeleteButton = styled.button`
   background-color: white;
   color: gray;
   cursor: pointer;
-`
+`;
 
 const AddButton = styled.button`
   font-weight: bold;

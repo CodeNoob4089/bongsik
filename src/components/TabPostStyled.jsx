@@ -56,13 +56,13 @@ export const ModalWrapper = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
+  width: 100vw;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 5;
-  max-height: 100%;
+  z-index: 100;
+  max-height: 100vh;
   overflow-y: auto; // 모달 스크롤 표시
 `;
 
@@ -71,7 +71,9 @@ export const ModalContent = styled.div`
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-  max-width: 64vw;
+  width: 64vw;
+  height: 100vh;
+  overflow-y: auto;
 
   h2 {
     margin-bottom: 10px;
@@ -108,7 +110,7 @@ export const Form = styled.form`
 `;
 export const CommentWrap = styled.div`
   color: black;
-
+  margin-top: 1rem;
   width: 60vw;
   height: auto;
   border-radius: 10px;
@@ -118,4 +120,41 @@ export const Like = styled.span`
   border-radius: 100%;
   cursor: pointer;
   color: ${(props) => (props.isLiked ? "red" : "black")};
+`;
+export const LikeCount = styled.div`
+  width: 0.6rem;
+  margin-top: 0.6rem;
+  margin-right: 0.3rem;
+  color: #7c7c89;
+`;
+export const CommentButton = styled.button`
+  color: white;
+  font-weight: bold;
+  background-color: #ff4e50;
+  width: 3rem;
+  height: 1.5rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-left: 0.5rem;
+`;
+export const CloseButton = styled.button`
+  color: white;
+  font-weight: bold;
+  background-color: #ff4e50;
+  width: 3rem;
+  height: 2rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-left: 26rem;
+  margin-top: 1rem;
+`;
+export const CommentInput = styled.input`
+  color: black;
+  font-weight: bold;
+  text-align: center;
+  width: 15rem;
+  height: 1.5rem;
+  border-radius: 10px;
 `;
