@@ -45,7 +45,7 @@ function PostAddModal({ modalOpen, setModalOpen }) {
   const [stars, setStars] = useState(initialStars)
 
   const starClickHandler = (index) => {
-    if(index === 0 && stars.filter((s) => s === true).length === 1){
+    if(index+1 ===  stars.filter((s) => s === true).length){
       console.log("여기유", stars.filter((s) => s === true).length, index)
       setInputValue({...inputValue, star: 0})
       console.log(inputValue.star)
