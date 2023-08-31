@@ -3,9 +3,8 @@ import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
-import { Link } from "react-router-dom";
 import useMapDataStore from "../store/mapdata";
-import useClickedDataStore from "../store/moduledata";
+import useClickedDataStore from "../store/modalData";
 import useAuthStore from "../store/auth";
 
 const { kakao } = window;
@@ -18,9 +17,11 @@ function KakaoMap({ showModal }) {
   const [map, setMap] = useState();
   const [pagination, setPagination] = useState({});
 
+
   const data = useMapDataStore((state) => state.data);
   const setData = useMapDataStore((state) => state.setData);
-  const setClickedData = useClickedDataStore((state) => state.setClickedData);
+  const setClickedData = useClickedDataStore((state) => 
+  state?state.setClickedData:[]);
   const user = useAuthStore((state) => state.user);
 
   const keywordInputChange = (e) => {

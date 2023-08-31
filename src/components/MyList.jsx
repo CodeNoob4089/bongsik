@@ -1,9 +1,6 @@
 import {
   arrayUnion,
-  deleteDoc,
   doc,
-  query,
-  setDoc,
   updateDoc,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
@@ -106,12 +103,11 @@ const onDeleteButtonClick = (key) => {
   } else {return}
 }
 
-console.log(postData)
 
   return (
     <ListCardsContainer>
       <ListTop>
-      <ListTitle>나의 리스트</ListTitle>
+      <ListTitle>나의 컬렉션 리스트</ListTitle>
       {addActive?
       <AddButton onClick={() => setAddActive(false)}>--</AddButton>
       :<AddButton onClick={addMyCollection}>+</AddButton>
@@ -252,7 +248,7 @@ const ButtonBox = styled.div`
 
 const ToggleButton = styled.button`
   font-size: 18px;
-  width: 30px;
+  width: 50px;
   margin-left: 15px;
   border: none;
   background-color: white;
@@ -260,10 +256,8 @@ const ToggleButton = styled.button`
   cursor: pointer;
 `
 const PostLists = styled.div`
-  background-color: #c8c8c8;
+  background-color: #dccdc5;
   border-radius: 15px;
-  /* max-height: 280px;
-  overflow-y: scroll; */
 `
 
 const CollectedPosts = styled.div`
@@ -273,7 +267,7 @@ const CollectedPosts = styled.div`
 
 const DeleteButton = styled.button`
   font-size: 14px;
-  width: 30px;
+  width: 50px;
   margin-left: 15px;
   border: none;
   background-color: white;
@@ -302,6 +296,7 @@ const NewCollectionCover = styled.div`
   background-color: #c8c8c8;
   border-radius: 15px;
   background-image: url(${(props) => props.img});
+  background-size: 5rem;
 `;
 
 const NewCollectionForm = styled.form`

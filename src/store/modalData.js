@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 const useClickedDataStore = create((set) => ({
-  clickedData: {},
+  clickedData: [],
   setClickedData: (clickedData) => set({ clickedData }),
 }));
 

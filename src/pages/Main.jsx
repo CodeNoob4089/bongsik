@@ -7,6 +7,7 @@ import { useState } from "react";
 
 function Main() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [clickedCategory, setClickedCategory] = useState('')
 
   const showModal = () => {
     setModalOpen(true);

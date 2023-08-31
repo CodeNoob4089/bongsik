@@ -12,7 +12,7 @@ const getMyTags = async () => {
   if (!auth.currentUser) {
     return [];
   }
-  const tagRef = doc(db, "users", auth.currentUser.uid);
+  const tagRef = doc(db, "users", auth.currentUser?.uid);
   const tagSnap = await getDoc(tagRef);
   return tagSnap.data().myTags;
 };
