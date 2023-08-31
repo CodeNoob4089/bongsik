@@ -17,6 +17,25 @@ import { getMyTags, getPosts } from "../api/collection";
 import { db, storage } from "../firebase";
 import useAuthStore from "../store/auth";
 import useClickedDataStore from "../store/moduledata";
+import { faLock, faLockOpen } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  increment,
+  updateDoc,
+} from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { nanoid } from "nanoid";
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import styled from "styled-components";
+import { getMyTags, getPosts } from "../api/collection";
+import { db, storage } from "../firebase";
+import useAuthStore from "../store/auth";
+import useClickedDataStore from "../store/moduledata";
 
 function PostAddModal({ modalOpen, setModalOpen }) {
   const queryClient = useQueryClient();
@@ -36,7 +55,6 @@ function PostAddModal({ modalOpen, setModalOpen }) {
     collectionTag: "",
     likeCount: 0,
     postID: nanoid(),
-    commentCount: 0,
   });
 
   const selectImage = async (e) => {
