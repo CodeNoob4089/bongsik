@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Like } from "../components/TabPostStyled";
-import { updateDoc, doc, getDoc } from "firebase/firestore";
+import { updateDoc, doc, getDoc, arrayUnion } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { db, auth } from "../firebase";
@@ -34,15 +34,16 @@ function Heart({ userData, item }) {
 
     if (alreadyLikedUser) {
       await updateDoc(userDocRef, {
-        userLikes: userData?.userLikes.filter(
+        userLikes: userData?.userLikes?.filter(
           (like) => like.likePostId !== postId
         ),
       });
     } else {
       await updateDoc(userDocRef, {
-        userLikes: [...userData?.userLikes, { likePostId: postId }],
+        userLikes: arrayUnion({ likePostId: postId }),
       });
     }
+    console.log(userData?.userLikes);
     //찜한 수 가져오기
     const userSnapshot = await getDoc(userDocRef);
     const updatedUserData = userSnapshot.data();
@@ -66,24 +67,20 @@ function Heart({ userData, item }) {
       alert("좋아요 10개 누르기 조건을 달성하여 뱃지를 획득합니다!");
     }
 
-    await Promise.all([
-      updateDoc(postDocRef, {}),
-      getDoc(postDocRef).then((snap) => {
-        const updatedLikeCount = snap.data().likeCount;
-        updateLikeCountInState(postId, updatedLikeCount);
-        console.log(updatedLikeCount);
-      }),
-    ]);
+    await updateDoc(postDocRef, {});
+    const updatedLikeCount = postSnapshot.data().likeCount;
+    updateLikeCountInState(postId, updatedLikeCount);
+    console.log(updatedLikeCount);
     // 하트색 바로 바뀌게 하려고 넣어둠
     setTimeout(() => {
       alert("찜");
       setIsClickProcessing(false); // 클릭 처리 완료 후 클릭 활성화
-    }, 100);
+    }, 10);
   };
   // 상태 업데이트 함수 정의
   const updateLikeCountInState = (postId, updatedLikeCount) => {
     setFilteredPosts((prevPosts) =>
-      prevPosts.map((post) => {
+      prevPosts?.map((post) => {
         if (post.postId === postId) {
           return { ...post, likeCount: updatedLikeCount };
         }

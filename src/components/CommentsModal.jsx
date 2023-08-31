@@ -83,19 +83,30 @@ function PostingModal({
   console.log("postComments", PostComments);
 
   // 댓글 추가
-  const addCommentMutation = useMutation(async (newComment) => {
-    const commentsCollectionRef = collection(db, "postComments");
-    await addDoc(commentsCollectionRef, newComment);
-    queryClient.invalidateQueries("fetchPostComments");
+  const addCommentMutation = useMutation(
+    async (newComment) => {
+      const commentsCollectionRef = collection(db, "postComments");
+      await addDoc(commentsCollectionRef, newComment);
+    },
+    {
+      onSuccess: async () => {
+        const postDocRef = doc(db, "posts", selectedPost.postId);
+        const postSnapshot = await getDoc(postDocRef);
+        const currentCommentCount = postSnapshot.data().commentCount;
 
-    // 해당 게시물의 commentCount 업데이트
-    const postDocRef = doc(db, "posts", selectedPost.postId);
-    const postSnapshot = await getDoc(postDocRef);
-    const currentCommentCount = postSnapshot.data().commentCount;
-    await updateDoc(postDocRef, {
-      commentCount: currentCommentCount + 1,
-    });
-  });
+        // 게시물의 commentCount 업데이트
+        await updateDoc(postDocRef, {
+          commentCount: currentCommentCount + 1,
+        });
+
+        queryClient.invalidateQueries("fetchPostComments");
+
+        // fetchPublicPosts 쿼리 다시 호출하여 게시물 리스트 업데이트
+        queryClient.invalidateQueries("fetchPublicPosts");
+      },
+    }
+  );
+
   //  댓글 작성 버튼 핸들러
   const handleSubmit = async (e, postId) => {
     e.preventDefault();
@@ -112,6 +123,7 @@ function PostingModal({
       alert("댓글을 입력해주세요");
       return;
     }
+
     const newComment = {
       nickName: displayName,
       postId: postId,
@@ -136,7 +148,6 @@ function PostingModal({
       await deleteDoc(commentDocRef);
     }
 
-    queryClient.invalidateQueries("fetchPostComments");
     // 해당 게시물의 commentCount 업데이트
     const postDocRef = doc(db, "posts", selectedPost.postId);
     const postSnapshot = await getDoc(postDocRef);
@@ -144,8 +155,9 @@ function PostingModal({
     await updateDoc(postDocRef, {
       commentCount: currentCommentCount - 1,
     });
-  });
 
+    queryClient.invalidateQueries("fetchPostComments");
+  });
   // 댓글 수정
   const handleEdit = (commentId, currentComment) => {
     setEditingCommentId(commentId);
@@ -196,13 +208,13 @@ function PostingModal({
     if (days < 7) return `${Math.floor(days)}일 전`;
     return `${start.toLocaleDateString()}`;
   };
-  // // 댓글 수 가져오기
-  // const getPostCommentCount = async (postId) => {
-  //   const postDocRef = doc(db, "posts", postId);
-  //   const postSnapshot = await getDoc(postDocRef);
-  //   const postData = postSnapshot.data();
-  //   return postData ? postData.commentCount : 0;
-  // };
+  // 게시물의 댓글 수 업데이트
+  const updatePostCommentCount = async (postId, newCommentCount) => {
+    const postDocRef = doc(db, "posts", postId);
+    await updateDoc(postDocRef, {
+      commentCount: newCommentCount,
+    });
+  };
   return (
     <>
       {openModal && selectedPost && (

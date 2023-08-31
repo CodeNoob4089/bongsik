@@ -68,7 +68,7 @@ function RestaurantPost() {
     if (docSnapshot.exists()) {
       const userData = docSnapshot.data();
       return {
-        userLikes: userData.userLikes || [],
+        userLikes: userData?.userLikes || [],
       };
     } else {
       return {
