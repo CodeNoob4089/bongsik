@@ -24,6 +24,7 @@ export const PostImgUrl = styled.img`
   border-radius: 0.35rem;
   display: block;
   margin: 0 auto;
+  object-fit: cover;
 `;
 export const PostContent = styled.div`
   /* background-color: #5e44ad; */
