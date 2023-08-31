@@ -50,7 +50,7 @@ export const Button = styled.button`
   border: none;
   font-size: 1rem;
   margin-left: 3rem;
-  margin-right: 3rem;
+  /* margin-right: 3rem; */
 `;
 export const ModalWrapper = styled.div`
   position: fixed;
@@ -84,6 +84,8 @@ export const ModalContent = styled.div`
     width: 60vw;
     height: 70vh;
     margin-bottom: 10px;
+    margin: auto;
+    display: block;
   }
 `;
 export const SubmitButton = styled.button`
@@ -157,4 +159,11 @@ export const CommentInput = styled.input`
   width: 15rem;
   height: 1.5rem;
   border-radius: 10px;
+`;
+export const ContentArea = styled.div`
+  max-width: 60vw;
+  height: auto;
+  margin-left: 0.5rem;
+  margin-bottom: 0.5rem;
+  margin-top: 0.3rem;
 `;

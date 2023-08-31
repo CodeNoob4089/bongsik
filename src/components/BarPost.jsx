@@ -58,6 +58,7 @@ function BarPost() {
         content: data.content,
         category: data.place.category_name,
         likeCount: data.likeCount,
+        commentCount: data.commentCount,
       };
     });
     return PublicPosts;
@@ -122,6 +123,7 @@ function BarPost() {
                 >
                   <FontAwesomeIcon icon={faComment} size="lg" />
                 </Button>
+                <LikeCount>{item.commentCount}</LikeCount>
                 <Button>
                   <FontAwesomeIcon icon={faArrowUpFromBracket} size="lg" />
                 </Button>

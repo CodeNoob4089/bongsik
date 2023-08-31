@@ -80,7 +80,7 @@ function Community() {
       <CommunityRight>
         <SearchArea>
           <SearchForm>
-            <SearchMapInput placeholder="검색어를 입력해주세요" />
+            <SearchInput placeholder="검색어를 입력해주세요" />
             <SearchButton>
               <FontAwesomeIcon icon={faMagnifyingGlass} />
             </SearchButton>
@@ -90,10 +90,10 @@ function Community() {
           <MonthlyTitle>이 달의 글</MonthlyTitle>
           <MonthlyContent></MonthlyContent>
         </MonthlyPost>
-        <MonthlyPost>
+        {/* <MonthlyPost>
           <MonthlyTitle>추가될 것 </MonthlyTitle>
           <MonthlyContent></MonthlyContent>
-        </MonthlyPost>
+        </MonthlyPost> */}
       </CommunityRight>
       {isTopVisible && <TopButton onClick={scrollToTop}>TOP</TopButton>}
     </Container>
@@ -127,11 +127,11 @@ const Button = styled.button`
 `;
 
 const SearchArea = styled.div`
-  /* position: absolute; */
-  margin-left: 3.7rem;
+  position: fixed;
+  /* margin-left: 3.7rem; */
   padding-bottom: 30px;
   top: 6rem;
-  right: 1rem;
+  right: 5rem;
   width: 18rem;
 `;
 
@@ -140,7 +140,7 @@ const SearchForm = styled.form`
   height: 2.5rem;
 `;
 
-const SearchMapInput = styled.input`
+const SearchInput = styled.input`
   position: absolute;
   font-size: 17px;
   z-index: 2;
@@ -169,6 +169,7 @@ const CommunityRight = styled.div`
   margin: 5vh auto;
 `;
 const MonthlyPost = styled.div`
+  position: fixed;
   flex-direction: row;
   background-color: #c8c8c8;
   width: 17.2vw;
@@ -176,18 +177,21 @@ const MonthlyPost = styled.div`
   border-radius: 0.3rem;
   margin-left: 3.7rem;
   margin-bottom: 3rem;
-  position: relative;
+  margin-top: 3rem;
 `;
 const MonthlyContent = styled.div`
+  position: absolute;
   display: flex;
-  background-color: #bf85a1;
+  /* background-color: #bf85a1; */
   width: 17.2vw;
   height: 42vh;
   border-radius: 0.3rem;
 `;
 const MonthlyTitle = styled.p`
+  position: fixed;
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
+  z-index: 1;
 `;
 const TopButton = styled.button`
   position: fixed;

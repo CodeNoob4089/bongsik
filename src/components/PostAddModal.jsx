@@ -17,6 +17,25 @@ import { getMyTags, getPosts } from "../api/collection";
 import { db, storage } from "../firebase";
 import useAuthStore from "../store/auth";
 import useClickedDataStore from "../store/moduledata";
+import { faLock, faLockOpen } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  increment,
+  updateDoc,
+} from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { nanoid } from "nanoid";
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import styled from "styled-components";
+import { getMyTags, getPosts } from "../api/collection";
+import { db, storage } from "../firebase";
+import useAuthStore from "../store/auth";
+import useClickedDataStore from "../store/moduledata";
 
 function PostAddModal({ modalOpen, setModalOpen }) {
   const queryClient = useQueryClient();
@@ -80,7 +99,7 @@ function PostAddModal({ modalOpen, setModalOpen }) {
         await updateDoc(usersRef, {
           [`ownedBadges.HUx94whUV9Ya1iBwbj4J`]: { isOwned: true },
         });
-        alert("게시글 5개작성 조건을 달성하여 뱃지를 획득하였습니다!");
+        alert("게시글 5개작성에 대한 뱃지를 획득하였습니다!");
       }
       if (
         userDoc.data().postCounts >= 10 &&
@@ -89,7 +108,7 @@ function PostAddModal({ modalOpen, setModalOpen }) {
         await updateDoc(usersRef, {
           [`ownedBadges.ZMfzvBXCERSFSIB7gNT5`]: { isOwned: true },
         });
-        alert("게시글 10개작성 조건을 달성하여 뱃지를 획득하였습니다!");
+        alert("게시글 10개작성에 대한 뱃지를 획득하였습니다!");
       }
       if (
         userDoc.data().postCounts >= 20 &&
@@ -98,7 +117,7 @@ function PostAddModal({ modalOpen, setModalOpen }) {
         await updateDoc(usersRef, {
           [`ownedBadges.qk0NnvYfoJVTUvnBBQ4x`]: { isOwned: true },
         });
-        alert("게시글 20개작성 조건을 달성하여 뱃지를 획득하였습니다!");
+        alert("게시글 20개작성에 대한 뱃지를 획득하였습니다!");
       }
     } catch (e) {
       console.error("문서 추가 실패 오류:", e);
