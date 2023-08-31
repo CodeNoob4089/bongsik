@@ -1,19 +1,28 @@
-import { faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { addDoc, collection, doc, getDoc, increment, updateDoc } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { nanoid } from 'nanoid';
-import { useState } from 'react'
-import { useMutation, useQuery, useQueryClient } from 'react-query';
-import styled from 'styled-components'
-import { getMyTags, getPosts } from '../api/collection';
-import { db, storage } from '../firebase';
-import useAuthStore from '../store/auth';
-import useClickedDataStore from '../store/modalData';
+import { faLock, faLockOpen } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  increment,
+  updateDoc,
+} from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { nanoid } from "nanoid";
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import styled from "styled-components";
+import { getMyTags, getPosts } from "../api/collection";
+import { db, storage } from "../firebase";
+import useAuthStore from "../store/auth";
+import useClickedDataStore from "../store/modalData";
 
-function PostAddModal({modalOpen, setModalOpen}) {
+
+function PostAddModal({ modalOpen, setModalOpen }) {
   const queryClient = useQueryClient();
-  const { data : myTags } = useQuery('getMyTags', getMyTags)
+  const { data: myTags } = useQuery("getMyTags", getMyTags);
+
   const clickedData = useClickedDataStore((state) => state.clickedData);
   const setClickedData = useClickedDataStore((state) => state.setClickedData);
   const user = useAuthStore((state) => state.user);
@@ -31,7 +40,7 @@ function PostAddModal({modalOpen, setModalOpen}) {
     collectionTag: "",
     likeCount: 0,
     postID: nanoid(),
-  })
+  });
 
   const selectImage = async (e) => {
     const image = e.target.files[0];
@@ -49,49 +58,53 @@ function PostAddModal({modalOpen, setModalOpen}) {
     setClickedData({});
   };
 
-  const mutation = useMutation(async() => {
-    const usersRef = doc(db, "users", user.uid);
-    await addDoc(collection(db, "posts"), inputValue)
-    await updateDoc(usersRef, { postCounts: increment(1)})
-  },{ onSuccess: () => {
-      queryClient.invalidateQueries(getPosts)
+  const mutation = useMutation(
+    async () => {
+      const usersRef = doc(db, "users", user.uid);
+      await addDoc(collection(db, "posts"), inputValue);
+      await updateDoc(usersRef, { postCounts: increment(1) });
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(getPosts);
+      },
     }
-  });
+  );
 
-  const onAddButtonClick = async() => {
-    try{
-    const usersRef = doc(db, "users", user.uid);
-    const userDoc = await getDoc(usersRef);
-    mutation.mutate();
-     if (
-      userDoc.data().postCounts >= 5 &&
-      !userDoc.data().ownedBadges?.HUx94whUV9Ya1iBwbj4J.isOwned
-    ) {
-      await updateDoc(usersRef, {
-        [`ownedBadges.HUx94whUV9Ya1iBwbj4J`]: { isOwned: true },
-      });
-      alert("게시글 5개작성에 대한 뱃지를 획득하였습니다!");
-    }
-    if (
-      userDoc.data().postCounts >= 10 &&
-      !userDoc.data().ownedBadges?.ZMfzvBXCERSFSIB7gNT5.isOwned
-    ) {
-      await updateDoc(usersRef, {
-        [`ownedBadges.ZMfzvBXCERSFSIB7gNT5`]: { isOwned: true },
-      });
-      alert("게시글 10개작성에 대한 뱃지를 획득하였습니다!");
-    }
-    if (
-      userDoc.data().postCounts >= 20 &&
-      !userDoc.data().ownedBadges?.qk0NnvYfoJVTUvnBBQ4x.isOwned
-    ) {
-      await updateDoc(usersRef, {
-        [`ownedBadges.qk0NnvYfoJVTUvnBBQ4x`]: { isOwned: true },
-      });
-      alert("게시글 20개작성에 대한 뱃지를 획득하였습니다!");
-    }
-    } catch(e){
-      console.error("문서 추가 실패 오류:", e)
+  const onAddButtonClick = async () => {
+    try {
+      const usersRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(usersRef);
+      mutation.mutate();
+      if (
+        userDoc.data().postCounts >= 5 &&
+        !userDoc.data().ownedBadges?.HUx94whUV9Ya1iBwbj4J.isOwned
+      ) {
+        await updateDoc(usersRef, {
+          [`ownedBadges.HUx94whUV9Ya1iBwbj4J`]: { isOwned: true },
+        });
+        alert("게시글 5개작성에 대한 뱃지를 획득하였습니다!");
+      }
+      if (
+        userDoc.data().postCounts >= 10 &&
+        !userDoc.data().ownedBadges?.ZMfzvBXCERSFSIB7gNT5.isOwned
+      ) {
+        await updateDoc(usersRef, {
+          [`ownedBadges.ZMfzvBXCERSFSIB7gNT5`]: { isOwned: true },
+        });
+        alert("게시글 10개작성에 대한 뱃지를 획득하였습니다!");
+      }
+      if (
+        userDoc.data().postCounts >= 20 &&
+        !userDoc.data().ownedBadges?.qk0NnvYfoJVTUvnBBQ4x.isOwned
+      ) {
+        await updateDoc(usersRef, {
+          [`ownedBadges.qk0NnvYfoJVTUvnBBQ4x`]: { isOwned: true },
+        });
+        alert("게시글 20개작성에 대한 뱃지를 획득하였습니다!");
+      }
+    } catch (e) {
+      console.error("문서 추가 실패 오류:", e);
     }
     closeModal();
   };
@@ -146,19 +159,24 @@ function PostAddModal({modalOpen, setModalOpen}) {
             <div>작성자: {user.displayName}</div>
           </BottomContent>
         </ModalContents>
-      <ModalBottom>
-      <SelectBox>
-        {inputValue.isPublic?
-        <FontAwesomeIcon icon={faLockOpen} style={{color:"gray"}}/>
-        :<FontAwesomeIcon icon={faLock} style={{color:"gray"}} />  
-      }
-      <PublicSelect onChange={(e) => setInputValue({...inputValue, isPublic: !inputValue.isPublic})}>
-        <option value="private">비공개</option>
-        <option value="public">공개</option>
-      </PublicSelect>
-      </SelectBox>
-      <AddButton onClick={onAddButtonClick}>기록하기</AddButton>
-      </ModalBottom>
+        <ModalBottom>
+          <SelectBox>
+            {inputValue.isPublic ? (
+              <FontAwesomeIcon icon={faLockOpen} style={{ color: "gray" }} />
+            ) : (
+              <FontAwesomeIcon icon={faLock} style={{ color: "gray" }} />
+            )}
+            <PublicSelect
+              onChange={(e) =>
+                setInputValue({ ...inputValue, isPublic: !inputValue.isPublic })
+              }
+            >
+              <option value="private">비공개</option>
+              <option value="public">공개</option>
+            </PublicSelect>
+          </SelectBox>
+          <AddButton onClick={onAddButtonClick}>기록하기</AddButton>
+        </ModalBottom>
       </Modal>
     </>
   );

@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Like } from "../components/TabPostStyled";
 import { updateDoc, doc, getDoc } from "firebase/firestore";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { db, auth } from "../firebase";
+import useAuthStore from "../store/auth";
 function Heart({ userData, item }) {
+  const user = useAuthStore((state) => state.user);
   const userId = auth.currentUser?.uid;
   const [isClickProcessing, setIsClickProcessing] = useState(false);
   // 필터링된 포스트 상태 정의
@@ -43,6 +44,28 @@ function Heart({ userData, item }) {
       });
     }
     //찜한 수 가져오기
+    const userSnapshot = await getDoc(userDocRef);
+    const updatedUserData = userSnapshot.data();
+
+    if (
+      updatedUserData.userLikes.length >= 1 &&
+      !updatedUserData.ownedBadges?.CQSiOVJ0zqEsG9yqO8g6.isOwned
+    ) {
+      await updateDoc(userDocRef, {
+        "ownedBadges.CQSiOVJ0zqEsG9yqO8g6.isOwned": true,
+      });
+      alert("첫 좋아요 누르기 조건을 달성하여 뱃지를 획득합니다!");
+    }
+    if (
+      updatedUserData.userLikes.length >= 10 &&
+      !updatedUserData.ownedBadges?.ybL0KO3fCwmJ0sDcAkOe.isOwned
+    ) {
+      await updateDoc(userDocRef, {
+        "ownedBadges.ybL0KO3fCwmJ0sDcAkOe.isOwned": true,
+      });
+      alert("좋아요 10개 누르기 조건을 달성하여 뱃지를 획득합니다!");
+    }
+
     await Promise.all([
       updateDoc(postDocRef, {}),
       getDoc(postDocRef).then((snap) => {

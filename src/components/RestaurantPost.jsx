@@ -55,6 +55,7 @@ function RestaurantPost() {
         content: data.content,
         category: data.place.category_group_name,
         likeCount: data.likeCount,
+        commentCount: data.commentCount,
       };
     });
     return PublicPosts;
@@ -115,6 +116,7 @@ function RestaurantPost() {
                 >
                   <FontAwesomeIcon icon={faComment} size="lg" />
                 </Button>
+                <LikeCount>{item.commentCount}</LikeCount>
                 <Button>
                   <FontAwesomeIcon icon={faArrowUpFromBracket} size="lg" />
                 </Button>
