@@ -62,6 +62,7 @@ function Community() {
               id={tab.id}
               disabled={currentTab === tab.id}
               onClick={() => TabClickHandler(tab.id)}
+              currentTab={currentTab}
             >
               {tab.tabTitle}
             </Button>
@@ -115,15 +116,20 @@ const CommunityLeft = styled.div`
   position: relative;
 `;
 const CategoryBar = styled.div`
-  background-color: #11a388;
-  height: 8vh;
   width: 21vw;
   display: flex;
+  margin-bottom: 5rem;
 `;
 const Button = styled.button`
-  width: 7vw;
+  font-weight: bold;
+  font-size: 17px;
+  color: ${(props) => (props.id === props.currentTab ? "#FF4E50" : "gray")};
+  width: 95px;
+  height: 45px;
   border: none;
-  font-size: 1rem;
+  border-bottom: ${(props) => (props.id === props.currentTab ? "3px solid #FF4E50" : "2px solid gray")};
+  background-color: rgba(255, 255, 255, 0);
+  cursor: pointer;
 `;
 
 const SearchArea = styled.div`

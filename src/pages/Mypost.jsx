@@ -31,6 +31,7 @@ function Mypost() {
         <CategoryButton onClick={() => categoryButtonClickHandler(category)} id={category} currentCategory={currentCategory}>{category}</CategoryButton>
         )}
       </MyPostsTitle>
+      <PostCards>
       {postData?.filter((post)=> post.category === currentCategory).map((post) => (
         <PostCard key={post.postID}>
           <TimeLine>
@@ -54,6 +55,7 @@ function Mypost() {
           </Post>
         </PostCard>
       ))}
+      </PostCards>
     </PostCardsContainer>
   );
   //map함수를 쓰는 이유 : 대량 데이터를 처리하기 위함
@@ -70,12 +72,10 @@ const PostCardsContainer = styled.div`
   height: 100%;
   border-radius: 18px;
   background-color: white;
-  overflow-y: scroll;
-  // flex-basis: 100px;
 `;
 const MyPostsTitle = styled.div`
   width: 100%;
-  padding: 2rem;
+  padding: 2rem 0rem 1rem 2rem;
   /* background-color: green; */
 `
 const CategoryButton = styled.button`
@@ -90,9 +90,13 @@ const CategoryButton = styled.button`
   background-color: ${(props) => props.id === props.currentCategory? "#FF4E50" : "white"};
   cursor: pointer;
 `
+const PostCards = styled.div`
+  overflow-y:scroll;
+  padding-top: 2rem;
+`
 const PostCard = styled.div`
   width: 100%;
-  height: 20rem;
+  height: 18rem;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -121,7 +125,7 @@ const TimeLine = styled.div`
   flex-direction: column;
   align-items: center;
 `
-const Circle = styled. div`
+const Circle = styled.div`
   width: 23px;
   height: 23px;
   background-color: #D0D0DE;

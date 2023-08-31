@@ -34,7 +34,7 @@ function MyLikePost() {
   console.log(user);
   return (
     <LikedPostsContainer>
-      <Title>My Liked Posts</Title>
+      <Title>찜한 글 리스트</Title>
       <GridContainer>
         {likedPosts.map((post) => (
           <PostContainer key={post.id}>
@@ -49,22 +49,34 @@ function MyLikePost() {
 
 export default MyLikePost;
 const LikedPostsContainer = styled.div`
-  padding: 20px;
+  margin: 5vh auto;
+  padding: 2.4rem;
+  display: flex;
+  flex-direction: column;
+  width: 95%;
+  height: 100%;
+  border-radius: 18px;
+  background-color: white;
 `;
 
 const Title = styled.h1`
   font-size: 24px;
-  margin-bottom: 20px;
+  font-weight: bold;
+  color: gray;
+  margin-bottom: 2rem;
 `;
 
 const GridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
+  overflow-y: scroll;
 `;
 
 const PostContainer = styled.div`
-  border: 1px solid gray;
+  border: none;
+  border-radius: 10px;
+  background-color: #F2F2F5;
   padding: 10px;
 `;
 
