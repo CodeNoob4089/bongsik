@@ -16,26 +16,8 @@ import styled from "styled-components";
 import { getMyTags, getPosts } from "../api/collection";
 import { db, storage } from "../firebase";
 import useAuthStore from "../store/auth";
-import useClickedDataStore from "../store/moduledata";
-import { faLock, faLockOpen } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  increment,
-  updateDoc,
-} from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { nanoid } from "nanoid";
-import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
-import styled from "styled-components";
-import { getMyTags, getPosts } from "../api/collection";
-import { db, storage } from "../firebase";
-import useAuthStore from "../store/auth";
-import useClickedDataStore from "../store/moduledata";
+import useClickedDataStore from "../store/modalData";
+
 
 function PostAddModal({ modalOpen, setModalOpen }) {
   const queryClient = useQueryClient();
@@ -44,6 +26,9 @@ function PostAddModal({ modalOpen, setModalOpen }) {
   const clickedData = useClickedDataStore((state) => state.clickedData);
   const setClickedData = useClickedDataStore((state) => state.setClickedData);
   const user = useAuthStore((state) => state.user);
+
+  const clickedCategory = clickedData?.category_name?.split(">").includes("카페")?"카페"
+  :clickedData?.category_name?.split(">").includes("술집")?"술집":"맛집"
 
   const [inputValue, setInputValue] = useState({
     place: clickedData,
@@ -64,7 +49,6 @@ function PostAddModal({ modalOpen, setModalOpen }) {
       await uploadBytes(imageRef, image);
 
       const downloadURL = await getDownloadURL(imageRef);
-      console.log(downloadURL);
       setInputValue({ ...inputValue, photo: downloadURL });
     }
   };
@@ -146,11 +130,23 @@ function PostAddModal({ modalOpen, setModalOpen }) {
                 : clickedData.address_name}
             </span>
           </StoreInfo>
-          <CategoryDiv>카테고리: {clickedData.category_name} </CategoryDiv>
+          <TitleCategory>
+        <SelectBox>
+        <CollectionSelect onChange={(e) => setInputValue({...inputValue, collectionTag: e.target.value})}>
+         <option value="">컬렉션 선택안함</option>
+          {myTags?.map((tag) =>
+          <option key={tag.collectionID} value={tag.collectionID}>{tag.title}</option>
+          )}
+        </CollectionSelect>
+      </SelectBox>
+      {console.log("clickedData", clickedData)}
+      <CategoryDiv>
+        {clickedCategory}
+      </CategoryDiv>
+      </TitleCategory>
         </ModalTitle>
         <ModalContents>
           <div>별점: </div>
-          {console.log(clickedData)}
           <ReviewInput
             placeholder="나만의 맛집 평가를 적어주세요!"
             value={inputValue.content}
@@ -178,20 +174,6 @@ function PostAddModal({ modalOpen, setModalOpen }) {
               <option value="private">비공개</option>
               <option value="public">공개</option>
             </PublicSelect>
-          </SelectBox>
-          <SelectBox>
-            <select
-              onChange={(e) =>
-                setInputValue({ ...inputValue, collectionTag: e.target.value })
-              }
-            >
-              <option value="">선택안함</option>
-              {myTags.map((tag) => (
-                <option key={tag.collectionID} value={tag.collectionID}>
-                  {tag.title}
-                </option>
-              ))}
-            </select>
           </SelectBox>
           <AddButton onClick={onAddButtonClick}>기록하기</AddButton>
         </ModalBottom>
@@ -250,6 +232,7 @@ const ModalTitle = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
 `;
 const StoreInfo = styled.div`
   display: flex;
@@ -259,14 +242,35 @@ const StoreInfo = styled.div`
   line-height: 30px;
 `;
 
+const TitleCategory = styled.div`
+  display: flex;
+`
+
 const CategoryDiv = styled.div`
   background-color: #f2f2f5;
   color: gray;
-  width: 150px;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 40px;
+  width: 70px;
   height: 40px;
-  margin: auto 40px;
+  margin-left: 10px;
   border-radius: 10px;
 `;
+
+const CollectionSelect = styled.select`
+  border: none;
+  outline: none;
+  background-color: #f2f2f5;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  font-weight: bold;
+  color: gray;
+  text-align: center;
+  cursor: pointer;
+`
 
 const ModalContents = styled.div`
   padding: 10px 30px;
@@ -306,7 +310,7 @@ const ModalBottom = styled.div`
 `;
 
 const SelectBox = styled.div`
-  width: 100px;
+  width: auto;
   height: 40px;
   display: flex;
   flex-direction: row;
