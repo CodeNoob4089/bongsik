@@ -2,20 +2,25 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import { Map, MapMarker } from "react-kakao-maps-sdk";
+import { Circle, Map, MapMarker } from "react-kakao-maps-sdk";
 import useMapDataStore from "../store/mapdata";
 import useClickedDataStore from "../store/modalData";
 import useAuthStore from "../store/auth";
+import { useQuery } from "react-query";
+import { getPosts } from "../api/collection";
 
 const { kakao } = window;
 
 function KakaoMap({ showModal }) {
+  let timerId = null
+  const { data: postData } = useQuery(`fetchPostData`, getPosts);
   const [inputValue, setInputValue] = useState("");
   const [searchKeyword, setSearchKeyword] = useState("");
   const [info, setInfo] = useState();
   const [markers, setMarkers] = useState([]);
   const [map, setMap] = useState();
   const [pagination, setPagination] = useState({});
+  const [currentMouseOver, setCurrentMouseOver]= useState();
   const [mapCenterPosition, setMapCenterPosition] = useState({
     lat: 35.6632102,
     lng: 128.556077,
@@ -38,6 +43,16 @@ function KakaoMap({ showModal }) {
     e.preventDefault();
     setSearchKeyword(inputValue);
   };
+
+  const debounce = (delay) => {
+    if(timerId){
+      clearTimeout(timerId)
+    }
+    timerId = setTimeout(() => {
+      setCurrentMouseOver();
+    }, delay)
+  }
+
 
   useEffect(() => {
     const getLocation = new Promise((resolve, reject) => {
@@ -118,6 +133,8 @@ function KakaoMap({ showModal }) {
   }, [searchKeyword, map]);
 
   if (loadingLocation) return <div>위치 정보를 가져오는 중...</div>;
+  
+  console.log(postData)
 
   return (
     <>
@@ -127,7 +144,7 @@ function KakaoMap({ showModal }) {
         <Map // 로드뷰를 표시할 Container
           center={mapCenterPosition}
           style={{
-            width: "67vw",
+            width: "65vw",
             height: "80vh",
             margin: "5vh 4vw",
             position: "relative",
@@ -140,17 +157,43 @@ function KakaoMap({ showModal }) {
             <MapMarker
               key={`marker-${marker.content}-${marker.position.lat},${marker.position.lng}`}
               position={marker.position}
-              onClick={() => setInfo(marker)}
+              onMouseOver={() => setInfo(marker)}
             >
               {info && info.content === marker.content && (
-                <div style={{ color: "#000" }}>{marker.content}</div>
+                <MarkerInfo>{marker.content}</MarkerInfo>
               )}
             </MapMarker>
           ))}
-        </Map>
-      )}
-
-      <SearchArea>
+          {postData.map((post) => 
+           <Circle key={post.postID}
+           center={{
+             lat: post.place.y,
+             lng: post.place.x,
+           }}
+           radius={100}
+           strokeWeight={2} // 선의 두께입니다
+           strokeColor={"#ff954e"} // 선의 색깔입니다
+           strokeOpacity={2} // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+           strokeStyle={"solid"} // 선의 스타일 입니다
+           fillColor={"#ff954e"} // 채우기 색깔입니다
+           fillOpacity={0.7} // 채우기 불투명도 입니다
+           onMouseover={() => setCurrentMouseOver(post)}
+           onMouseout={() => debounce(4000)}
+         />
+          )}
+        {currentMouseOver?
+        <MapMarker
+        key={currentMouseOver.postID}
+        position={{
+          lat: currentMouseOver.place.y,
+          lng: currentMouseOver.place.x,
+        }}
+        onMouseover={() => setCurrentMouseOver(currentMouseOver)}
+        >
+        <MarkerInfo>{currentMouseOver.place.place_name}</MarkerInfo>
+        </MapMarker>
+        : null}
+              <SearchArea>
         <SearchForm onSubmit={submitKeyword}>
           <SearchMapInput
             value={inputValue}
@@ -167,7 +210,9 @@ function KakaoMap({ showModal }) {
               {searchKeyword}&nbsp; 검색 결과
             </ResultText>
             {data?.map((d, index) => (
-              <ResultList key={d.id}>
+              <ResultList
+              key={d.id}
+              >
                 <span>{index + 1}</span>
                 <div
                   onClick={() => {
@@ -191,6 +236,11 @@ function KakaoMap({ showModal }) {
                 </div>
                 <ButtonContainer>
                   <PlaceLinkButton
+                    onClick={() => {setMapCenterPosition({lat: d.y, lng: d.x})}}
+                  >
+                    위치 보기
+                  </PlaceLinkButton>
+                  <PlaceLinkButton
                     onClick={() => window.open(`${d.place_url}`, "_blank")}
                   >
                     가게 정보
@@ -202,18 +252,28 @@ function KakaoMap({ showModal }) {
           </SearchResult>
         )}
       </SearchArea>
+        </Map>
+      )}
     </>
   );
 }
 
 export default KakaoMap;
 
+const MarkerInfo = styled.div`
+  padding: 10px;
+  width: 190px;
+`
+
 const SearchArea = styled.div`
   position: absolute;
-  margin: 6vh 4vw 0vh 4vw;
-  top: 6rem;
-  right: 23rem;
+  display: flex;
   width: 18rem;
+  height: 80vh;
+  justify-content: right;
+  margin-top: 6vh;
+  top: 6rem;
+  right: 35vw;
 `;
 
 const SearchForm = styled.form`
@@ -245,13 +305,13 @@ const SearchButton = styled.button`
 const SearchResult = styled.div`
   position: absolute;
   z-index: 3;
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(255, 255, 255, 0.8);
   border-radius: 15px;
   width: 15rem;
   height: auto;
   max-height: 70vh;
   padding: 0.7rem;
-  margin-left: 20px;
+  margin-top: 2.2rem;
   overflow-y: scroll;
 `;
 const ResultText = styled.p`
@@ -271,15 +331,20 @@ const ButtonContainer = styled.div`
   justify-content: right;
   align-items: center;
   height: 15px;
+  margin-top: 5px;
 `;
 
 const PlaceLinkButton = styled.button`
   background-color: white;
-  border: 1px solid gray;
+  border: 1px solid #D0D0DE;
   border-radius: 30px;
-  width: 4rem;
-  height: 2rem;
+  width: 70px;
+  height: 30px;
+  margin-left: 5px;
   cursor: pointer;
+  &:hover{
+    background-color: #D0D0DE;
+  }
 `;
 
 const PlaceData = styled.p`
