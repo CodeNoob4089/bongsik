@@ -168,7 +168,7 @@ export default MyList;
 
 const ListCardsContainer = styled.div`
   width: 100%;
-  height: auto;
+  height: 80vh;
   margin: 5vh 4vw 5vh 0vw;
   background-color: white;
   border-radius: 15px;
