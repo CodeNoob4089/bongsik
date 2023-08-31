@@ -36,7 +36,7 @@ function Mypost() {
   return (
     <PostCardsContainer>
       <MyPostsTitle>
-        <PostTitle><FontAwesomeIcon icon={faRectangleList}/> 나의 기록 <span style={{color: "#D0D0DE" }}>{user.postCounts}</span></PostTitle>
+        <PostTitle><FontAwesomeIcon icon={faRectangleList}/> 나의 기록 <span style={{color: "#D0D0DE" }}>{postData?.length}</span></PostTitle>
         {categories.map((category) => 
         <CategoryButton onClick={() => categoryButtonClickHandler(category)} id={category} currentCategory={currentCategory}>{category}</CategoryButton>
         )}

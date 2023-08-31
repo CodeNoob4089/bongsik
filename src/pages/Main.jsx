@@ -7,7 +7,6 @@ import { useState } from "react";
 
 function Main() {
   const [modalOpen, setModalOpen] = useState(false);
-  const [clickedCategory, setClickedCategory] = useState('')
 
   const showModal = () => {
     setModalOpen(true);
@@ -17,7 +16,9 @@ function Main() {
     <>
     {modalOpen && <PostAddModal modalOpen={modalOpen} setModalOpen={setModalOpen}/>}
     <Container>
+      <MapContainer>
       <KakaoMap showModal={showModal} />
+      </MapContainer>
       <MyList />
     </Container>
     </>
@@ -29,3 +30,6 @@ export default Main;
 const Container = styled.div`
   display: flex;
 `;
+const MapContainer = styled.div`
+  width: 67vw;
+`
