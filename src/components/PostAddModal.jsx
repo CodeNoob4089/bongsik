@@ -1,4 +1,4 @@
-import { faLock, faLockOpen } from "@fortawesome/free-solid-svg-icons";
+import { faLock, faLockOpen, faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   addDoc,
@@ -41,6 +41,24 @@ function PostAddModal({ modalOpen, setModalOpen }) {
     likeCount: 0,
     postID: nanoid(),
   });
+  const initialStars = [false, false, false, false, false]
+  const [stars, setStars] = useState(initialStars)
+
+  const starClickHandler = (index) => {
+    if(index === 0 && stars.filter((s) => s === true).length === 1){
+      console.log("여기유", stars.filter((s) => s === true).length, index)
+      setInputValue({...inputValue, star: 0})
+      console.log(inputValue.star)
+      setStars(initialStars)
+      return
+    }
+    setInputValue({...inputValue, star: index+1});
+    let newStars = [...stars]
+    for(let i = 0; i < 5; i++){
+      newStars[i] = i<= index? true : false;
+    };
+    setStars(newStars)
+  }
 
   const selectImage = async (e) => {
     const image = e.target.files[0];
@@ -122,14 +140,14 @@ function PostAddModal({ modalOpen, setModalOpen }) {
         </ModalTop>
         <ModalTitle>
           <StoreInfo>
-            <span>가게 이름: {clickedData.place_name}</span>
+            <span>가게:&nbsp;{clickedData.place_name}</span>
             <span>
-              주소:{" "}
-              {clickedData.road_address_name
+              주소:&nbsp;{clickedData.road_address_name
                 ? clickedData.road_address_name
                 : clickedData.address_name}
             </span>
           </StoreInfo>
+           
           <TitleCategory>
         <SelectBox>
         <CollectionSelect onChange={(e) => setInputValue({...inputValue, collectionTag: e.target.value})}>
@@ -139,14 +157,24 @@ function PostAddModal({ modalOpen, setModalOpen }) {
           )}
         </CollectionSelect>
       </SelectBox>
-      {console.log("clickedData", clickedData)}
       <CategoryDiv>
         {clickedCategory}
       </CategoryDiv>
       </TitleCategory>
+     
         </ModalTitle>
         <ModalContents>
-          <div>별점: </div>
+        <div>별점:&nbsp;
+            {stars.map((star, index) =>
+            <StarSpan onClick={() =>{
+             starClickHandler(index)
+            }
+            }>
+            {stars[index]?<FontAwesomeIcon icon={faStar} style={{color: "#ff4e50"}}/>
+            :<FontAwesomeIcon icon={faStar} style={{color: "gray"}}/>}
+            </StarSpan>
+            )}
+          </div>
           <ReviewInput
             placeholder="나만의 맛집 평가를 적어주세요!"
             value={inputValue.content}
@@ -227,7 +255,7 @@ const CloseButton = styled.button`
 
 const ModalTitle = styled.div`
   width: 100%;
-  height: 90px;
+  height: 80px;
   border-bottom: 3px solid #f2f2f5;
   display: flex;
   flex-direction: row;
@@ -270,6 +298,11 @@ const CollectionSelect = styled.select`
   color: gray;
   text-align: center;
   cursor: pointer;
+`
+const StarSpan = styled.span`
+  cursor: pointer;
+  margin-left: 2px;
+  font-size: 18px;
 `
 
 const ModalContents = styled.div`
