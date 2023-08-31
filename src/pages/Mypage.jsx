@@ -8,9 +8,10 @@ import Main from "./Main";
 import Badge from "../components/Badge";
 import Mypost from "./Mypost";
 import MyLikePost from "../components/MyLikePost";
+import MyList from "../components/MyList";
 
 function Mypage() {
-  const [currentTab, setCurrentTab] = useState();
+  const [currentTab, setCurrentTab] = useState(1);
   const user = useAuthStore((state) => state.user);
   const badges = useBadgeStore((state) => state.badges);
   const ownedBadges = useBadgeStore((state) => state.ownedBadges);
@@ -25,12 +26,10 @@ function Mypage() {
 
     const fetchUserBadges = async () => {
       if (!user) return;
+      console.log(user.uid);
       const fetchedUserBadges = await getUserBadges(user.uid);
       console.log(fetchedUserBadges);
-
-      const ownedBadgesArray = Object.keys(fetchedUserBadges).filter(
-        (badgeId) => fetchedUserBadges[badgeId].isOwned
-      );
+      const ownedBadgesArray = Object.keys(fetchedUserBadges).filter((badgeId) => fetchedUserBadges[badgeId].isOwned);
 
       setOwnedBadges(ownedBadgesArray);
     };
@@ -44,72 +43,82 @@ function Mypage() {
   const tabs = [
     {
       id: 1,
-      tabTitle: "스크랩 보기",
+      tabTitle: "기록",
       title: "title",
-      component: <MyLikePost />,
-      content: "scrap",
+      component: (
+        <>
+          <MyList />
+          <Mypost />
+        </>
+      ),
+      content: "Mypost",
     },
     {
       id: 2,
-      tabTitle: "뱃지 보러가기",
+      tabTitle: "활동",
       title: "title",
       component: <Badge badges={badges} ownedBadges={ownedBadges} />,
       content: "badge",
     },
-    {
-      id: 3,
-      tabTitle: "나의 맛 기록",
-      title: "title",
-      component: <Mypost />,
-      content: "Mypost",
-    },
-    {
-      id: 4,
-      tabTitle: "맛 도장 깨기",
-      component: <MyLikePost />,
-      title: "title",
-      content: "post",
-    },
+    // {
+    //   id: 1,
+    //   tabTitle: "찜 목록",
+    //   title: "title",
+    //   component: <MyLikePost />,
+    //   content: "scrap",
+    // },
+    // {
+    //   id: 4,
+    //   tabTitle: "맛 도장 깨기",
+    //   component: <MyLikePost />,
+    //   title: "title",
+    //   content: "post",
+    // },
   ];
+
   const TabClickHandler = (e) => {
-    setCurrentTab(e.target.id);
+    setCurrentTab(Number(e.target.id));
   };
 
   return (
     <Container>
       {user ? (
         <>
-          <TabsArea>
-            <UserInfo>
+          {/* <UserInfo>
               <ProfileCircle>
                 <ProfileImage src={user.photoURL} alt="프로필 사진" />
               </ProfileCircle>
               <Nickname>{user.displayName}님의 마이페이지</Nickname>
-            </UserInfo>
-            <TabsBox>
-              {tabs.map((tab) => (
-                <TabButton
-                  key={tab.id}
-                  id={tab.id}
-                  disabled={currentTab === `${tab.id}`}
-                  onClick={TabClickHandler}
-                >
-                  {tab.tabTitle}
-                </TabButton>
-              ))}
-            </TabsBox>
-          </TabsArea>
-          <TabContent>
+            </UserInfo> */}
+          <TabsBox>
             {tabs.map((tab) => (
+              <TabButton key={tab.id} id={tab.id} disabled={currentTab === `${tab.id}`} onClick={TabClickHandler} currentTab={currentTab}>
+                {tab.tabTitle}
+              </TabButton>
+            ))}
+          </TabsBox>
+          <TabContent>
+            {/* {tabs.map((tab) => (
               <React.Fragment key={tab.id}>
-                {currentTab === `${tab.id}` && (
+                {currentTab === tab.id && (
                   <div>
-                    <TabTitle>{tab.title}</TabTitle>
                     <div>{tab.component}</div>
                   </div>
                 )}
               </React.Fragment>
-            ))}
+            ))} */}
+            {currentTab === 1 ? (
+              <PostContents>
+                <MyListBox>
+                  <MyList/>
+                </MyListBox>
+                <MypostBox>
+                <Mypost/>
+                </MypostBox>
+              </PostContents>
+            ) : (
+              <></>
+            )}
           </TabContent>
         </>
       ) : (
@@ -121,55 +130,83 @@ function Mypage() {
 export default Mypage;
 
 //스타일컴포넌트
-const Container = styled.div``;
-
-const TabsArea = styled.div`
-  width: 400px;
-  height: 700px;
-  float: left;
+const Container = styled.div`
+  .flexbox-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
 `;
+
+// const TabsArea = styled.div`
+//   width: 400px;
+//   height: 700px;
+//   float: left;
+//   background-color: gray;
+// `;
 const UserInfo = styled.div`
   display: flex;
   margin-top: 50px;
   margin-left: 40px;
 `;
-const Nickname = styled.p`
-  margin-left: 15px;
-  margin-top: 5px;
-`;
-const ProfileCircle = styled.div`
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  overflow: hidden;
-  display: inline-block;
-`;
-const ProfileImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-`;
+
+//000님의 마이페이지
+// const Nickname = styled.p`
+//   margin-left: 15px;
+//   margin-top: 5px;
+// `;
+
+// const ProfileCircle = styled.div`
+//   width: 60px;
+//   height: 60px;
+//   border-radius: 50%;
+//   overflow: hidden;
+//   display: inline-block;
+// `;
+
+// const ProfileImage = styled.img`
+//   width: 100%;
+//   height: 100%;
+//   object-fit: cover;
+//   object-position: center;
+// `;
 
 const TabsBox = styled.div`
-  background-color: #d9d9d9;
-  height: 120px;
-  width: 350px;
-  margin-left: 23px;
+  height: 100px;
+  width: 190px;
+  margin-left: 50px;
   margin-top: 15px;
 `;
 
 const TabButton = styled.button`
-  width: 60px;
-  height: 60px;
+  font-weight: bold;
+  font-size: 17px;
+  color: ${(props) => (props.id === props.currentTab ? "#FF4E50" : "gray")};
+  width: 95px;
+  height: 45px;
   margin-top: 30px;
-  margin-left: 20px;
-  border-radius: 50px;
   border: none;
+  border-bottom: ${(props) => (props.id === props.currentTab ? "3px solid #FF4E50" : "2px solid gray")};
+  background-color: rgba(255, 255, 255, 0);
+  cursor: pointer;
 `;
 
 const TabContent = styled.div`
   width: 100%;
-  height: 700px;
+  height: 80vh;
 `;
-const TabTitle = styled.p``;
+
+const PostContents = styled.div`
+  display: flex;
+  flex-direction: row;
+`
+
+const MyListBox = styled.div`
+  width: 30vw;
+  height: 80vh;
+`;
+
+const MypostBox = styled.div`
+  width: 70vw;
+  height: 80vh;
+`

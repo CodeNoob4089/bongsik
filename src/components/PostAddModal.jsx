@@ -27,8 +27,10 @@ function PostAddModal({ modalOpen, setModalOpen }) {
   const setClickedData = useClickedDataStore((state) => state.setClickedData);
   const user = useAuthStore((state) => state.user);
 
-  const clickedCategory = clickedData?.category_name?.split(">").includes("카페")?"카페"
-  :clickedData?.category_name?.split(">").includes("술집")?"술집":"맛집"
+  const clickedCategory = (clickedData?.category_group_name === "카페") ? "카페"
+  : (clickedData?.category_name?.split(">").includes(" 술집 "))?"술집":"맛집"
+
+  console.log(clickedData?.category_name?.split(">"))
 
   const [inputValue, setInputValue] = useState({
     place: clickedData,
@@ -40,6 +42,9 @@ function PostAddModal({ modalOpen, setModalOpen }) {
     collectionTag: "",
     likeCount: 0,
     postID: nanoid(),
+    category: clickedCategory,
+    commentCount: 0,
+    timestamp: new Date(),
   });
   const initialStars = [false, false, false, false, false]
   const [stars, setStars] = useState(initialStars)
