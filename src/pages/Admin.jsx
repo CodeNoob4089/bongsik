@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import useAuthStore from "../store/auth";
+import { collection, getDocs, updateDoc } from "firebase/firestore";
+import { db } from "../firebase";
 import { uploadImage, addBadge } from "../store/UserService";
 import { useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
@@ -59,6 +61,45 @@ function Admin() {
     }
   };
 
+  const updateAllUserBadges = async () => {
+    const badgesRef = collection(db, "badges");
+    const badgesSnapshot = await getDocs(badgesRef);
+    const allBadgeIds = badgesSnapshot.docs.map((doc) => doc.id);
+
+    const usersRef = collection(db, "users");
+    const usersSnapshot = await getDocs(usersRef);
+
+    for (const userDoc of usersSnapshot.docs) {
+      let ownedBadgesUpdateNeeded = false;
+      let updatedOwnedBadges = {};
+
+      if (userDoc.data().ownedBadges) {
+        updatedOwnedBadges = { ...userDoc.data().ownedBadges };
+      }
+
+      for (const badgeId of allBadgeIds) {
+        if (!updatedOwnedBadges[badgeId]) {
+          updatedOwnedBadges[badgeId] = { isOwned: false };
+          ownedBadgesUpdateNeeded = true;
+        }
+      }
+
+      if (ownedBadgesUpdateNeeded) {
+        await updateDoc(userDoc.ref, { ownedBadges: updatedOwnedBadges });
+      }
+    }
+  };
+
+  const handleUpdateAllUserBadges = async () => {
+    try {
+      await updateAllUserBadges();
+      alert("모든 유저의 뱃지 정보가 성공적으로 업데이트되었습니다.");
+    } catch (error) {
+      alert("유저 뱃지 정보 업데이트에 실패했습니다. 다시 시도해주세요.");
+      console.log("error updating user badges", error);
+    }
+  };
+
   return user && user.isAdmin ? (
     <>
       <Adminbox>
@@ -93,6 +134,9 @@ function Admin() {
         </label>
         <button onClick={handleAddBadge} disabled={isLoading}>
           {isLoading ? "Adding..." : "Add Badge"}
+        </button>
+        <button onClick={handleUpdateAllUserBadges}>
+          모든 유저 뱃지 정보 업데이트
         </button>
       </Adminbox>
     </>
@@ -132,6 +176,7 @@ const Adminbox = styled.div`
     background-color: #ff4e50;
     color: white;
     border: none;
+    margin: 20px;
 
     &:disabled {
       background-color: #ccc;
