@@ -1,5 +1,4 @@
 import KakaoMap from "../components/KakaoMap";
-import useAuthStore from "../store/auth";
 import MyList from "../components/MyList";
 import { styled } from "styled-components";
 import PostAddModal from "../components/PostAddModal";
@@ -10,6 +9,7 @@ function Main() {
 
   const showModal = () => {
     setModalOpen(true);
+    document.body.style.overflow = "hidden";
   };
   
   return (

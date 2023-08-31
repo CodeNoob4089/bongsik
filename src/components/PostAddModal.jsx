@@ -78,6 +78,7 @@ function PostAddModal({ modalOpen, setModalOpen }) {
 
   const closeModal = () => {
     setModalOpen(false);
+    document.body.style.overflow = "auto";
     setClickedData({});
   };
 
@@ -220,7 +221,9 @@ export default PostAddModal;
 const ModalContainer = styled.div`
   width: 100vw;
   height: 100vh;
-  position: absolute;
+  top: 0;
+  left: 0;
+  position: fixed;
   z-index: 50;
   background-color: rgba(0, 0, 0, 0.8);
 `;

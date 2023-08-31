@@ -4,10 +4,8 @@ import { getUserBadges } from "../store/UserService";
 import useAuthStore from "../store/auth";
 import useBadgeStore from "../shared/BadgeStore";
 import styled from "styled-components";
-import Main from "./Main";
 import Badge from "../components/Badge";
 import Mypost from "./Mypost";
-import MyLikePost from "../components/MyLikePost";
 import MyList from "../components/MyList";
 
 function Mypage() {
@@ -98,15 +96,6 @@ function Mypage() {
             ))}
           </TabsBox>
           <TabContent>
-            {/* {tabs.map((tab) => (
-              <React.Fragment key={tab.id}>
-                {currentTab === tab.id && (
-                  <div>
-                    <div>{tab.component}</div>
-                  </div>
-                )}
-              </React.Fragment>
-            ))} */}
             {currentTab === 1 ? (
               <PostContents>
                 <MyListBox>
@@ -131,19 +120,9 @@ export default Mypage;
 
 //스타일컴포넌트
 const Container = styled.div`
-  .flexbox-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
+  min-height: 100vh;
 `;
 
-// const TabsArea = styled.div`
-//   width: 400px;
-//   height: 700px;
-//   float: left;
-//   background-color: gray;
-// `;
 const UserInfo = styled.div`
   display: flex;
   margin-top: 50px;
