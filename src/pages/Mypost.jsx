@@ -151,6 +151,7 @@ const PostCard = styled.div`
   height: 18rem;
   display: flex;
   flex-direction: row;
+  align-items: center;
 `;
 const Post = styled.div`
   height: 100%;

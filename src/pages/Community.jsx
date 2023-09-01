@@ -9,7 +9,6 @@ import BarPost from "../components/BarPost";
 function Community() {
   const [currentTab, setCurrentTab] = useState(1);
   const [isTopVisible, setIsTopVisible] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
 
   // 페이지 상단으로 부드럽게 스크롤하는 함수
   const scrollToTop = () => {
@@ -127,7 +126,8 @@ const Button = styled.button`
   width: 95px;
   height: 45px;
   border: none;
-  border-bottom: ${(props) => (props.id === props.currentTab ? "3px solid #FF4E50" : "2px solid gray")};
+  border-bottom: ${(props) =>
+    props.id === props.currentTab ? "3px solid #FF4E50" : "2px solid gray"};
   background-color: rgba(255, 255, 255, 0);
   cursor: pointer;
 `;

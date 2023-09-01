@@ -8,7 +8,6 @@ import {
   Button,
   ButtonSet,
   LikeCount,
-  ContentArea,
 } from "../components/TabPostStyled";
 import {
   collection,
@@ -20,6 +19,7 @@ import {
 } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
+import { faLocationDot, faStar } from "@fortawesome/free-solid-svg-icons";
 import { faArrowUpFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { db, auth } from "../firebase";
 import { useQuery } from "react-query";
@@ -31,7 +31,7 @@ function CafePost() {
   //모달
   const [openModal, setOpenModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
-  const [selectedPostId, setSelectedPostId] = useState(null);
+  const [, setSelectedPostId] = useState(null);
   // //모달 열기
   const handlePostClick = (post) => {
     // 배경 페이지 스크롤 막기
@@ -49,12 +49,8 @@ function CafePost() {
     const PublicPosts = querySnapshot.docs.map((postDoc) => {
       const data = postDoc.data();
       return {
+        ...data,
         postId: postDoc.id,
-        imageUrl: data.photo,
-        content: data.content,
-        category: data.place.category_group_name,
-        likeCount: data.likeCount,
-        commentCount: data.commentCount,
       };
     });
     return PublicPosts;
@@ -85,10 +81,10 @@ function CafePost() {
       {filterdPosts?.map((item) => (
         <CommunityPosting key={item.postId}>
           <div>
-            {item.imageUrl ? (
+            {item.photo ? (
               <>
                 <PostImgBox>
-                  <PostImgUrl src={item.imageUrl}></PostImgUrl>
+                  <PostImgUrl src={item.photo}></PostImgUrl>
                 </PostImgBox>
               </>
             ) : (
@@ -100,10 +96,26 @@ function CafePost() {
               </>
             )}
             <PostContent>
-              <h2>{item.title}</h2>
-              <ContentArea>{item.content}</ContentArea>
+              <h2>
+                {item.place.place_name}&nbsp;
+                {Array(item.star)
+                  .fill()
+                  .map((_, index) => (
+                    <FontAwesomeIcon
+                      key={index}
+                      icon={faStar}
+                      style={{ color: "#ff4e50" }}
+                      size="lg"
+                    />
+                  ))}
+              </h2>
+              <p>
+                <FontAwesomeIcon icon={faLocationDot} size="lg" />
+                &nbsp;{item.place.address_name}
+              </p>
             </PostContent>
             <PostBottomBar>
+              <hr />
               <ButtonSet>
                 <Heart userData={userData} item={item} />
                 <LikeCount>{item.likeCount}</LikeCount>
