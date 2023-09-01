@@ -9,24 +9,14 @@ import { useQuery } from "react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock, faLockOpen, faHeart, faRectangleList } from "@fortawesome/free-solid-svg-icons";
 import {useState} from "react";
+import { getPosts } from "../api/collection";
 function Mypost() {
   const user = useAuthStore((state) => state.user);
-
-  const getPosts = async () => {
-    const postsRef = collection(db, "posts");
-    const q = query(postsRef, where("uid", "==", user.uid));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map((doc) => ({
-      ...doc.data(),
-    }));
-  };
   const { data: postData } = useQuery(`fetchPostData`, getPosts);
-  console.log("postData",postData);
 
   const [currentCategory, setCurrentCategory] = useState("맛집")
   const categories = ["맛집", "술집", "카페"]
 
-  console.log("여기에유!!!!!!!!!!");
 
   const categoryButtonClickHandler = (category) => {
     setCurrentCategory(category)
@@ -41,6 +31,7 @@ function Mypost() {
         <CategoryButton onClick={() => categoryButtonClickHandler(category)} id={category} currentCategory={currentCategory}>{category}</CategoryButton>
         )}
       </MyPostsTitle>
+      <PostCards>
       {postData?.filter((post)=> post.category === currentCategory).map((post) => (
         <PostCard key={post.postID}>
           <TimeLine>
@@ -64,6 +55,7 @@ function Mypost() {
           </Post>
         </PostCard>
       ))}
+      </PostCards>
     </PostCardsContainer>
   );
   //map함수를 쓰는 이유 : 대량 데이터를 처리하기 위함
@@ -80,13 +72,10 @@ const PostCardsContainer = styled.div`
   height: 100%;
   border-radius: 18px;
   background-color: white;
-  overflow-y: scroll;
-  // flex-basis: 100px;
 `;
-
 const MyPostsTitle = styled.div`
   width: 100%;
-  padding: 2rem;
+  padding: 2rem 0rem 1rem 2rem;
   /* background-color: green; */
 `
 const CategoryButton = styled.button`
@@ -101,10 +90,13 @@ const CategoryButton = styled.button`
   background-color: ${(props) => props.id === props.currentCategory? "#FF4E50" : "white"};
   cursor: pointer;
 `
-
+const PostCards = styled.div`
+  overflow-y:scroll;
+  padding-top: 2rem;
+`
 const PostCard = styled.div`
   width: 100%;
-  height: 20rem;
+  height: 18rem;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -112,21 +104,19 @@ const PostCard = styled.div`
 const Post = styled.div`
   height: 100%;
 `
-const Date = styled. div`
+const Date = styled.div`
   height: 30px;
   line-height: 30px;
   color: gray;
   font-size: 20px;
-  
 `
-const ImageAndContents = styled. div`
+const ImageAndContents = styled.div`
   display: flex;
   flex-direction: row;
   padding-top: 10px;
   margin-bottom: 10rem;
   height: 12rem;
 `
-
 const TimeLine = styled.div`
   width: 4rem;
   margin-left: 1rem;
@@ -135,8 +125,7 @@ const TimeLine = styled.div`
   flex-direction: column;
   align-items: center;
 `
-
-const Circle = styled. div`
+const Circle = styled.div`
   width: 23px;
   height: 23px;
   background-color: #D0D0DE;
@@ -153,24 +142,21 @@ const PostTitle = styled.p`
   font-weight: bold;
 `;
 
-
 const IsPublic = styled.div`
   color: gray;
   font-size: 17px;
 `
-
 const PostImage = styled.img`
   width: 20rem;
   height: 100%;
   border-radius: 20px;
   object-fit: cover;
 `;
-
-const PostContents = styled. div`
+const PostContents = styled.div`
   padding: 15px;
   line-height: 2rem;
 `
-const LikesCount = styled. div`
+const LikesCount = styled.div`
   margin-top: 2.5rem;
   color: gray;
   font-size: 18px;

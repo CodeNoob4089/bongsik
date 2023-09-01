@@ -5,6 +5,8 @@ function Badge({ badges, ownedBadges }) {
   console.log(ownedBadges);
   return (
     <BadgeContainer>
+      <Title>뱃지</Title>
+      <GridContainer>
       {badges.map((badge) => {
         return (
           <BadgeCard key={badge.id}>
@@ -17,6 +19,7 @@ function Badge({ badges, ownedBadges }) {
           </BadgeCard>
         );
       })}
+      </GridContainer>
     </BadgeContainer>
   );
 }
@@ -24,35 +27,48 @@ function Badge({ badges, ownedBadges }) {
 export default Badge;
 
 const BadgeContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
+  margin: 5vh auto;
+  padding: 2.4rem;
+  display: grid;
+  flex-direction: column;
+  width: 95%;
+  height: 100%;
+  border-radius: 18px;
+  background-color: white;
+`;
+
+const Title = styled.h1`
+  font-size: 24px;
+  font-weight: bold;
+  color: gray;
+`;
+
+const GridContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  overflow-y: scroll;
 `;
 
 const BadgeCard = styled.div`
-  width: 300px;
-  height: 300px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 1px solid #ccc;
-  padding: 1rem;
-  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-  background-color: #fafafa;
+  border: none;
+  background-color: rgb(0,0,0,0);
 `;
 
 const Badgeimg = styled.img`
-  width: 200px;
-  height: 200px;
+  width: 130px;
+  height: 130px;
+  margin: 0.7rem;
+  object-fit: contain;
   border-radius: 50%;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 `;
 
 const BadgeName = styled.p`
-  font-size: 24px;
-  padding-top: 1rem;
+  font-size: 20px;
 `;

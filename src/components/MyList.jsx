@@ -167,9 +167,9 @@ function MyList() {
 export default MyList;
 
 const ListCardsContainer = styled.div`
-  width: 23vw;
-  height: auto;
-  margin: 5vh auto;
+  width: 100%;
+  height: 80vh;
+  margin: 5vh 4vw 5vh 0vw;
   background-color: white;
   border-radius: 15px;
   padding: 20px;
@@ -190,7 +190,7 @@ const ListTop = styled.div`
 `;
 
 const ListTitle = styled.h1`
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
   color: #c8c8c8;
 `;

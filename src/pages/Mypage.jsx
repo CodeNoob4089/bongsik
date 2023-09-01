@@ -7,6 +7,9 @@ import styled from "styled-components";
 import Badge from "../components/Badge";
 import Mypost from "./Mypost";
 import MyList from "../components/MyList";
+import MyLikePost from "../components/MyLikePost";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGear, faHeart, faIdBadge } from "@fortawesome/free-solid-svg-icons";
 
 function Mypage() {
   const [currentTab, setCurrentTab] = useState(1);
@@ -15,6 +18,8 @@ function Mypage() {
   const ownedBadges = useBadgeStore((state) => state.ownedBadges);
   const setBadges = useBadgeStore((state) => state.setBadges);
   const setOwnedBadges = useBadgeStore((state) => state.setOwnedBadges);
+
+  const [currentUserTab, setCurrentUserTab] = useState("like-posts")
 
   useEffect(() => {
     const fetchBadges = async () => {
@@ -42,14 +47,6 @@ function Mypage() {
     {
       id: 1,
       tabTitle: "기록",
-      title: "title",
-      component: (
-        <>
-          <MyList />
-          <Mypost />
-        </>
-      ),
-      content: "Mypost",
     },
     {
       id: 2,
@@ -58,20 +55,6 @@ function Mypage() {
       component: <Badge badges={badges} ownedBadges={ownedBadges} />,
       content: "badge",
     },
-    // {
-    //   id: 1,
-    //   tabTitle: "찜 목록",
-    //   title: "title",
-    //   component: <MyLikePost />,
-    //   content: "scrap",
-    // },
-    // {
-    //   id: 4,
-    //   tabTitle: "맛 도장 깨기",
-    //   component: <MyLikePost />,
-    //   title: "title",
-    //   content: "post",
-    // },
   ];
 
   const TabClickHandler = (e) => {
@@ -82,12 +65,6 @@ function Mypage() {
     <Container>
       {user ? (
         <>
-          {/* <UserInfo>
-              <ProfileCircle>
-                <ProfileImage src={user.photoURL} alt="프로필 사진" />
-              </ProfileCircle>
-              <Nickname>{user.displayName}님의 마이페이지</Nickname>
-            </UserInfo> */}
           <TabsBox>
             {tabs.map((tab) => (
               <TabButton key={tab.id} id={tab.id} disabled={currentTab === `${tab.id}`} onClick={TabClickHandler} currentTab={currentTab}>
@@ -101,12 +78,42 @@ function Mypage() {
                 <MyListBox>
                   <MyList/>
                 </MyListBox>
-                <MypostBox>
+                <RightContents>
                 <Mypost/>
-                </MypostBox>
+                </RightContents>
               </PostContents>
             ) : (
-              <></>
+            <PostContents>
+              <UserInfo>
+              <UserProfile>
+              <ProfileCircle>
+              <ProfileImage src={user.photoURL} alt="프로필 사진" />
+              </ProfileCircle>
+              <UserNameAndLevel>
+              <Nickname>{user.displayName}</Nickname>
+              <Nickname>Lv.</Nickname>
+              </UserNameAndLevel>
+              <SettingButton><FontAwesomeIcon icon={faGear} /></SettingButton>
+              </UserProfile>
+              <UserTabsBox>
+                <UserTabButton onClick={()=>setCurrentUserTab("like-posts")}>
+                  <FontAwesomeIcon icon={faHeart} style={{color: "gray"}} /><br/>
+                  {user?.userLikes?.length}
+                  </UserTabButton>
+                <Line/>
+                <UserTabButton onClick={()=>setCurrentUserTab("my-badges")}>
+                  <FontAwesomeIcon icon={faIdBadge} style={{color: "gray"}} /><br/>
+                  뱃지
+                  </UserTabButton>
+              </UserTabsBox>
+            </UserInfo>
+            <RightContents>
+              {currentUserTab === "like-posts"?
+              <MyLikePost/>
+              :<Badge badges={badges} ownedBadges={ownedBadges}/>
+              }
+            </RightContents>
+            </PostContents>
             )}
           </TabContent>
         </>
@@ -124,32 +131,81 @@ const Container = styled.div`
 `;
 
 const UserInfo = styled.div`
+  background-color: white;
+  border-radius: 10px;
+  width: 30vw;
+  height: 35vh;
+  margin: 5vh auto;
+  padding: 2.5rem;
   display: flex;
-  margin-top: 50px;
-  margin-left: 40px;
+  flex-direction: column;
 `;
 
-//000님의 마이페이지
-// const Nickname = styled.p`
-//   margin-left: 15px;
-//   margin-top: 5px;
-// `;
+const UserProfile = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`
+const UserNameAndLevel = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 63%;
+`
 
-// const ProfileCircle = styled.div`
-//   width: 60px;
-//   height: 60px;
-//   border-radius: 50%;
-//   overflow: hidden;
-//   display: inline-block;
-// `;
+const Nickname = styled.p`
+  margin-left: 15px;
+  margin-top: 5px;
+`;
 
-// const ProfileImage = styled.img`
-//   width: 100%;
-//   height: 100%;
-//   object-fit: cover;
-//   object-position: center;
-// `;
+const ProfileCircle = styled.div`
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  /* display: inline-block; */
+`;
 
+const ProfileImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+`;
+const SettingButton = styled.button`
+  width: 40px;
+  position: relative;
+  color: gray;
+  border: none;
+  font-size: 25px;
+  background-color: rgba(0,0,0,0);
+  padding-bottom: 25px;
+  cursor: pointer;
+`
+
+const UserTabsBox = styled.div`
+  background-color: #F2F2F5;
+  margin-top: 2.5rem;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`
+const UserTabButton = styled.button`
+  font-size: 15px;
+  height: 5rem;
+  width: 50%;
+  line-height: 1.4rem;
+  border: none;
+  color: gray;
+  cursor: pointer;
+`
+const Line = styled.div`
+  height: 3rem;
+  width: 1.4px;
+  background-color: #D0D0DE;
+`
 const TabsBox = styled.div`
   height: 100px;
   width: 190px;
@@ -183,9 +239,10 @@ const PostContents = styled.div`
 const MyListBox = styled.div`
   width: 30vw;
   height: 80vh;
+  margin: 0 auto;
 `;
 
-const MypostBox = styled.div`
-  width: 70vw;
+const RightContents = styled.div`
+  width: 68vw;
   height: 80vh;
 `
