@@ -19,6 +19,7 @@ import {
 } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
+import { faLocationDot, faStar } from "@fortawesome/free-solid-svg-icons";
 import { faArrowUpFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { db, auth } from "../firebase";
 import { useQuery } from "react-query";
@@ -30,7 +31,7 @@ function BarPost() {
   //모달
   const [openModal, setOpenModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
-  const [selectedPostId, setSelectedPostId] = useState(null);
+  const [, setSelectedPostId] = useState(null);
 
   //모달 열기
   const handlePostClick = (post) => {
@@ -53,23 +54,17 @@ function BarPost() {
       const data = postDoc.data();
 
       return {
+        ...data,
         postId: postDoc.id,
-        imageUrl: data.photo,
-        content: data.content,
-        category: data.place.category_name,
-        likeCount: data.likeCount,
-        commentCount: data.commentCount,
       };
     });
     return PublicPosts;
   };
 
   const { data: PublicPosts } = useQuery("fetchPublicPosts", getPublicPosts);
-  const filterdPosts = PublicPosts?.filter(
-    (post) =>
-      post.category === "음식점 > 술집" ||
-      post.category === "음식점 > 술집 > 호프,요리주점"
-  );
+  console.log(PublicPosts);
+  const filterdPosts = PublicPosts?.filter((post) => post.category === "술집");
+  console.log(filterdPosts);
 
   //유저 좋아요, 댓글 정보 가져오기
   const getUserData = async () => {
@@ -94,25 +89,41 @@ function BarPost() {
       {filterdPosts?.map((item) => (
         <CommunityPosting key={item.postId}>
           <div>
-            {item.imageUrl ? (
+            {item.photo ? (
               <>
                 <PostImgBox>
-                  <PostImgUrl src={item.imageUrl}></PostImgUrl>
+                  <PostImgUrl src={item.photo}></PostImgUrl>
                 </PostImgBox>
               </>
             ) : (
               <>
                 <PostImgBox>
-                  {/* <PostImgUrl src={}> </PostImgUrl> */}
-                  무슨 사진 넣을지 고민중
+                  <PostImgUrl> </PostImgUrl>
+                  사진 없음
                 </PostImgBox>
               </>
             )}
             <PostContent>
-              <h2>{item.title}</h2>
-              <p>{item.content}</p>
+              <h2>
+                {item.place.place_name}&nbsp;
+                {Array(item.star)
+                  .fill()
+                  .map((_, index) => (
+                    <FontAwesomeIcon
+                      key={index}
+                      icon={faStar}
+                      style={{ color: "#ff4e50" }}
+                      size="lg"
+                    />
+                  ))}
+              </h2>
+              <p>
+                <FontAwesomeIcon icon={faLocationDot} size="lg" />
+                &nbsp;{item.place.address_name}
+              </p>
             </PostContent>
             <PostBottomBar>
+              <hr />
               <ButtonSet>
                 <Heart userData={userData} item={item} />
                 <LikeCount>{item.likeCount}</LikeCount>
