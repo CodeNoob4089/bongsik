@@ -19,7 +19,7 @@ export const PostImgUrl = styled.img`
   /* background-color: #3511a3; */
   height: 50vh;
   width: 48vw;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   margin-left: 3.2rem;
   border-radius: 0.35rem;
   display: block;
@@ -28,7 +28,7 @@ export const PostImgUrl = styled.img`
 `;
 export const PostContent = styled.div`
   /* background-color: #5e44ad; */
-  height: 12vh;
+  /* height: 8vh; */
   width: 48vw;
   margin-left: 6rem;
   p {
@@ -37,12 +37,12 @@ export const PostContent = styled.div`
 `;
 export const PostBottomBar = styled.div`
   /* background-color: #1f961f; */
-  height: 6vh;
   width: 48vw;
-  margin-left: 6rem;
-  display: flex;
+  margin-left: 5.5rem;
+  margin-top: 1rem;
+  /* display: flex;
   text-align: center;
-  justify-content: center;
+  justify-content: center; */
 `;
 export const ButtonSet = styled.div`
   display: flex;

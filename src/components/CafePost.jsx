@@ -8,7 +8,6 @@ import {
   Button,
   ButtonSet,
   LikeCount,
-  ContentArea,
 } from "../components/TabPostStyled";
 import {
   collection,
@@ -32,7 +31,7 @@ function CafePost() {
   //모달
   const [openModal, setOpenModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
-  const [selectedPostId, setSelectedPostId] = useState(null);
+  const [, setSelectedPostId] = useState(null);
   // //모달 열기
   const handlePostClick = (post) => {
     // 배경 페이지 스크롤 막기
@@ -116,6 +115,7 @@ function CafePost() {
               </p>
             </PostContent>
             <PostBottomBar>
+              <hr />
               <ButtonSet>
                 <Heart userData={userData} item={item} />
                 <LikeCount>{item.likeCount}</LikeCount>

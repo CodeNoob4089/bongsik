@@ -31,7 +31,7 @@ function BarPost() {
   //모달
   const [openModal, setOpenModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
-  const [selectedPostId, setSelectedPostId] = useState(null);
+  const [, setSelectedPostId] = useState(null);
 
   //모달 열기
   const handlePostClick = (post) => {
@@ -123,6 +123,7 @@ function BarPost() {
               </p>
             </PostContent>
             <PostBottomBar>
+              <hr />
               <ButtonSet>
                 <Heart userData={userData} item={item} />
                 <LikeCount>{item.likeCount}</LikeCount>

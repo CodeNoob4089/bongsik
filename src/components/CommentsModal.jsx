@@ -47,7 +47,7 @@ function PostingModal({
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editedComment, setEditedComment] = useState("");
   // 댓글 세기
-  const [commentCount, setCommentCount] = useState(0);
+  const [, setCommentCount] = useState(0);
   //모달 닫기
   const handleCloseModal = () => {
     // 배경 페이지 스크롤 활성화
@@ -210,13 +210,13 @@ function PostingModal({
     if (days < 7) return `${Math.floor(days)}일 전`;
     return `${start.toLocaleDateString()}`;
   };
-  // 게시물의 댓글 수 업데이트
-  const updatePostCommentCount = async (postId, newCommentCount) => {
-    const postDocRef = doc(db, "posts", postId);
-    await updateDoc(postDocRef, {
-      commentCount: newCommentCount,
-    });
-  };
+  // // 게시물의 댓글 수 업데이트
+  // const updatePostCommentCount = async (postId, newCommentCount) => {
+  //   const postDocRef = doc(db, "posts", postId);
+  //   await updateDoc(postDocRef, {
+  //     commentCount: newCommentCount,
+  //   });
+  // };
   return (
     <>
       {openModal && selectedPost && (
@@ -256,7 +256,7 @@ function PostingModal({
             </Form>
             {PostComments?.map(
               (comment) =>
-                comment.postId == selectedPost.postId && (
+                comment.postId === selectedPost.postId && (
                   <CommentWrap key={comment.commentId}>
                     <div>
                       <span>{comment.nickName}:&nbsp;</span>
