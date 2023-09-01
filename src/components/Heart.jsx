@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Like } from "../components/TabPostStyled";
 import { updateDoc, doc, getDoc, arrayUnion } from "firebase/firestore";
+import { useQueryClient } from "react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { db, auth } from "../firebase";
 import useAuthStore from "../store/auth";
 function Heart({ userData, item }) {
+  const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);
   const userId = auth.currentUser?.uid;
   const [isClickProcessing, setIsClickProcessing] = useState(false);
@@ -31,6 +33,7 @@ function Heart({ userData, item }) {
         ? currentLikeCount - (alreadyLikedUser ? 1 : 0)
         : currentLikeCount + (alreadyLikedUser ? 0 : 1),
     });
+    queryClient.invalidateQueries("fetchPublicPosts");
 
     if (alreadyLikedUser) {
       await updateDoc(userDocRef, {
@@ -43,7 +46,7 @@ function Heart({ userData, item }) {
         userLikes: arrayUnion({ likePostId: postId }),
       });
     }
-    console.log(userData?.userLikes);
+    queryClient.invalidateQueries("fetchUserData");
     //찜한 수 가져오기
     const userSnapshot = await getDoc(userDocRef);
     const updatedUserData = userSnapshot.data();
@@ -73,7 +76,6 @@ function Heart({ userData, item }) {
     console.log(updatedLikeCount);
     // 하트색 바로 바뀌게 하려고 넣어둠
     setTimeout(() => {
-      alert("찜");
       setIsClickProcessing(false); // 클릭 처리 완료 후 클릭 활성화
     }, 10);
   };
@@ -88,6 +90,7 @@ function Heart({ userData, item }) {
       })
     );
   };
+
   return (
     <>
       <Like

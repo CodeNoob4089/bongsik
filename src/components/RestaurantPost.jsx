@@ -29,6 +29,7 @@ import Heart from "./Heart";
 
 function RestaurantPost() {
   const userId = auth.currentUser?.uid;
+
   //모달
   const [openModal, setOpenModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
@@ -77,6 +78,7 @@ function RestaurantPost() {
 
   const { data: userData } = useQuery("fetchUserData", getUserData);
   const { data: PublicPosts } = useQuery("fetchPublicPosts", getPublicPosts);
+
   const filterdPosts = PublicPosts?.filter((post) => post?.category === "맛집");
   console.log(filterdPosts);
   return (

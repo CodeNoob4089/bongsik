@@ -100,9 +100,7 @@ function PostingModal({
         await updateDoc(postDocRef, {
           commentCount: currentCommentCount + 1,
         });
-
         queryClient.invalidateQueries("fetchPostComments");
-
         // fetchPublicPosts 쿼리 다시 호출하여 게시물 리스트 업데이트
         queryClient.invalidateQueries("fetchPublicPosts");
       },
@@ -157,8 +155,8 @@ function PostingModal({
     await updateDoc(postDocRef, {
       commentCount: currentCommentCount - 1,
     });
-    console.log(postDocRef);
     queryClient.invalidateQueries("fetchPostComments");
+    queryClient.invalidateQueries("fetchPublicPosts");
   });
   // 댓글 수정
   const handleEdit = (commentId, currentComment) => {
@@ -210,17 +208,11 @@ function PostingModal({
     if (days < 7) return `${Math.floor(days)}일 전`;
     return `${start.toLocaleDateString()}`;
   };
-  // // 게시물의 댓글 수 업데이트
-  // const updatePostCommentCount = async (postId, newCommentCount) => {
-  //   const postDocRef = doc(db, "posts", postId);
-  //   await updateDoc(postDocRef, {
-  //     commentCount: newCommentCount,
-  //   });
-  // };
+
   return (
     <>
       {openModal && selectedPost && (
-        <ModalWrapper>
+        <ModalWrapper onClick={handleCloseModal}>
           <ModalContent>
             {selectedPost && <img src={selectedPost.photo} alt="Post" />}
             <h2>{selectedPost.title}</h2>
@@ -246,7 +238,6 @@ function PostingModal({
               <br />
               {selectedPost.content}
             </ContentArea>
-
             <Form onSubmit={(e) => handleSubmit(e, selectedPost.postId)}>
               <InputBox
                 name="comment"
@@ -299,11 +290,13 @@ function PostingModal({
                                 수정
                               </CommentButton>
                               <CommentButton
-                                onClick={() =>
-                                  deleteCommentMutation.mutate(
-                                    comment.commentId
-                                  )
-                                }
+                                onClick={() => {
+                                  if (window.confirm("삭제하시겠습니까?")) {
+                                    deleteCommentMutation.mutate(
+                                      comment.commentId
+                                    );
+                                  }
+                                }}
                               >
                                 삭제
                               </CommentButton>
