@@ -19,7 +19,7 @@ export const PostImgUrl = styled.img`
   /* background-color: #3511a3; */
   height: 50vh;
   width: 48vw;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   margin-left: 3.2rem;
   border-radius: 0.35rem;
   display: block;
@@ -28,19 +28,21 @@ export const PostImgUrl = styled.img`
 `;
 export const PostContent = styled.div`
   /* background-color: #5e44ad; */
-  height: 12vh;
+  /* height: 8vh; */
   width: 48vw;
   margin-left: 6rem;
-  margin-top: 0.5rem;
+  p {
+    margin-top: 0.5rem;
+  }
 `;
 export const PostBottomBar = styled.div`
   /* background-color: #1f961f; */
-  height: 6vh;
   width: 48vw;
-  margin-left: 6rem;
-  display: flex;
+  margin-left: 5.5rem;
+  margin-top: 1rem;
+  /* display: flex;
   text-align: center;
-  justify-content: center;
+  justify-content: center; */
 `;
 export const ButtonSet = styled.div`
   display: flex;
@@ -62,7 +64,7 @@ export const ModalWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: 50;
   max-height: 100vh;
   overflow-y: auto; // 모달 스크롤 표시
 `;
@@ -75,6 +77,7 @@ export const ModalContent = styled.div`
   width: 64vw;
   height: 100vh;
   overflow-y: auto;
+  z-index: 55;
 
   h2 {
     margin-bottom: 10px;

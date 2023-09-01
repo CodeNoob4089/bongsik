@@ -28,6 +28,8 @@ import {
   ContentArea,
 } from "./TabPostStyled";
 import { nanoid } from "nanoid";
+import { faStar, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 function PostingModal({
   Button,
   openModal,
@@ -45,7 +47,7 @@ function PostingModal({
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editedComment, setEditedComment] = useState("");
   // 댓글 세기
-  const [commentCount, setCommentCount] = useState(0);
+  const [, setCommentCount] = useState(0);
   //모달 닫기
   const handleCloseModal = () => {
     // 배경 페이지 스크롤 활성화
@@ -98,9 +100,7 @@ function PostingModal({
         await updateDoc(postDocRef, {
           commentCount: currentCommentCount + 1,
         });
-
         queryClient.invalidateQueries("fetchPostComments");
-
         // fetchPublicPosts 쿼리 다시 호출하여 게시물 리스트 업데이트
         queryClient.invalidateQueries("fetchPublicPosts");
       },
@@ -155,8 +155,8 @@ function PostingModal({
     await updateDoc(postDocRef, {
       commentCount: currentCommentCount - 1,
     });
-
     queryClient.invalidateQueries("fetchPostComments");
+    queryClient.invalidateQueries("fetchPublicPosts");
   });
   // 댓글 수정
   const handleEdit = (commentId, currentComment) => {
@@ -208,22 +208,36 @@ function PostingModal({
     if (days < 7) return `${Math.floor(days)}일 전`;
     return `${start.toLocaleDateString()}`;
   };
-  // 게시물의 댓글 수 업데이트
-  const updatePostCommentCount = async (postId, newCommentCount) => {
-    const postDocRef = doc(db, "posts", postId);
-    await updateDoc(postDocRef, {
-      commentCount: newCommentCount,
-    });
-  };
+
   return (
     <>
       {openModal && selectedPost && (
-        <ModalWrapper>
-          <ModalContent>
-            {selectedPost && <img src={selectedPost.imageUrl} alt="Post" />}
+        <ModalWrapper onClick={handleCloseModal}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+            {selectedPost && <img src={selectedPost.photo} alt="Post" />}
             <h2>{selectedPost.title}</h2>
-            <ContentArea>{selectedPost.content}</ContentArea>
-
+            <ContentArea>
+              {selectedPost.timestamp?.toDate().toLocaleDateString()}&nbsp;
+              {selectedPost.userName}
+              <br />
+              {selectedPost.place.place_name}&nbsp;
+              {Array(selectedPost.star)
+                .fill()
+                .map((_, index) => (
+                  <FontAwesomeIcon
+                    key={index}
+                    icon={faStar}
+                    style={{ color: "#ff4e50" }}
+                    size="lg"
+                  />
+                ))}
+              <br />
+              <FontAwesomeIcon icon={faLocationDot} size="lg" />
+              &nbsp;
+              {selectedPost.place.address_name}
+              <br />
+              {selectedPost.content}
+            </ContentArea>
             <Form onSubmit={(e) => handleSubmit(e, selectedPost.postId)}>
               <InputBox
                 name="comment"
@@ -276,11 +290,13 @@ function PostingModal({
                                 수정
                               </CommentButton>
                               <CommentButton
-                                onClick={() =>
-                                  deleteCommentMutation.mutate(
-                                    comment.commentId
-                                  )
-                                }
+                                onClick={() => {
+                                  if (window.confirm("삭제하시겠습니까?")) {
+                                    deleteCommentMutation.mutate(
+                                      comment.commentId
+                                    );
+                                  }
+                                }}
                               >
                                 삭제
                               </CommentButton>
