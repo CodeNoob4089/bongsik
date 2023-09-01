@@ -213,7 +213,7 @@ function PostingModal({
     <>
       {openModal && selectedPost && (
         <ModalWrapper onClick={handleCloseModal}>
-          <ModalContent>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
             {selectedPost && <img src={selectedPost.photo} alt="Post" />}
             <h2>{selectedPost.title}</h2>
             <ContentArea>
