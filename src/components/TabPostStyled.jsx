@@ -31,7 +31,9 @@ export const PostContent = styled.div`
   height: 12vh;
   width: 48vw;
   margin-left: 6rem;
-  margin-top: 0.5rem;
+  p {
+    margin-top: 0.5rem;
+  }
 `;
 export const PostBottomBar = styled.div`
   /* background-color: #1f961f; */

@@ -18,7 +18,6 @@ import { db, storage } from "../firebase";
 import useAuthStore from "../store/auth";
 import useClickedDataStore from "../store/modalData";
 
-
 function PostAddModal({ modalOpen, setModalOpen }) {
   const queryClient = useQueryClient();
   const { data: myTags } = useQuery("getMyTags", getMyTags);
@@ -27,15 +26,20 @@ function PostAddModal({ modalOpen, setModalOpen }) {
   const setClickedData = useClickedDataStore((state) => state.setClickedData);
   const user = useAuthStore((state) => state.user);
 
-  const clickedCategory = (clickedData?.category_group_name === "카페") ? "카페"
-  : (clickedData?.category_name?.split(">").includes(" 술집 "))?"술집":"맛집"
+  const clickedCategory =
+    clickedData?.category_group_name === "카페"
+      ? "카페"
+      : clickedData?.category_name?.split(">").includes(" 술집 ")
+      ? "술집"
+      : "맛집";
 
-  console.log(clickedData?.category_name?.split(">"))
+  console.log(clickedData?.category_name?.split(">"));
 
   const [inputValue, setInputValue] = useState({
     place: clickedData,
     content: "",
     uid: user.uid,
+    userName: user.displayName,
     star: 0,
     photo: "",
     isPublic: false,
@@ -46,24 +50,24 @@ function PostAddModal({ modalOpen, setModalOpen }) {
     commentCount: 0,
     timestamp: new Date(),
   });
-  const initialStars = [false, false, false, false, false]
-  const [stars, setStars] = useState(initialStars)
+  const initialStars = [false, false, false, false, false];
+  const [stars, setStars] = useState(initialStars);
 
   const starClickHandler = (index) => {
-    if(index+1 ===  stars.filter((s) => s === true).length){
-      console.log("여기유", stars.filter((s) => s === true).length, index)
-      setInputValue({...inputValue, star: 0})
-      console.log(inputValue.star)
-      setStars(initialStars)
-      return
+    if (index + 1 === stars.filter((s) => s === true).length) {
+      console.log("여기유", stars.filter((s) => s === true).length, index);
+      setInputValue({ ...inputValue, star: 0 });
+      console.log(inputValue.star);
+      setStars(initialStars);
+      return;
     }
-    setInputValue({...inputValue, star: index+1});
-    let newStars = [...stars]
-    for(let i = 0; i < 5; i++){
-      newStars[i] = i<= index? true : false;
-    };
-    setStars(newStars)
-  }
+    setInputValue({ ...inputValue, star: index + 1 });
+    let newStars = [...stars];
+    for (let i = 0; i < 5; i++) {
+      newStars[i] = i <= index ? true : false;
+    }
+    setStars(newStars);
+  };
 
   const selectImage = async (e) => {
     const image = e.target.files[0];
@@ -148,38 +152,50 @@ function PostAddModal({ modalOpen, setModalOpen }) {
           <StoreInfo>
             <span>가게:&nbsp;{clickedData.place_name}</span>
             <span>
-              주소:&nbsp;{clickedData.road_address_name
+              주소:&nbsp;
+              {clickedData.road_address_name
                 ? clickedData.road_address_name
                 : clickedData.address_name}
             </span>
           </StoreInfo>
-           
+
           <TitleCategory>
-        <SelectBox>
-        <CollectionSelect onChange={(e) => setInputValue({...inputValue, collectionTag: e.target.value})}>
-         <option value="">컬렉션 선택안함</option>
-          {myTags?.map((tag) =>
-          <option key={tag.collectionID} value={tag.collectionID}>{tag.title}</option>
-          )}
-        </CollectionSelect>
-      </SelectBox>
-      <CategoryDiv>
-        {clickedCategory}
-      </CategoryDiv>
-      </TitleCategory>
-     
+            <SelectBox>
+              <CollectionSelect
+                onChange={(e) =>
+                  setInputValue({
+                    ...inputValue,
+                    collectionTag: e.target.value,
+                  })
+                }
+              >
+                <option value="">컬렉션 선택안함</option>
+                {myTags?.map((tag) => (
+                  <option key={tag.collectionID} value={tag.collectionID}>
+                    {tag.title}
+                  </option>
+                ))}
+              </CollectionSelect>
+            </SelectBox>
+            <CategoryDiv>{clickedCategory}</CategoryDiv>
+          </TitleCategory>
         </ModalTitle>
         <ModalContents>
-        <div>별점:&nbsp;
-            {stars.map((star, index) =>
-            <StarSpan onClick={() =>{
-             starClickHandler(index)
-            }
-            }>
-            {stars[index]?<FontAwesomeIcon icon={faStar} style={{color: "#ff4e50"}}/>
-            :<FontAwesomeIcon icon={faStar} style={{color: "gray"}}/>}
-            </StarSpan>
-            )}
+          <div>
+            별점:&nbsp;
+            {stars.map((star, index) => (
+              <StarSpan
+                onClick={() => {
+                  starClickHandler(index);
+                }}
+              >
+                {stars[index] ? (
+                  <FontAwesomeIcon icon={faStar} style={{ color: "#ff4e50" }} />
+                ) : (
+                  <FontAwesomeIcon icon={faStar} style={{ color: "gray" }} />
+                )}
+              </StarSpan>
+            ))}
           </div>
           <ReviewInput
             placeholder="나만의 맛집 평가를 적어주세요!"
@@ -280,7 +296,7 @@ const StoreInfo = styled.div`
 
 const TitleCategory = styled.div`
   display: flex;
-`
+`;
 
 const CategoryDiv = styled.div`
   background-color: #f2f2f5;
@@ -306,12 +322,12 @@ const CollectionSelect = styled.select`
   color: gray;
   text-align: center;
   cursor: pointer;
-`
+`;
 const StarSpan = styled.span`
   cursor: pointer;
   margin-left: 2px;
   font-size: 18px;
-`
+`;
 
 const ModalContents = styled.div`
   padding: 10px 30px;

@@ -28,6 +28,8 @@ import {
   ContentArea,
 } from "./TabPostStyled";
 import { nanoid } from "nanoid";
+import { faStar, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 function PostingModal({
   Button,
   openModal,
@@ -155,7 +157,7 @@ function PostingModal({
     await updateDoc(postDocRef, {
       commentCount: currentCommentCount - 1,
     });
-
+    console.log(postDocRef);
     queryClient.invalidateQueries("fetchPostComments");
   });
   // 댓글 수정
@@ -220,9 +222,30 @@ function PostingModal({
       {openModal && selectedPost && (
         <ModalWrapper>
           <ModalContent>
-            {selectedPost && <img src={selectedPost.imageUrl} alt="Post" />}
+            {selectedPost && <img src={selectedPost.photo} alt="Post" />}
             <h2>{selectedPost.title}</h2>
-            <ContentArea>{selectedPost.content}</ContentArea>
+            <ContentArea>
+              {selectedPost.timestamp?.toDate().toLocaleDateString()}&nbsp;
+              {selectedPost.userName}
+              <br />
+              {selectedPost.place.place_name}&nbsp;
+              {Array(selectedPost.star)
+                .fill()
+                .map((_, index) => (
+                  <FontAwesomeIcon
+                    key={index}
+                    icon={faStar}
+                    style={{ color: "#ff4e50" }}
+                    size="lg"
+                  />
+                ))}
+              <br />
+              <FontAwesomeIcon icon={faLocationDot} size="lg" />
+              &nbsp;
+              {selectedPost.place.address_name}
+              <br />
+              {selectedPost.content}
+            </ContentArea>
 
             <Form onSubmit={(e) => handleSubmit(e, selectedPost.postId)}>
               <InputBox
@@ -233,7 +256,7 @@ function PostingModal({
             </Form>
             {PostComments?.map(
               (comment) =>
-                comment.postId === selectedPost.postId && (
+                comment.postId == selectedPost.postId && (
                   <CommentWrap key={comment.commentId}>
                     <div>
                       <span>{comment.nickName}:&nbsp;</span>
