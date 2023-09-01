@@ -36,6 +36,7 @@ function PostAddModal({ modalOpen, setModalOpen }) {
     place: clickedData,
     content: "",
     uid: user.uid,
+    userName: user.displayName,
     star: 0,
     photo: "",
     isPublic: false,

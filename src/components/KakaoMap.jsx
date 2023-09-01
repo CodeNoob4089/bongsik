@@ -153,7 +153,7 @@ function KakaoMap({ showModal }) {
           level={5}
           onCreate={setMap}
         >
-          {markers.map((marker) => (
+          {markers?.map((marker) => (
             <MapMarker
               key={`marker-${marker.content}-${marker.position.lat},${marker.position.lng}`}
               position={marker.position}
@@ -164,7 +164,7 @@ function KakaoMap({ showModal }) {
               )}
             </MapMarker>
           ))}
-          {postData.map((post) => 
+          {postData?.map((post) => 
            <Circle key={post.postID}
            center={{
              lat: post.place.y,
@@ -273,7 +273,7 @@ const SearchArea = styled.div`
   justify-content: right;
   margin-top: 6vh;
   top: 6rem;
-  right: 35vw;
+  right: 31.5vw;
 `;
 
 const SearchForm = styled.form`
