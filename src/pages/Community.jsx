@@ -126,18 +126,16 @@ const Button = styled.button`
   width: 95px;
   height: 45px;
   border: none;
-  border-bottom: ${(props) =>
-    props.id === props.currentTab ? "3px solid #FF4E50" : "2px solid gray"};
+  border-bottom: ${(props) => (props.id === props.currentTab ? "3px solid #FF4E50" : "2px solid gray")};
   background-color: rgba(255, 255, 255, 0);
   cursor: pointer;
 `;
 
 const SearchArea = styled.div`
   position: fixed;
-  /* margin-left: 3.7rem; */
+  margin-left: 3.7rem;
   padding-bottom: 30px;
   top: 6rem;
-  right: 5rem;
   width: 18rem;
 `;
 
@@ -186,7 +184,7 @@ const MonthlyPost = styled.div`
   margin-top: 3rem;
 `;
 const MonthlyContent = styled.div`
-  position: absolute;
+  position: fixed;
   display: flex;
   /* background-color: #bf85a1; */
   width: 17.2vw;

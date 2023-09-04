@@ -20,6 +20,7 @@ const getPosts = async () => {
   return querySnapshot.docs.map((doc) => ({
     ...doc.data(),
     docID: doc.id,
+    postId: doc.id,
   }));
 };
 const deletePost = async (postID) => {

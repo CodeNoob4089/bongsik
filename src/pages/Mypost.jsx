@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import useAuthStore from "../store/auth";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock, faLockOpen, faHeart, faRectangleList } from "@fortawesome/free-solid-svg-icons";
@@ -9,9 +8,8 @@ import { getPosts } from "../api/collection";
 import PostEditModal from "../components/PostEditModal";
 import { deletePost } from "../api/collection";
 import DeleteModal from "../components/DeleteModal";
-
+import PostingModal from "../components/CommentsModal";
 function Mypost() {
-  const user = useAuthStore((state) => state.user);
   const { data: postData } = useQuery(`fetchPostData`, getPosts);
   const [modalOpen, setModalOpen] = useState(false);
   const [currentPostData, setCurrentPostData] = useState(null);
@@ -20,6 +18,20 @@ function Mypost() {
   const [deletePostId, setDeletePostId] = useState(null);
   const categories = ["맛집", "술집", "카페"];
   const queryClient = useQueryClient();
+  //모달
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [, setSelectedPostId] = useState(null);
+  console.log(postData);
+  //모달 열기
+  const handlePostClick = (post) => {
+    // 배경 페이지 스크롤 막기
+    document.body.style.overflow = "hidden";
+    setSelectedPost(post);
+    setSelectedPostId(post.postId);
+    setOpenModal(true);
+  };
+
   const mutation = useMutation(deletePost, {
     onSuccess: () => {
       queryClient.invalidateQueries("fetchPostData");
@@ -78,7 +90,7 @@ function Mypost() {
           {postData
             ?.filter((post) => post.category === currentCategory)
             .map((post) => (
-              <PostCard key={post.postID}>
+              <PostCard key={post.docID}>
                 <TimeLine>
                   <Circle />
                   <Line />
@@ -86,7 +98,12 @@ function Mypost() {
                 <Post>
                   <Date>{post.timestamp?.toDate().toLocaleDateString()}</Date>
                   <ImageAndContents>
-                    <PostImage src={post.photo ? post.photo : ""} />
+                    <PostImage
+                      onClick={() => {
+                        handlePostClick(post, post.docID);
+                      }}
+                      src={post.photo ? post.photo : ""}
+                    />
                     <PostContents>
                       <PostTitle>{post.place.place_name}</PostTitle>
                       {post.isPublic ? (
@@ -120,6 +137,12 @@ function Mypost() {
             ))}
         </PostCards>
       </PostCardsContainer>
+      <PostingModal
+        selectedPost={selectedPost}
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+        setSelectedPostId={setSelectedPost}
+      />
     </>
   );
   //map함수를 쓰는 이유 : 대량 데이터를 처리하기 위함
