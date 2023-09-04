@@ -22,7 +22,6 @@ function Mypage() {
   const [isHeartHovered, setIsHeartHovered] = useState(false);
   const [isMedalHovered, setIsMedalHovered] = useState(false);
   const [iseditusermodal, setIsEditUserModal] = useState(false);
-  console.log(user);
 
   const [currentUserTab, setCurrentUserTab] = useState("like-posts");
 
@@ -34,7 +33,6 @@ function Mypage() {
 
     const fetchUserBadges = async () => {
       if (!user) return;
-      console.log(user);
       const fetchedUserBadges = await getUserBadges(user.uid);
       console.log(fetchedUserBadges);
       const ownedBadgesArray = Object.keys(fetchedUserBadges).filter((badgeId) => fetchedUserBadges[badgeId].isOwned);

@@ -1,20 +1,11 @@
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { db, auth } from "../firebase";
-import {
-  collection,
-  addDoc,
-  where,
-  query,
-  getDocs,
-  deleteDoc,
-  doc,
-  updateDoc,
-  getDoc,
-} from "firebase/firestore";
+import { collection, addDoc, where, query, getDocs, deleteDoc, doc, updateDoc, getDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
 import useAuthStore from "../store/auth";
+
 import {
   ModalWrapper,
   ModalContent,
@@ -26,23 +17,26 @@ import {
   CloseButton,
   CommentInput,
   ContentArea,
+  UserInfo,
+  UserProfile,
+  UserNameAndLevel,
+  Nickname,
+  ProfileCircle,
+  ProfileImage,
+  ModalLocation,
+  InputArea,
 } from "./TabPostStyled";
 import { nanoid } from "nanoid";
 import { faStar, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-function PostingModal({
-  Button,
-  openModal,
-  setOpenModal,
-  selectedPost,
-  setSelectedPostId,
-}) {
+function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelectedPostId }) {
   const authStore = useAuthStore();
   const displayName = authStore.user?.displayName;
   const isLogIn = authStore.user !== null;
   const userId = auth.currentUser?.uid;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const user = useAuthStore((state) => state.user);
   // 댓글 수정
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editedComment, setEditedComment] = useState("");
@@ -60,9 +54,7 @@ function PostingModal({
   const getPostComments = async (postId) => {
     const commentsCollectionRef = collection(db, "postComments");
 
-    const querySnapshot = await getDocs(
-      query(commentsCollectionRef, where("postId", "==", postId))
-    );
+    const querySnapshot = await getDocs(query(commentsCollectionRef, where("postId", "==", postId)));
     const PostComments = querySnapshot.docs.map((commentsDoc) => {
       const data = commentsDoc.data();
       return {
@@ -72,16 +64,12 @@ function PostingModal({
     return PostComments;
   };
 
-  const { data: PostComments } = useQuery(
-    "fetchPostComments",
-    () => getPostComments(selectedPost.postId),
-    {
-      enabled: !!selectedPost?.postId,
-      onSuccess: () => {
-        setCommentCount(0); // 초기 댓글 개수 0으로 설정
-      },
-    }
-  );
+  const { data: PostComments } = useQuery("fetchPostComments", () => getPostComments(selectedPost.postId), {
+    enabled: !!selectedPost?.postId,
+    onSuccess: () => {
+      setCommentCount(0); // 초기 댓글 개수 0으로 설정
+    },
+  });
   console.log("postComments", PostComments);
 
   // 댓글 추가
@@ -140,9 +128,7 @@ function PostingModal({
   // 댓글 삭제
   const deleteCommentMutation = useMutation(async (commentId) => {
     const commentsCollectionRef = collection(db, "postComments");
-    const querySnapshot = await getDocs(
-      query(commentsCollectionRef, where("commentId", "==", commentId))
-    );
+    const querySnapshot = await getDocs(query(commentsCollectionRef, where("commentId", "==", commentId)));
     if (!querySnapshot.empty) {
       const commentDocRef = doc(db, "postComments", querySnapshot.docs[0].id);
       await deleteDoc(commentDocRef);
@@ -168,9 +154,7 @@ function PostingModal({
     const commentsCollectionRef = collection(db, "postComments");
 
     // 댓글의 commentId를 사용하여 해당 댓글 문서를 찾음
-    const querySnapshot = await getDocs(
-      query(commentsCollectionRef, where("commentId", "==", commentId))
-    );
+    const querySnapshot = await getDocs(query(commentsCollectionRef, where("commentId", "==", commentId)));
 
     if (!querySnapshot.empty) {
       const commentDocRef = querySnapshot.docs[0].ref; // 첫 번째 문서의 참조를 가져옴
@@ -214,101 +198,122 @@ function PostingModal({
       {openModal && selectedPost && (
         <ModalWrapper onClick={handleCloseModal}>
           <ModalContent onClick={(e) => e.stopPropagation()}>
+            <CloseButton onClick={handleCloseModal}>X</CloseButton>
+            <UserInfo>
+              <UserProfile>
+                <ProfileCircle>
+                  <ProfileImage src={user.photoURL} alt="프로필 사진" />
+                </ProfileCircle>
+                <UserNameAndLevel>
+                  <Nickname>
+                    {selectedPost.userName}&nbsp;Lv.
+                    <br />
+                    {selectedPost.timestamp?.toDate().toLocaleDateString()}
+                  </Nickname>
+                </UserNameAndLevel>
+              </UserProfile>
+            </UserInfo>
+            <ModalLocation>
+              <p>
+                {selectedPost.place.place_name}&nbsp;
+                {Array(selectedPost.star)
+                  .fill()
+                  .map((_, index) => (
+                    <FontAwesomeIcon key={index} icon={faStar} style={{ color: "#ff4e50" }} />
+                  ))}
+                <br />
+                <FontAwesomeIcon icon={faLocationDot} size="lg" />
+                &nbsp;
+                {selectedPost.place.address_name}
+                <br />
+              </p>
+            </ModalLocation>
             {selectedPost && <img src={selectedPost.photo} alt="Post" />}
             <h2>{selectedPost.title}</h2>
             <ContentArea>
-              {selectedPost.timestamp?.toDate().toLocaleDateString()}&nbsp;
-              {selectedPost.userName}
-              <br />
-              {selectedPost.place.place_name}&nbsp;
-              {Array(selectedPost.star)
-                .fill()
-                .map((_, index) => (
-                  <FontAwesomeIcon
-                    key={index}
-                    icon={faStar}
-                    style={{ color: "#ff4e50" }}
-                    size="lg"
-                  />
-                ))}
-              <br />
-              <FontAwesomeIcon icon={faLocationDot} size="lg" />
-              &nbsp;
-              {selectedPost.place.address_name}
-              <br />
-              {selectedPost.content}
+              {selectedPost.content} <hr />
             </ContentArea>
-            <Form onSubmit={(e) => handleSubmit(e, selectedPost.postId)}>
-              <InputBox
-                name="comment"
-                placeholder="댓글을 작성해주세요"
-              ></InputBox>
-              <SubmitButton type="submit">작성</SubmitButton>
-            </Form>
+            <InputArea>
+              <ProfileCircle style={{ marginLeft: "2rem" }}>
+                <ProfileImage src={user.photoURL} alt="프로필 사진" />
+              </ProfileCircle>
+              <Form onSubmit={(e) => handleSubmit(e, selectedPost.postId)}>
+                <InputBox name="comment" placeholder="댓글을 작성해주세요"></InputBox>
+                <SubmitButton type="submit">작성</SubmitButton>
+              </Form>
+            </InputArea>
             {PostComments?.map(
               (comment) =>
                 comment.postId === selectedPost.postId && (
                   <CommentWrap key={comment.commentId}>
-                    <div>
-                      <span>{comment.nickName}:&nbsp;</span>
-                      {editingCommentId === comment.commentId ? (
-                        <>
-                          <CommentInput
-                            type="text"
-                            value={editedComment}
-                            onChange={(e) => setEditedComment(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
-                                if (editingCommentId === comment.commentId) {
-                                  handleSaveEdit(
-                                    comment.commentId,
-                                    comment.postId
-                                  );
-                                }
-                              }
-                            }}
-                          />
-                          <CommentButton
-                            onClick={() => {
-                              handleSaveEdit(comment.commentId, comment.postId);
-                            }}
-                          >
-                            저장
-                          </CommentButton>
-                        </>
-                      ) : (
-                        <>
-                          {comment.comment}&nbsp;
-                          <span>{elapsedTime(comment.date)}</span>
-                          {comment.userId === userId && (
-                            <>
-                              <CommentButton
-                                onClick={() =>
-                                  handleEdit(comment.commentId, comment.comment)
-                                }
-                              >
-                                수정
-                              </CommentButton>
-                              <CommentButton
-                                onClick={() => {
-                                  if (window.confirm("삭제하시겠습니까?")) {
-                                    deleteCommentMutation.mutate(
-                                      comment.commentId
-                                    );
+                    <div style={{ marginLeft: "2rem", display: "flex" }}>
+                      <ProfileCircle style={{}}>
+                        <ProfileImage src={user.photoURL} alt="프로필 사진" />
+                      </ProfileCircle>
+                      <div style={{ display: "column" }}>
+                        <Nickname style={{ marginTop: "1rem", display: "flex" }}>
+                          {comment.nickName} &nbsp;<p>{elapsedTime(comment.date)}</p>
+                        </Nickname>
+
+                        {editingCommentId === comment.commentId ? (
+                          <>
+                            <CommentInput
+                              type="text"
+                              value={editedComment}
+                              onChange={(e) => setEditedComment(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  if (editingCommentId === comment.commentId) {
+                                    handleSaveEdit(comment.commentId, comment.postId);
                                   }
-                                }}
-                              >
-                                삭제
-                              </CommentButton>
-                            </>
-                          )}
-                        </>
-                      )}
+                                }
+                              }}
+                            />
+                            <CommentButton
+                              onClick={() => {
+                                handleSaveEdit(comment.commentId, comment.postId);
+                              }}
+                            >
+                              저장
+                            </CommentButton>
+                          </>
+                        ) : (
+                          <div style={{ display: "flex" }}>
+                            <div
+                              style={{
+                                marginTop: "1rem",
+                                marginLeft: "1.7rem",
+                                display: "flex",
+                                backgroundColor: "#F2F2F5",
+                                borderRadius: "7px",
+                              }}
+                            >
+                              {comment.comment}
+
+                              {comment.userId === userId && (
+                                <div>
+                                  <CommentButton onClick={() => handleEdit(comment.commentId, comment.comment)}>
+                                    수정
+                                  </CommentButton>
+                                  <CommentButton
+                                    onClick={() => {
+                                      if (window.confirm("삭제하시겠습니까?")) {
+                                        deleteCommentMutation.mutate(comment.commentId);
+                                      }
+                                    }}
+                                  >
+                                    삭제
+                                  </CommentButton>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </CommentWrap>
                 )
             )}
-            <CloseButton onClick={handleCloseModal}>X</CloseButton>
           </ModalContent>
         </ModalWrapper>
       )}

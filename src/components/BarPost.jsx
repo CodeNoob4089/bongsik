@@ -9,18 +9,11 @@ import {
   ButtonSet,
   LikeCount,
 } from "../components/TabPostStyled";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
-import { faLocationDot, faStar } from "@fortawesome/free-solid-svg-icons";
-import { faArrowUpFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { faLocationDot, faStar, faArrowUpFromBracket } from "@fortawesome/free-solid-svg-icons";
+
 import { db, auth } from "../firebase";
 import { useQuery } from "react-query";
 import PostingModal from "./CommentsModal";
@@ -46,9 +39,7 @@ function BarPost() {
   const getPublicPosts = async () => {
     const postsCollectionRef = collection(db, "posts");
 
-    const querySnapshot = await getDocs(
-      query(postsCollectionRef, where("isPublic", "==", true))
-    );
+    const querySnapshot = await getDocs(query(postsCollectionRef, where("isPublic", "==", true)));
 
     const PublicPosts = querySnapshot.docs.map((postDoc) => {
       const data = postDoc.data();
@@ -109,12 +100,7 @@ function BarPost() {
                 {Array(item.star)
                   .fill()
                   .map((_, index) => (
-                    <FontAwesomeIcon
-                      key={index}
-                      icon={faStar}
-                      style={{ color: "#ff4e50" }}
-                      size="lg"
-                    />
+                    <FontAwesomeIcon key={index} icon={faStar} style={{ color: "#ff4e50" }} size="lg" />
                   ))}
               </h2>
               <p>
@@ -144,12 +130,11 @@ function BarPost() {
         </CommunityPosting>
       ))}
       <PostingModal
-        userData={userData}
-        Button={Button}
         selectedPost={selectedPost}
         openModal={openModal}
         setOpenModal={setOpenModal}
         setSelectedPostId={setSelectedPost}
+        userData={userData}
       />
     </>
   );
