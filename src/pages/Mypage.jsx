@@ -10,6 +10,7 @@ import MyList from "../components/MyList";
 import MyLikePost from "../components/MyLikePost";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGear, faHeart, faMedal } from "@fortawesome/free-solid-svg-icons";
+import EditUserModal from "../components/EditUserModal";
 
 function Mypage() {
   const [currentTab, setCurrentTab] = useState(1);
@@ -20,6 +21,8 @@ function Mypage() {
   const setOwnedBadges = useBadgeStore((state) => state.setOwnedBadges);
   const [isHeartHovered, setIsHeartHovered] = useState(false);
   const [isMedalHovered, setIsMedalHovered] = useState(false);
+  const [iseditusermodal, setIsEditUserModal] = useState(false);
+  console.log(user);
 
   const [currentUserTab, setCurrentUserTab] = useState("like-posts");
 
@@ -31,7 +34,7 @@ function Mypage() {
 
     const fetchUserBadges = async () => {
       if (!user) return;
-      console.log(user.uid);
+      console.log(user);
       const fetchedUserBadges = await getUserBadges(user.uid);
       console.log(fetchedUserBadges);
       const ownedBadgesArray = Object.keys(fetchedUserBadges).filter((badgeId) => fetchedUserBadges[badgeId].isOwned);
@@ -44,6 +47,10 @@ function Mypage() {
       fetchUserBadges();
     }
   }, [user, setBadges, setOwnedBadges]);
+
+  const edituserhandler = () => {
+    setIsEditUserModal(true);
+  };
 
   const tabs = [
     {
@@ -65,6 +72,12 @@ function Mypage() {
 
   return (
     <Container>
+      <EditUserModal
+        isOpen={iseditusermodal}
+        onCancle={() => {
+          setIsEditUserModal(false);
+        }}
+      />
       {user ? (
         <>
           <TabsBox>
@@ -95,7 +108,7 @@ function Mypage() {
                 <UserInfo>
                   <UserProfile>
                     <ProfileCircle>
-                      <ProfileImage src={user.photoURL} alt="프로필 사진" />
+                      <ProfileImage src={user.photoUrl} alt="프로필 사진" />
                     </ProfileCircle>
                     <UserNameAndLevel>
                       <Nickname>{user.displayName} </Nickname>
@@ -105,7 +118,7 @@ function Mypage() {
                       </Level>
                     </UserNameAndLevel>
                     <SettingButton>
-                      <FontAwesomeIcon icon={faGear} />
+                      <FontAwesomeIcon icon={faGear} onClick={edituserhandler} />
                     </SettingButton>
                   </UserProfile>
                   <UserTabsBox>
