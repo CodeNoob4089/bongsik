@@ -9,14 +9,7 @@ import {
   ButtonSet,
   LikeCount,
 } from "../components/TabPostStyled";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
 import { faLocationDot, faStar } from "@fortawesome/free-solid-svg-icons";
@@ -43,9 +36,7 @@ function CafePost() {
   // 공개게시물 가져오기
   const getPublicPosts = async () => {
     const postsCollectionRef = collection(db, "posts");
-    const querySnapshot = await getDocs(
-      query(postsCollectionRef, where("isPublic", "==", true))
-    );
+    const querySnapshot = await getDocs(query(postsCollectionRef, where("isPublic", "==", true)));
     const PublicPosts = querySnapshot.docs.map((postDoc) => {
       const data = postDoc.data();
       return {
@@ -101,12 +92,7 @@ function CafePost() {
                 {Array(item.star)
                   .fill()
                   .map((_, index) => (
-                    <FontAwesomeIcon
-                      key={index}
-                      icon={faStar}
-                      style={{ color: "#ff4e50" }}
-                      size="lg"
-                    />
+                    <FontAwesomeIcon key={index} icon={faStar} style={{ color: "#ff4e50" }} size="lg" />
                   ))}
               </h2>
               <p>
@@ -136,8 +122,6 @@ function CafePost() {
         </CommunityPosting>
       ))}
       <PostingModal
-        userData={userData}
-        Button={Button}
         selectedPost={selectedPost}
         openModal={openModal}
         setOpenModal={setOpenModal}
