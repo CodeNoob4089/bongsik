@@ -16,9 +16,7 @@ function Heart({ userData, item }) {
   //모달 열기
   // 찜하기
   const clickHeart = async (postId, isLiked) => {
-    const alreadyLikedUser = userData?.userLikes?.find(
-      (like) => like.likePostId === postId
-    );
+    const alreadyLikedUser = userData?.userLikes?.find((like) => like.likePostId === postId);
     if (isClickProcessing) return; // 클릭 처리 중인 경우 클릭 방지
 
     setIsClickProcessing(true); // 클릭 처리 시작
@@ -37,9 +35,7 @@ function Heart({ userData, item }) {
 
     if (alreadyLikedUser) {
       await updateDoc(userDocRef, {
-        userLikes: userData?.userLikes?.filter(
-          (like) => like.likePostId !== postId
-        ),
+        userLikes: userData?.userLikes?.filter((like) => like.likePostId !== postId),
       });
     } else {
       await updateDoc(userDocRef, {
@@ -51,21 +47,21 @@ function Heart({ userData, item }) {
     const userSnapshot = await getDoc(userDocRef);
     const updatedUserData = userSnapshot.data();
 
-    if (
-      updatedUserData.userLikes.length >= 1 &&
-      !updatedUserData.ownedBadges?.CQSiOVJ0zqEsG9yqO8g6.isOwned
-    ) {
+    if (updatedUserData.userLikes.length >= 1 && !updatedUserData.ownedBadges?.fBQFJ6xzfDovK0N3FedE.isOwned) {
       await updateDoc(userDocRef, {
-        "ownedBadges.CQSiOVJ0zqEsG9yqO8g6.isOwned": true,
+        "ownedBadges.fBQFJ6xzfDovK0N3FedE.isOwned": true,
       });
       alert("첫 좋아요 누르기 조건을 달성하여 뱃지를 획득합니다!");
     }
-    if (
-      updatedUserData.userLikes.length >= 10 &&
-      !updatedUserData.ownedBadges?.ybL0KO3fCwmJ0sDcAkOe.isOwned
-    ) {
+    if (updatedUserData.userLikes.length >= 10 && !updatedUserData.ownedBadges?.xplIFBYaDPZfiBUPg8nV.isOwned) {
       await updateDoc(userDocRef, {
-        "ownedBadges.ybL0KO3fCwmJ0sDcAkOe.isOwned": true,
+        "ownedBadges.xplIFBYaDPZfiBUPg8nV.isOwned": true,
+      });
+      alert("좋아요 10개 누르기 조건을 달성하여 뱃지를 획득합니다!");
+    }
+    if (updatedUserData.userLikes.length >= 30 && !updatedUserData.ownedBadges?.wR3TzKNMDzPPwCLA8c1f.isOwned) {
+      await updateDoc(userDocRef, {
+        "ownedBadges.wR3TzKNMDzPPwCLA8c1f.isOwned": true,
       });
       alert("좋아요 10개 누르기 조건을 달성하여 뱃지를 획득합니다!");
     }
@@ -94,9 +90,7 @@ function Heart({ userData, item }) {
   return (
     <>
       <Like
-        isLiked={userData?.userLikes?.some(
-          (like) => like.likePostId === item.postId
-        )}
+        isLiked={userData?.userLikes?.some((like) => like.likePostId === item.postId)}
         onClick={() => {
           clickHeart(
             item.postId,

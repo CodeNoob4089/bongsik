@@ -7,18 +7,14 @@ function Badge({ badges, ownedBadges }) {
     <BadgeContainer>
       <Title>뱃지</Title>
       <GridContainer>
-      {badges.map((badge) => {
-        return (
-          <BadgeCard key={badge.id}>
-            <Badgeimg
-              src={
-                ownedBadges.includes(badge.id) ? badge.colorsrc : badge.greysrc
-              }
-            />
-            <BadgeName>{badge.name}</BadgeName>
-          </BadgeCard>
-        );
-      })}
+        {badges.map((badge) => {
+          return (
+            <BadgeCard key={badge.id}>
+              <Badgeimg src={ownedBadges.includes(badge.id) ? badge.colorsrc : badge.greysrc} />
+              <BadgeName>{badge.name}</BadgeName>
+            </BadgeCard>
+          );
+        })}
       </GridContainer>
     </BadgeContainer>
   );
@@ -56,7 +52,7 @@ const BadgeCard = styled.div`
   align-items: center;
   justify-content: center;
   border: none;
-  background-color: rgb(0,0,0,0);
+  background-color: rgb(0, 0, 0, 0);
 `;
 
 const Badgeimg = styled.img`
@@ -64,7 +60,7 @@ const Badgeimg = styled.img`
   height: 130px;
   margin: 0.7rem;
   object-fit: contain;
-  border-radius: 50%;
+  border-radius: 30%;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 `;

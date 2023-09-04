@@ -9,7 +9,8 @@ import Mypost from "./Mypost";
 import MyList from "../components/MyList";
 import MyLikePost from "../components/MyLikePost";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGear, faHeart, faIdBadge } from "@fortawesome/free-solid-svg-icons";
+import { faGear, faHeart, faMedal } from "@fortawesome/free-solid-svg-icons";
+import EditUserModal from "../components/EditUserModal";
 
 function Mypage() {
   const [currentTab, setCurrentTab] = useState(1);
@@ -18,8 +19,12 @@ function Mypage() {
   const ownedBadges = useBadgeStore((state) => state.ownedBadges);
   const setBadges = useBadgeStore((state) => state.setBadges);
   const setOwnedBadges = useBadgeStore((state) => state.setOwnedBadges);
+  const [isHeartHovered, setIsHeartHovered] = useState(false);
+  const [isMedalHovered, setIsMedalHovered] = useState(false);
+  const [iseditusermodal, setIsEditUserModal] = useState(false);
+  console.log(user);
 
-  const [currentUserTab, setCurrentUserTab] = useState("like-posts")
+  const [currentUserTab, setCurrentUserTab] = useState("like-posts");
 
   useEffect(() => {
     const fetchBadges = async () => {
@@ -29,7 +34,7 @@ function Mypage() {
 
     const fetchUserBadges = async () => {
       if (!user) return;
-      console.log(user.uid);
+      console.log(user);
       const fetchedUserBadges = await getUserBadges(user.uid);
       console.log(fetchedUserBadges);
       const ownedBadgesArray = Object.keys(fetchedUserBadges).filter((badgeId) => fetchedUserBadges[badgeId].isOwned);
@@ -42,6 +47,10 @@ function Mypage() {
       fetchUserBadges();
     }
   }, [user, setBadges, setOwnedBadges]);
+
+  const edituserhandler = () => {
+    setIsEditUserModal(true);
+  };
 
   const tabs = [
     {
@@ -63,11 +72,23 @@ function Mypage() {
 
   return (
     <Container>
+      <EditUserModal
+        isOpen={iseditusermodal}
+        onCancle={() => {
+          setIsEditUserModal(false);
+        }}
+      />
       {user ? (
         <>
           <TabsBox>
             {tabs.map((tab) => (
-              <TabButton key={tab.id} id={tab.id} disabled={currentTab === `${tab.id}`} onClick={TabClickHandler} currentTab={currentTab}>
+              <TabButton
+                key={tab.id}
+                id={tab.id}
+                disabled={currentTab === `${tab.id}`}
+                onClick={TabClickHandler}
+                currentTab={currentTab}
+              >
                 {tab.tabTitle}
               </TabButton>
             ))}
@@ -76,44 +97,60 @@ function Mypage() {
             {currentTab === 1 ? (
               <PostContents>
                 <MyListBox>
-                  <MyList/>
+                  <MyList />
                 </MyListBox>
                 <RightContents>
-                <Mypost/>
+                  <Mypost />
                 </RightContents>
               </PostContents>
             ) : (
-            <PostContents>
-              <UserInfo>
-              <UserProfile>
-              <ProfileCircle>
-              <ProfileImage src={user.photoURL} alt="프로필 사진" />
-              </ProfileCircle>
-              <UserNameAndLevel>
-              <Nickname>{user.displayName}</Nickname>
-              <Nickname>Lv.</Nickname>
-              </UserNameAndLevel>
-              <SettingButton><FontAwesomeIcon icon={faGear} /></SettingButton>
-              </UserProfile>
-              <UserTabsBox>
-                <UserTabButton onClick={()=>setCurrentUserTab("like-posts")}>
-                  <FontAwesomeIcon icon={faHeart} style={{color: "gray"}} /><br/>
-                  {user?.userLikes?.length}
-                  </UserTabButton>
-                <Line/>
-                <UserTabButton onClick={()=>setCurrentUserTab("my-badges")}>
-                  <FontAwesomeIcon icon={faIdBadge} style={{color: "gray"}} /><br/>
-                  뱃지
-                  </UserTabButton>
-              </UserTabsBox>
-            </UserInfo>
-            <RightContents>
-              {currentUserTab === "like-posts"?
-              <MyLikePost/>
-              :<Badge badges={badges} ownedBadges={ownedBadges}/>
-              }
-            </RightContents>
-            </PostContents>
+              <PostContents>
+                <UserInfo>
+                  <UserProfile>
+                    <ProfileCircle>
+                      <ProfileImage src={user.photoUrl} alt="프로필 사진" />
+                    </ProfileCircle>
+                    <UserNameAndLevel>
+                      <Nickname>{user.displayName} </Nickname>
+                      <Level>
+                        Lv.{user.level}
+                        <LevelImg src={user.userLevel} />
+                      </Level>
+                    </UserNameAndLevel>
+                    <SettingButton>
+                      <FontAwesomeIcon icon={faGear} onClick={edituserhandler} />
+                    </SettingButton>
+                  </UserProfile>
+                  <UserTabsBox>
+                    <UserTabButton
+                      onClick={() => setCurrentUserTab("like-posts")}
+                      onMouseEnter={() => setIsHeartHovered(true)}
+                      onMouseLeave={() => setIsHeartHovered(false)}
+                    >
+                      <FontAwesomeIcon icon={faHeart} style={{ color: isHeartHovered ? "#ff4e50" : "gray" }} />
+                      <br />
+                      {user?.userLikes?.length}
+                    </UserTabButton>
+                    <Line />
+                    <UserTabButton
+                      onClick={() => setCurrentUserTab("my-badges")}
+                      onMouseEnter={() => setIsMedalHovered(true)}
+                      onMouseLeave={() => setIsMedalHovered(false)}
+                    >
+                      <FontAwesomeIcon icon={faMedal} style={{ color: isMedalHovered ? "#ff4e50" : "gray" }} />
+                      <br />
+                      챌린지
+                    </UserTabButton>
+                  </UserTabsBox>
+                </UserInfo>
+                <RightContents>
+                  {currentUserTab === "like-posts" ? (
+                    <MyLikePost />
+                  ) : (
+                    <Badge badges={badges} ownedBadges={ownedBadges} />
+                  )}
+                </RightContents>
+              </PostContents>
             )}
           </TabContent>
         </>
@@ -145,16 +182,17 @@ const UserProfile = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-`
+`;
 const UserNameAndLevel = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   width: 63%;
-`
+`;
 
 const Nickname = styled.p`
-  margin-left: 15px;
+  font-size: 24px;
+  margin-left: 0.5rem;
   margin-top: 5px;
 `;
 
@@ -178,20 +216,20 @@ const SettingButton = styled.button`
   color: gray;
   border: none;
   font-size: 25px;
-  background-color: rgba(0,0,0,0);
+  background-color: rgba(0, 0, 0, 0);
   padding-bottom: 25px;
   cursor: pointer;
-`
+`;
 
 const UserTabsBox = styled.div`
-  background-color: #F2F2F5;
+  background-color: #f2f2f5;
   margin-top: 2.5rem;
   border-radius: 10px;
   overflow: hidden;
   display: flex;
   flex-direction: row;
   align-items: center;
-`
+`;
 const UserTabButton = styled.button`
   font-size: 15px;
   height: 5rem;
@@ -200,12 +238,18 @@ const UserTabButton = styled.button`
   border: none;
   color: gray;
   cursor: pointer;
-`
+  &:hover {
+    color: #ff4e50;
+    svg {
+      color: #ff4e50;
+    }
+  }
+`;
 const Line = styled.div`
   height: 3rem;
   width: 1.4px;
-  background-color: #D0D0DE;
-`
+  background-color: #d0d0de;
+`;
 const TabsBox = styled.div`
   height: 100px;
   width: 190px;
@@ -234,7 +278,7 @@ const TabContent = styled.div`
 const PostContents = styled.div`
   display: flex;
   flex-direction: row;
-`
+`;
 
 const MyListBox = styled.div`
   width: 30vw;
@@ -245,4 +289,17 @@ const MyListBox = styled.div`
 const RightContents = styled.div`
   width: 68vw;
   height: 80vh;
-`
+`;
+const LevelImg = styled.img`
+  width: 25px;
+  height: 25px;
+  overflow: hidden;
+`;
+
+const Level = styled.div`
+  font-size: 20px;
+  display: flex;
+  justify-content: left;
+  margin-left: 0.5rem;
+  margin-top: 1rem;
+`;

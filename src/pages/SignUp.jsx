@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import {
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-  updateProfile,
-} from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
 import { auth, db } from "../firebase";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -60,6 +56,8 @@ function SignUp() {
         userLikes: [],
         ownedBadges: userBadgeData,
         postCounts: 0,
+        level: 1,
+        exp: 0,
       });
     } catch ({ code, message }) {
       alert(code);
@@ -77,20 +75,13 @@ function SignUp() {
   };
 
   const handleErrorCheck = () => {
-    return (
-      state.emailError || state.passwordError || state.confirmPasswordError
-    );
+    return state.emailError || state.passwordError || state.confirmPasswordError;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!handleErrorCheck()) {
-      joinWithVerification(
-        state.name,
-        state.email,
-        state.password,
-        state.photoURL
-      );
+      joinWithVerification(state.name, state.email, state.password, state.photoURL);
     } else {
       alert("입력값을 확인해주세요.");
     }
@@ -103,22 +94,11 @@ function SignUp() {
           <StyledForm onSubmit={handleSubmit}>
             <StyledInputDiv>
               <StyledLabel>Name</StyledLabel>
-              <StyledInput
-                type="text"
-                name="name"
-                value={state.name}
-                onChange={handleChange}
-                required
-              />
+              <StyledInput type="text" name="name" value={state.name} onChange={handleChange} required />
             </StyledInputDiv>
             <StyledInputDiv>
               <StyledLabel>Email</StyledLabel>
-              <StyledInput
-                type="email"
-                name="email"
-                value={state.email}
-                onChange={handleEmailChange}
-              />
+              <StyledInput type="email" name="email" value={state.email} onChange={handleEmailChange} />
 
               {state.emailError && <ErrorArea>{state.emailError}</ErrorArea>}
             </StyledInputDiv>
@@ -150,9 +130,7 @@ function SignUp() {
                 }}
               />
 
-              {state.passwordError && (
-                <ErrorArea>{state.passwordError}</ErrorArea>
-              )}
+              {state.passwordError && <ErrorArea>{state.passwordError}</ErrorArea>}
             </StyledInputDiv>
             <StyledInputDiv>
               <StyledLabel>Retype Password</StyledLabel>
@@ -176,14 +154,10 @@ function SignUp() {
                 }}
               />
 
-              {state.confirmPasswordError && (
-                <ErrorArea>{state.confirmPasswordError}</ErrorArea>
-              )}
+              {state.confirmPasswordError && <ErrorArea>{state.confirmPasswordError}</ErrorArea>}
             </StyledInputDiv>
             <SignUpButton type="submit">Sign Up</SignUpButton>
-            <GoogleSignUpButton type="button">
-              Sign up with Google
-            </GoogleSignUpButton>
+            <GoogleSignUpButton type="button">Sign up with Google</GoogleSignUpButton>
           </StyledForm>
         </InputContainer>
         <ImageContainer>이미지 영역</ImageContainer>
