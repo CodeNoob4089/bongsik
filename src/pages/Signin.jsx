@@ -30,18 +30,6 @@ function SignIn() {
 
   return (
     <>
-      <Header>
-        <LogoContent>
-          <LogoImg
-            src={
-              "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%A1%9C%EA%B3%A07.png?alt=media&token=b0943697-3adc-40ab-9bec-fe12259408e1"
-            }
-            onClick={() => {
-              navigate("/");
-            }}
-          />
-        </LogoContent>
-      </Header>
       <SignInContainer>
         <SignInBox>
           <InputContainer>
@@ -72,28 +60,21 @@ function SignIn() {
             </StyledForm>
           </InputContainer>
           <ImageContainer>
-            <ImageLogo src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%A1%9C%EA%B3%A08.png?alt=media&token=de9e2b70-f61b-41a1-802f-1c910339a984" />
+            <ImageLogo
+              src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%A1%9C%EA%B3%A08.png?alt=media&token=de9e2b70-f61b-41a1-802f-1c910339a984"
+              onClick={() => {
+                navigate("/");
+              }}
+            />
           </ImageContainer>
         </SignInBox>
       </SignInContainer>
-      <Footer>
-        <FooterContent>김봉식 푸터</FooterContent>
-      </Footer>
     </>
   );
 }
 
 export default SignIn;
 
-const Header = styled.div`
-  background: #eeeeee;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  height: 80px;
-  padding: 0 20px;
-`;
 export const SignInContainer = styled.div`
   display: flex;
   background-color: #d9d9d9;
@@ -194,29 +175,4 @@ export const GoogleSignUpButton = styled.button`
   &:hover {
     color: #4285f4;
   }
-`;
-const LogoContent = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 20px;
-`;
-const LogoImg = styled.img`
-  width: 220px;
-  height: 40px;
-  scale: 1.3;
-  margin-left: 4rem;
-  cursor: pointer;
-`;
-const Footer = styled.div`
-  bottom: 0;
-  background: #eeeeee;
-  width: 100%;
-  height: 100px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-const FooterContent = styled.div`
-  /* max-width: 1200px; */
-  margin: 0 auto;
 `;
