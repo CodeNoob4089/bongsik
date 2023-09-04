@@ -97,23 +97,32 @@ function PostAddModal({ modalOpen, setModalOpen }) {
       const usersRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(usersRef);
       mutation.mutate();
-      if (userDoc.data().postCounts >= 5 && !userDoc.data().ownedBadges?.HUx94whUV9Ya1iBwbj4J.isOwned) {
+      if (userDoc.data().postCounts >= 5 && !userDoc.data().ownedBadges?.Enxc4FhNynGwy0yjNeZY.isOwned) {
         await updateDoc(usersRef, {
-          [`ownedBadges.HUx94whUV9Ya1iBwbj4J`]: { isOwned: true },
+          [`ownedBadges.Enxc4FhNynGwy0yjNeZY`]: { isOwned: true },
         });
         alert("게시글 5개작성에 대한 뱃지를 획득하였습니다!");
       }
-      if (userDoc.data().postCounts >= 10 && !userDoc.data().ownedBadges?.ZMfzvBXCERSFSIB7gNT5.isOwned) {
+      if (userDoc.data().postCounts >= 10 && !userDoc.data().ownedBadges?.anQKDwRjXghFWDwKvaKA.isOwned) {
         await updateDoc(usersRef, {
-          [`ownedBadges.ZMfzvBXCERSFSIB7gNT5`]: { isOwned: true },
+          [`ownedBadges.anQKDwRjXghFWDwKvaKA`]: { isOwned: true },
         });
         alert("게시글 10개작성에 대한 뱃지를 획득하였습니다!");
       }
-      if (userDoc.data().postCounts >= 20 && !userDoc.data().ownedBadges?.qk0NnvYfoJVTUvnBBQ4x.isOwned) {
+      if (userDoc.data().postCounts >= 20 && !userDoc.data().ownedBadges?.AHTgJVUtQIezbnbbIVHL.isOwned) {
         await updateDoc(usersRef, {
-          [`ownedBadges.qk0NnvYfoJVTUvnBBQ4x`]: { isOwned: true },
+          [`ownedBadges.AHTgJVUtQIezbnbbIVHL`]: { isOwned: true },
         });
         alert("게시글 20개작성에 대한 뱃지를 획득하였습니다!");
+      }
+      await updateDoc(usersRef, { exp: increment(30) });
+      const updatedUserDoc = await getDoc(usersRef);
+      if (updatedUserDoc.data().exp >= updatedUserDoc.data().level * 100) {
+        await updateDoc(usersRef, {
+          level: increment(1),
+          exp: updatedUserDoc.data().exp - updatedUserDoc.data().level * 100,
+        });
+        alert("레벨업!");
       }
     } catch (e) {
       console.error("문서 추가 실패 오류:", e);

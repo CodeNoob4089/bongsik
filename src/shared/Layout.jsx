@@ -28,16 +28,18 @@ function Layout() {
       <Header>
         <LogoContent>
           <LogoImg
+            src={
+              "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%A1%9C%EA%B3%A07.png?alt=media&token=b0943697-3adc-40ab-9bec-fe12259408e1"
+            }
             onClick={() => {
               navigate("/");
             }}
-          ></LogoImg>
+          />
         </LogoContent>
         {isLoggedIn ? (
           <>
             <NavigationBar>
-              Hello, {displayName}님
-              <Button onClick={() => navigate("/mypage")}>Mypage</Button>
+              Hello, {displayName}님<Button onClick={() => navigate("/mypage")}>Mypage</Button>
               <Button
                 onClick={() => {
                   navigate("/community");
@@ -116,12 +118,14 @@ const Header = styled.div`
 const LogoContent = styled.div`
   display: flex;
   align-items: center;
+  gap: 20px;
 `;
-const LogoImg = styled.div`
-  width: 60px;
-  height: 60px;
-  background-image: url(https://th.bing.com/th/id/R.e771e69269a626ef5992a25680a45757?rik=h%2bS0NU8p17%2fbZg&riu=http%3a%2f%2fstorage.enuri.info%2fpic_upload%2fknowbox2%2f202012%2f0107315902020121547c1dd11-700c-4145-96e7-fea4a8ebdd84.jpg&ehk=mV9W4RCJGw3YKTF5kXGHpqIib2%2fIL93yy%2fyYbcKHhu8%3d&risl=&pid=ImgRaw&r=0);
-  background-size: cover;
+const LogoImg = styled.img`
+  width: 220px;
+  height: 40px;
+  scale: 1.3;
+  margin-left: 4rem;
+  cursor: pointer;
 `;
 
 const Footer = styled.div`
