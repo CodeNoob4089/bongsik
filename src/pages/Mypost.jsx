@@ -8,6 +8,7 @@ import { useState } from "react";
 import { getPosts } from "../api/collection";
 import PostEditModal from "../components/PostEditModal";
 import { deletePost } from "../api/collection";
+import DeleteModal from "../components/DeleteModal";
 
 function Mypost() {
   const user = useAuthStore((state) => state.user);
@@ -15,6 +16,8 @@ function Mypost() {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentPostData, setCurrentPostData] = useState(null);
   const [currentCategory, setCurrentCategory] = useState("맛집");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deletePostId, setDeletePostId] = useState(null);
   const categories = ["맛집", "술집", "카페"];
   const queryClient = useQueryClient();
   const mutation = useMutation(deletePost, {
@@ -23,9 +26,14 @@ function Mypost() {
     },
   });
 
-  const handleDeleteButton = async (postID) => {
+  const handleDeleteButton = (postID) => {
+    setDeletePostId(postID);
+    setIsDeleteModalOpen(true);
+  };
+  const confirmDeletion = async () => {
     try {
-      await mutation.mutateAsync(postID);
+      await mutation.mutateAsync(deletePostId);
+      setIsDeleteModalOpen(false);
     } catch (error) {
       console.log(error);
     }
@@ -42,13 +50,18 @@ function Mypost() {
   //로그인한 유저 상태확인해서 그걸로 그 유저가 작성한 글만 가져와야함
   return (
     <>
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onConfirm={confirmDeletion}
+        onCancel={() => setIsDeleteModalOpen(false)}
+      />
       {modalOpen && currentPostData && (
         <PostEditModal modalOpen={modalOpen} onRequestClose={() => setModalOpen(false)} postData={currentPostData} />
       )}
       <PostCardsContainer>
         <MyPostsTitle>
           <PostTitle>
-            <FontAwesomeIcon icon={faRectangleList} /> 나의 기록{" "}
+            <FontAwesomeIcon icon={faRectangleList} /> 나의 기록
             <span style={{ color: "#D0D0DE" }}>{postData?.length}</span>
           </PostTitle>
           {categories.map((category) => (
