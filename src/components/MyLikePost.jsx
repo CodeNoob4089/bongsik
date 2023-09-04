@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRectangleList, faHeart } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
 import useAuthStore from "../store/auth";
 import { getDoc, doc } from "@firebase/firestore";
@@ -30,57 +32,101 @@ function MyLikePost() {
       getLikedPosts(user.userLikes).then((posts) => setLikedPosts(posts));
     }
   }, [user]);
+
   console.log(likedPosts);
-  console.log(user);
   return (
-    <LikedPostsContainer>
-      <Title>찜한 글 리스트</Title>
-      <GridContainer>
-        {likedPosts.map((post) => (
-          <PostContainer key={post.id}>
-            <PostImage src={post.photo} />
-            <p>{post.content}</p>
-          </PostContainer>
-        ))}
-      </GridContainer>
-    </LikedPostsContainer>
+    <>
+      <PostCardsContainer>
+        <PostTitle>
+          <FontAwesomeIcon icon={faHeart} style={{ color: "#FF4E50" }} /> 좋아요 {user.userLikes.length}
+        </PostTitle>
+        <Posts>
+          {likedPosts.map((post) => (
+            <PostContainer key={post.id}>
+              <PostImage src={post.photo} />
+              <PostDetails>
+                <div>
+                  <ShopName>{post.place.place_name}</ShopName>
+                  <ShopAddress>{post.place.road_address_name}</ShopAddress>
+                </div>
+                <LikesCount>
+                  <FontAwesomeIcon icon={faHeart} style={{ color: "#FF4E50" }} />
+                  {post.likeCount}
+                </LikesCount>
+              </PostDetails>
+            </PostContainer>
+          ))}
+        </Posts>
+      </PostCardsContainer>
+    </>
   );
 }
 
 export default MyLikePost;
-const LikedPostsContainer = styled.div`
+
+const PostCardsContainer = styled.div`
   margin: 5vh auto;
-  padding: 2.4rem;
   display: flex;
   flex-direction: column;
   width: 95%;
   height: 100%;
   border-radius: 18px;
   background-color: white;
-`;
-
-const Title = styled.h1`
-  font-size: 24px;
-  font-weight: bold;
-  color: gray;
-  margin-bottom: 2rem;
-`;
-
-const GridContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
   overflow-y: scroll;
 `;
 
+const PostTitle = styled.h1`
+  font-size: 20px;
+  font-weight: bold;
+  padding: 2rem 0rem 1rem 2rem;
+`;
+
+const Posts = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 2rem;
+`;
+
 const PostContainer = styled.div`
+  display: flex;
+  height: 18rem;
   border: none;
   border-radius: 10px;
-  background-color: #F2F2F5;
   padding: 10px;
+  margin-left: 30px;
+  margin-top: 20px;
 `;
 
 const PostImage = styled.img`
-  width: 100%;
-  margin-bottom: 10px;
+  width: 20rem;
+  height: 100%;
+  border-radius: 20px;
+  object-fit: cover;
+`;
+
+const PostDetails = styled.div`
+  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+`;
+
+const ShopName = styled.h3`
+  color: black;
+  font-size: 20px;
+  font-weight: bold;
+`;
+
+const ShopAddress = styled.p`
+  color: gray;
+  font-size: 18px;
+  margin-top: 20px;
+`;
+
+const LikesCount = styled.div`
+  color: gray;
+  font-size: 18px;
+  margin-bottom: 1rem;
+  margin-left: 5px;
 `;
