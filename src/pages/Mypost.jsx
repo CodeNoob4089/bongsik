@@ -73,7 +73,7 @@ function Mypost() {
       <PostCardsContainer>
         <MyPostsTitle>
           <PostTitle>
-            <FontAwesomeIcon icon={faRectangleList} /> 나의 기록
+            <FontAwesomeIcon icon={faRectangleList} /> 나의 기록 &nbsp;
             <span style={{ color: "#D0D0DE" }}>{postData?.length}</span>
           </PostTitle>
           {categories.map((category) => (
@@ -171,10 +171,10 @@ const CategoryButton = styled.button`
   font-weight: bold;
   width: 5rem;
   height: 2.5rem;
-  border: 1px solid #d0d0de;
+  border: none;
   border-radius: 10px;
   color: ${(props) => (props.id === props.currentCategory ? "white" : "gray")};
-  background-color: ${(props) => (props.id === props.currentCategory ? "#FF4E50" : "white")};
+  background-color: ${(props) => (props.id === props.currentCategory ? "#FF4E50" : "#e8e8ef")};
   cursor: pointer;
 `;
 const PostCards = styled.div`

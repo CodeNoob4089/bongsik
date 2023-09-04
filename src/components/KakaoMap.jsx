@@ -145,7 +145,7 @@ function KakaoMap({ showModal }) {
           level={5}
           onCreate={setMap}
         >
-          {markers.map((marker) => (
+          {markers?.map((marker) => (
             <MapMarker
               key={`marker-${marker.content}-${marker.position.lat},${marker.position.lng}`}
               position={marker.position}

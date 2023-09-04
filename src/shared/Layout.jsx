@@ -1,16 +1,20 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "../store/auth";
 import { Outlet } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
 import { useParams } from "react-router-dom";
 import { styled } from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { useState } from "react";
 
 function Layout() {
   const authStore = useAuthStore();
   const { id } = useParams();
   const isLoggedIn = authStore.user !== null;
   const displayName = authStore.user?.displayName;
+  const [currentPage, setCurrentPage] = useState("")
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -32,6 +36,7 @@ function Layout() {
               "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%A1%9C%EA%B3%A07.png?alt=media&token=b0943697-3adc-40ab-9bec-fe12259408e1"
             }
             onClick={() => {
+              setCurrentPage("")
               navigate("/");
             }}
           />
@@ -39,30 +44,48 @@ function Layout() {
         {isLoggedIn ? (
           <>
             <NavigationBar>
-              Hello, {displayName}님<Button onClick={() => navigate("/mypage")}>Mypage</Button>
+              Hello, {displayName}님
               <Button
+              id="mypage"
+              onClick={() =>
+              {setCurrentPage("mypage")
+              navigate("/mypage")}}
+              currentPage={currentPage}
+              >My page</Button>
+              <Button
+                id="community"
                 onClick={() => {
+                  setCurrentPage("community")
                   navigate("/community");
                 }}
-              >
+                currentPage={currentPage}
+                >
                 Community
               </Button>
-              <Button onClick={handleLogout}>Logout</Button>
+              <Button
+              id="log-out"
+              onClick={handleLogout}>Log out</Button>
             </NavigationBar>
           </>
         ) : (
           <div>
             <Button
+              id="signin"
               onClick={() => {
+                setCurrentPage("signin")
                 navigate("/signin");
               }}
+              currentPage={currentPage}
             >
               Login
             </Button>
             <Button
+              id="signup"
               onClick={() => {
+                setCurrentPage("signup")
                 navigate("/signup");
               }}
+              currentPage={currentPage}
             >
               Signup
             </Button>
@@ -73,14 +96,10 @@ function Layout() {
         <Outlet />
       </MainContent>
       <Footer>
-        <FooterContent>김봉식 푸터</FooterContent>
-        <Button
-          onClick={() => {
-            navigate("/admin");
-          }}
-        >
-          어드민
-        </Button>
+        <FooterContent>© 2023 KIMBONGSIK</FooterContent>
+        <FooterButton onClick={() => window.open("https://github.com/Kim-bongsik/bongsik", "_blank")}>
+          <FontAwesomeIcon icon={faGithub}/>
+          </FooterButton>
       </Footer>
     </LayoutContainer>
   );
@@ -91,22 +110,24 @@ export default Layout;
 const LayoutContainer = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: #f2f2f5;
+  background-color: #FAF7F7;
 `;
 
 const Button = styled.button`
   border: none;
   height: 60px;
   width: 120px;
-  font-size: 20px;
-  :hover {
-    cursor: pointer;
-  }
+  font-size: 18px;
+  color: ${(props) => props.id === props.currentPage? "red": "black"};
+  background-color: rgba(0,0,0,0);
+  cursor: pointer;
 `;
-const NavigationBar = styled.div``;
+const NavigationBar = styled.div`
+
+`;
 
 const Header = styled.div`
-  background: #eeeeee;
+  background: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -121,18 +142,16 @@ const LogoContent = styled.div`
   gap: 20px;
 `;
 const LogoImg = styled.img`
-  width: 220px;
-  height: 40px;
-  scale: 1.3;
-  margin-left: 4rem;
+  height: 37px;
+  margin-left: 0.5rem;
   cursor: pointer;
 `;
 
 const Footer = styled.div`
   bottom: 0;
-  background: #eeeeee;
+  background: white;
   width: 100%;
-  height: 100px;
+  height: 90px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -142,6 +161,16 @@ const FooterContent = styled.div`
   /* max-width: 1200px; */
   margin: 0 auto;
 `;
+
+const FooterButton = styled.button`
+  border: none;
+  font-size: 30px;
+  color: #452828;
+  margin-right: 3vw;
+  background-color: rgba(0,0,0,0);
+  cursor: pointer;
+`
+
 const MainContent = styled.div`
   flex: 1;
 `;
