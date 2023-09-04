@@ -88,81 +88,100 @@ function SignUp() {
   };
 
   return (
-    <SignUpContainer>
-      <SignUpBox>
-        <InputContainer>
-          <StyledForm onSubmit={handleSubmit}>
-            <StyledInputDiv>
-              <StyledLabel>Name</StyledLabel>
-              <StyledInput type="text" name="name" value={state.name} onChange={handleChange} required />
-            </StyledInputDiv>
-            <StyledInputDiv>
-              <StyledLabel>Email</StyledLabel>
-              <StyledInput type="email" name="email" value={state.email} onChange={handleEmailChange} />
+    <>
+      <Header>
+        <LogoContent>
+          <LogoImg
+            src={
+              "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%A1%9C%EA%B3%A07.png?alt=media&token=b0943697-3adc-40ab-9bec-fe12259408e1"
+            }
+            onClick={() => {
+              navigate("/");
+            }}
+          />
+        </LogoContent>
+      </Header>
+      <SignUpContainer>
+        <SignUpBox>
+          <InputContainer>
+            <SignupTitle>Sign Up</SignupTitle>
+            <StyledForm onSubmit={handleSubmit}>
+              <StyledInputDiv>
+                <StyledLabel>닉네임</StyledLabel>
+                <StyledInput type="text" name="name" value={state.name} onChange={handleChange} required />
+              </StyledInputDiv>
+              <StyledInputDiv>
+                <StyledLabel>이메일</StyledLabel>
+                <StyledInput type="email" name="email" value={state.email} onChange={handleEmailChange} />
 
-              {state.emailError && <ErrorArea>{state.emailError}</ErrorArea>}
-            </StyledInputDiv>
-            <StyledInputDiv>
-              <StyledLabel>Password</StyledLabel>
-              <StyledInput
-                type="password"
-                name="password"
-                value={state.password}
-                onChange={(e) => {
-                  handleChange(e);
-                  setState((prevState) => ({
-                    ...prevState,
-                    passwordError: "",
-                  }));
-                }}
-                onBlur={(e) => {
-                  if (e.target.value.length < 6 || e.target.value.length > 20) {
-                    setState({
-                      ...state,
-                      passwordError: "비밀번호는 6~20자리로 입력해주세요.",
-                    });
-                  } else {
+                {state.emailError && <ErrorArea>{state.emailError}</ErrorArea>}
+              </StyledInputDiv>
+              <StyledInputDiv>
+                <StyledLabel>비밀번호</StyledLabel>
+                <StyledInput
+                  type="password"
+                  name="password"
+                  value={state.password}
+                  onChange={(e) => {
+                    handleChange(e);
                     setState((prevState) => ({
                       ...prevState,
                       passwordError: "",
                     }));
-                  }
-                }}
-              />
+                  }}
+                  onBlur={(e) => {
+                    if (e.target.value.length < 6 || e.target.value.length > 20) {
+                      setState({
+                        ...state,
+                        passwordError: "비밀번호는 6~20자리로 입력해주세요.",
+                      });
+                    } else {
+                      setState((prevState) => ({
+                        ...prevState,
+                        passwordError: "",
+                      }));
+                    }
+                  }}
+                />
 
-              {state.passwordError && <ErrorArea>{state.passwordError}</ErrorArea>}
-            </StyledInputDiv>
-            <StyledInputDiv>
-              <StyledLabel>Retype Password</StyledLabel>
-              <StyledInput
-                type="password"
-                name="confirmPassword"
-                value={state.confirmPassword}
-                onChange={(e) => {
-                  handleChange(e);
-                  state.confirmPasswordError = "";
-                }}
-                onBlur={(e) => {
-                  if (e.target.value !== state.password) {
-                    setState({
-                      ...state,
-                      confirmPasswordError: "비밀번호가 일치하지 않습니다.",
-                    });
-                  } else {
+                {state.passwordError && <ErrorArea>{state.passwordError}</ErrorArea>}
+              </StyledInputDiv>
+              <StyledInputDiv>
+                <StyledLabel>비밀번호 확인</StyledLabel>
+                <StyledInput
+                  type="password"
+                  name="confirmPassword"
+                  value={state.confirmPassword}
+                  onChange={(e) => {
+                    handleChange(e);
                     state.confirmPasswordError = "";
-                  }
-                }}
-              />
+                  }}
+                  onBlur={(e) => {
+                    if (e.target.value !== state.password) {
+                      setState({
+                        ...state,
+                        confirmPasswordError: "비밀번호가 일치하지 않습니다.",
+                      });
+                    } else {
+                      state.confirmPasswordError = "";
+                    }
+                  }}
+                />
 
-              {state.confirmPasswordError && <ErrorArea>{state.confirmPasswordError}</ErrorArea>}
-            </StyledInputDiv>
-            <SignUpButton type="submit">Sign Up</SignUpButton>
-            <GoogleSignUpButton type="button">Sign up with Google</GoogleSignUpButton>
-          </StyledForm>
-        </InputContainer>
-        <ImageContainer>이미지 영역</ImageContainer>
-      </SignUpBox>
-    </SignUpContainer>
+                {state.confirmPasswordError && <ErrorArea>{state.confirmPasswordError}</ErrorArea>}
+              </StyledInputDiv>
+              <SignUpButton type="submit">Sign Up</SignUpButton>
+            </StyledForm>
+          </InputContainer>
+          <ImageContainer>
+            <ImageLogo src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%A1%9C%EA%B3%A08.png?alt=media&token=de9e2b70-f61b-41a1-802f-1c910339a984" />
+          </ImageContainer>
+        </SignUpBox>
+      </SignUpContainer>
+      <Footer>
+        <FooterContent>김봉식 푸터</FooterContent>
+      </Footer>
+    </>
   );
 }
 
@@ -179,6 +198,15 @@ export const SignUpContainer = styled.div`
   align-items: center;
   height: calc(100vh - 20px);
 `;
+export const SignupTitle = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  font-size: 42px;
+  font-weight: bold;
+  position: relative;
+  left: 80px;
+  top: 90px;
+`;
 
 export const SignUpBox = styled.div`
   display: flex;
@@ -194,9 +222,18 @@ export const InputContainer = styled.div`
 `;
 
 export const ImageContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-basis: 50%;
   background-color: #f0f0f0;
 `;
+export const ImageLogo = styled.img`
+  scale: 1.3;
+  width: auto;
+  height: auto;
+`;
+
 export const StyledForm = styled.form`
   width: 100%;
   height: 100%;
@@ -235,16 +272,37 @@ export const SignUpButton = styled.button`
     background-color: #ff2e30;
   }
 `;
-export const GoogleSignUpButton = styled.button`
-  background-color: #ffffff;
-  color: black;
-  width: 20rem;
-  border-top: 1px solid #000000;
-  border-radius: 5px;
-  padding: 10px;
-  margin-top: 20px;
+const Header = styled.div`
+  background: #eeeeee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 80px;
+  padding: 0 20px;
+`;
+const LogoContent = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px;
+`;
+const LogoImg = styled.img`
+  width: 220px;
+  height: 40px;
+  scale: 1.3;
+  margin-left: 4rem;
   cursor: pointer;
-  &:hover {
-    color: #4285f4;
-  }
+`;
+const Footer = styled.div`
+  bottom: 0;
+  background: #eeeeee;
+  width: 100%;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const FooterContent = styled.div`
+  /* max-width: 1200px; */
+  margin: 0 auto;
 `;
