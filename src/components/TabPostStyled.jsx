@@ -64,7 +64,7 @@ export const ModalWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: 50;
   max-height: 100vh;
   overflow-y: auto; // 모달 스크롤 표시
 `;
@@ -77,6 +77,7 @@ export const ModalContent = styled.div`
   width: 64vw;
   height: 100vh;
   overflow-y: auto;
+  z-index: 55;
 
   h2 {
     margin-bottom: 10px;
