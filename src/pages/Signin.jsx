@@ -14,11 +14,7 @@ function SignIn() {
     e.preventDefault();
 
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const { emailVerified } = userCredential.user;
 
       if (emailVerified) {
@@ -33,40 +29,71 @@ function SignIn() {
   };
 
   return (
-    <SignInContainer>
-      <SignInBox>
-        <InputContainer>
-          <StyledForm onSubmit={handleSubmit}>
-            <StyledInputDiv>
-              <StyledLabel>Email</StyledLabel>
-              <StyledInput
-                type="email"
-                name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </StyledInputDiv>
-            <StyledInputDiv>
-              <StyledLabel>Password</StyledLabel>
-              <StyledInput
-                type="password"
-                name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </StyledInputDiv>
-            <SignInButton type="submit">Sign In</SignInButton>
-          </StyledForm>
-        </InputContainer>
-        <ImageContainer>이미지 영역</ImageContainer>
-      </SignInBox>
-    </SignInContainer>
+    <>
+      <Header>
+        <LogoContent>
+          <LogoImg
+            src={
+              "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%A1%9C%EA%B3%A07.png?alt=media&token=b0943697-3adc-40ab-9bec-fe12259408e1"
+            }
+            onClick={() => {
+              navigate("/");
+            }}
+          />
+        </LogoContent>
+      </Header>
+      <SignInContainer>
+        <SignInBox>
+          <InputContainer>
+            <SigninTitle>Sign in</SigninTitle>
+            <StyledForm onSubmit={handleSubmit}>
+              <StyledInputDiv>
+                <StyledLabel>이메일</StyledLabel>
+                <StyledInput
+                  type="email"
+                  name="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </StyledInputDiv>
+              <StyledInputDiv>
+                <StyledLabel>비밀번호</StyledLabel>
+                <StyledInput
+                  type="password"
+                  name="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </StyledInputDiv>
+              <SignInButton type="submit">Sign In</SignInButton>
+              <GoogleSignUpButton type="button">Sign up with Google</GoogleSignUpButton>
+            </StyledForm>
+          </InputContainer>
+          <ImageContainer>
+            <ImageLogo src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%A1%9C%EA%B3%A08.png?alt=media&token=de9e2b70-f61b-41a1-802f-1c910339a984" />
+          </ImageContainer>
+        </SignInBox>
+      </SignInContainer>
+      <Footer>
+        <FooterContent>김봉식 푸터</FooterContent>
+      </Footer>
+    </>
   );
 }
 
 export default SignIn;
+
+const Header = styled.div`
+  background: #eeeeee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 80px;
+  padding: 0 20px;
+`;
 export const SignInContainer = styled.div`
   display: flex;
   background-color: #d9d9d9;
@@ -86,11 +113,31 @@ export const InputContainer = styled.div`
   background-color: #ffffff;
   flex-basis: 50%;
   padding-right: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+export const SigninTitle = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  font-size: 42px;
+  font-weight: bold;
+  position: relative;
+  left: 80px;
+  top: 90px;
 `;
 
 export const ImageContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-basis: 50%;
   background-color: #f0f0f0;
+`;
+export const ImageLogo = styled.img`
+  scale: 1.3;
+  width: auto;
+  height: auto;
 `;
 
 export const StyledForm = styled.form`
@@ -128,8 +175,48 @@ export const SignInButton = styled.button`
   border-radius: 5px;
   padding: 10px 20px;
   margin-top: 20px;
+  transition-duration: 0.3s;
   cursor: pointer;
   &:hover {
     background-color: #ff2e30;
   }
+`;
+export const GoogleSignUpButton = styled.button`
+  background-color: #ffffff;
+  color: black;
+  width: 20rem;
+  border-top: 1px solid #000000;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 20px;
+  transition-duration: 0.3s;
+  cursor: pointer;
+  &:hover {
+    color: #4285f4;
+  }
+`;
+const LogoContent = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px;
+`;
+const LogoImg = styled.img`
+  width: 220px;
+  height: 40px;
+  scale: 1.3;
+  margin-left: 4rem;
+  cursor: pointer;
+`;
+const Footer = styled.div`
+  bottom: 0;
+  background: #eeeeee;
+  width: 100%;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const FooterContent = styled.div`
+  /* max-width: 1200px; */
+  margin: 0 auto;
 `;
