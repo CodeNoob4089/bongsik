@@ -1,13 +1,6 @@
 import { faLock, faLockOpen, faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  increment,
-  updateDoc,
-} from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, increment, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { nanoid } from "nanoid";
 import { useState } from "react";
@@ -104,32 +97,32 @@ function PostAddModal({ modalOpen, setModalOpen }) {
       const usersRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(usersRef);
       mutation.mutate();
-      if (
-        userDoc.data().postCounts >= 5 &&
-        !userDoc.data().ownedBadges?.HUx94whUV9Ya1iBwbj4J.isOwned
-      ) {
+      if (userDoc.data().postCounts >= 5 && !userDoc.data().ownedBadges?.Enxc4FhNynGwy0yjNeZY.isOwned) {
         await updateDoc(usersRef, {
-          [`ownedBadges.HUx94whUV9Ya1iBwbj4J`]: { isOwned: true },
+          [`ownedBadges.Enxc4FhNynGwy0yjNeZY`]: { isOwned: true },
         });
         alert("게시글 5개작성에 대한 뱃지를 획득하였습니다!");
       }
-      if (
-        userDoc.data().postCounts >= 10 &&
-        !userDoc.data().ownedBadges?.ZMfzvBXCERSFSIB7gNT5.isOwned
-      ) {
+      if (userDoc.data().postCounts >= 10 && !userDoc.data().ownedBadges?.anQKDwRjXghFWDwKvaKA.isOwned) {
         await updateDoc(usersRef, {
-          [`ownedBadges.ZMfzvBXCERSFSIB7gNT5`]: { isOwned: true },
+          [`ownedBadges.anQKDwRjXghFWDwKvaKA`]: { isOwned: true },
         });
         alert("게시글 10개작성에 대한 뱃지를 획득하였습니다!");
       }
-      if (
-        userDoc.data().postCounts >= 20 &&
-        !userDoc.data().ownedBadges?.qk0NnvYfoJVTUvnBBQ4x.isOwned
-      ) {
+      if (userDoc.data().postCounts >= 20 && !userDoc.data().ownedBadges?.AHTgJVUtQIezbnbbIVHL.isOwned) {
         await updateDoc(usersRef, {
-          [`ownedBadges.qk0NnvYfoJVTUvnBBQ4x`]: { isOwned: true },
+          [`ownedBadges.AHTgJVUtQIezbnbbIVHL`]: { isOwned: true },
         });
         alert("게시글 20개작성에 대한 뱃지를 획득하였습니다!");
+      }
+      await updateDoc(usersRef, { exp: increment(30) });
+      const updatedUserDoc = await getDoc(usersRef);
+      if (updatedUserDoc.data().exp >= updatedUserDoc.data().level * 100) {
+        await updateDoc(usersRef, {
+          level: increment(1),
+          exp: updatedUserDoc.data().exp - updatedUserDoc.data().level * 100,
+        });
+        alert("레벨업!");
       }
     } catch (e) {
       console.error("문서 추가 실패 오류:", e);
@@ -139,10 +132,7 @@ function PostAddModal({ modalOpen, setModalOpen }) {
 
   return (
     <>
-      <ModalContainer
-        modalOpen={modalOpen}
-        onClick={closeModal}
-      ></ModalContainer>
+      <ModalContainer modalOpen={modalOpen} onClick={closeModal}></ModalContainer>
       <Modal>
         <ModalTop>
           새 게시물
@@ -153,9 +143,7 @@ function PostAddModal({ modalOpen, setModalOpen }) {
             <span>가게:&nbsp;{clickedData.place_name}</span>
             <span>
               주소:&nbsp;
-              {clickedData.road_address_name
-                ? clickedData.road_address_name
-                : clickedData.address_name}
+              {clickedData.road_address_name ? clickedData.road_address_name : clickedData.address_name}
             </span>
           </StoreInfo>
 
@@ -216,11 +204,7 @@ function PostAddModal({ modalOpen, setModalOpen }) {
             ) : (
               <FontAwesomeIcon icon={faLock} style={{ color: "gray" }} />
             )}
-            <PublicSelect
-              onChange={(e) =>
-                setInputValue({ ...inputValue, isPublic: !inputValue.isPublic })
-              }
-            >
+            <PublicSelect onChange={(e) => setInputValue({ ...inputValue, isPublic: !inputValue.isPublic })}>
               <option value="private">비공개</option>
               <option value="public">공개</option>
             </PublicSelect>

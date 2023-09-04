@@ -12,7 +12,7 @@ import { getPosts } from "../api/collection";
 const { kakao } = window;
 
 function KakaoMap({ showModal }) {
-  let timerId = null
+  let timerId = null;
   const { data: postData } = useQuery(`fetchPostData`, getPosts);
   const [inputValue, setInputValue] = useState("");
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -20,7 +20,7 @@ function KakaoMap({ showModal }) {
   const [markers, setMarkers] = useState([]);
   const [map, setMap] = useState();
   const [pagination, setPagination] = useState({});
-  const [currentMouseOver, setCurrentMouseOver]= useState();
+  const [currentMouseOver, setCurrentMouseOver] = useState();
   const [mapCenterPosition, setMapCenterPosition] = useState({
     lat: 35.6632102,
     lng: 128.556077,
@@ -29,9 +29,7 @@ function KakaoMap({ showModal }) {
 
   const data = useMapDataStore((state) => state.data);
   const setData = useMapDataStore((state) => state.setData);
-  const setClickedData = useClickedDataStore((state) =>
-    state ? state.setClickedData : []
-  );
+  const setClickedData = useClickedDataStore((state) => (state ? state.setClickedData : []));
   const user = useAuthStore((state) => state.user);
 
   const keywordInputChange = (e) => {
@@ -45,14 +43,13 @@ function KakaoMap({ showModal }) {
   };
 
   const debounce = (delay) => {
-    if(timerId){
-      clearTimeout(timerId)
+    if (timerId) {
+      clearTimeout(timerId);
     }
     timerId = setTimeout(() => {
       setCurrentMouseOver();
-    }, delay)
-  }
-
+    }, delay);
+  };
 
   useEffect(() => {
     const getLocation = new Promise((resolve, reject) => {
@@ -78,9 +75,7 @@ function KakaoMap({ showModal }) {
   useEffect(() => {
     if (!map || !mapCenterPosition) return;
 
-    map.setCenter(
-      new kakao.maps.LatLng(mapCenterPosition.lat, mapCenterPosition.lng)
-    );
+    map.setCenter(new kakao.maps.LatLng(mapCenterPosition.lat, mapCenterPosition.lng));
   }, [map, mapCenterPosition]);
 
   useEffect(() => {
@@ -88,10 +83,7 @@ function KakaoMap({ showModal }) {
     const ps = new kakao.maps.services.Places();
 
     const options = {
-      location: new kakao.maps.LatLng(
-        mapCenterPosition.lat,
-        mapCenterPosition.lng
-      ),
+      location: new kakao.maps.LatLng(mapCenterPosition.lat, mapCenterPosition.lng),
     };
 
     ps.keywordSearch(
@@ -133,8 +125,8 @@ function KakaoMap({ showModal }) {
   }, [searchKeyword, map]);
 
   if (loadingLocation) return <div>위치 정보를 가져오는 중...</div>;
-  
-  console.log(postData)
+
+  console.log(postData);
 
   return (
     <>
@@ -159,99 +151,87 @@ function KakaoMap({ showModal }) {
               position={marker.position}
               onMouseOver={() => setInfo(marker)}
             >
-              {info && info.content === marker.content && (
-                <MarkerInfo>{marker.content}</MarkerInfo>
-              )}
+              {info && info.content === marker.content && <MarkerInfo>{marker.content}</MarkerInfo>}
             </MapMarker>
           ))}
-          {postData.map((post) => 
-           <Circle key={post.postID}
-           center={{
-             lat: post.place.y,
-             lng: post.place.x,
-           }}
-           radius={100}
-           strokeWeight={2} // 선의 두께입니다
-           strokeColor={"#ff954e"} // 선의 색깔입니다
-           strokeOpacity={2} // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
-           strokeStyle={"solid"} // 선의 스타일 입니다
-           fillColor={"#ff954e"} // 채우기 색깔입니다
-           fillOpacity={0.7} // 채우기 불투명도 입니다
-           onMouseover={() => setCurrentMouseOver(post)}
-           onMouseout={() => debounce(4000)}
-         />
-          )}
-        {currentMouseOver?
-        <MapMarker
-        key={currentMouseOver.postID}
-        position={{
-          lat: currentMouseOver.place.y,
-          lng: currentMouseOver.place.x,
-        }}
-        onMouseover={() => setCurrentMouseOver(currentMouseOver)}
-        >
-        <MarkerInfo>{currentMouseOver.place.place_name}</MarkerInfo>
-        </MapMarker>
-        : null}
-              <SearchArea>
-        <SearchForm onSubmit={submitKeyword}>
-          <SearchMapInput
-            value={inputValue}
-            onChange={keywordInputChange}
-            placeholder="검색어를 입력해주세요"
-          />
-          <SearchButton>
-            <FontAwesomeIcon icon={faMagnifyingGlass} />
-          </SearchButton>
-        </SearchForm>
-        {!searchKeyword ? null : (
-          <SearchResult id="result-wrapper">
-            <ResultText className="result-keyword">
-              {searchKeyword}&nbsp; 검색 결과
-            </ResultText>
-            {data?.map((d, index) => (
-              <ResultList
-              key={d.id}
-              >
-                <span>{index + 1}</span>
-                <div
-                  onClick={() => {
-                    if (user === null) {
-                      return alert("글을 작성하려면 로그인해주세요!");
-                    }
-                    if (
-                      d.category_group_name === "음식점" ||
-                      d.category_group_name === "카페"
-                    ) {
-                      setClickedData(d);
-                      showModal();
-                    } else {
-                      alert("해당 장소는 음식점이 아닙니다!");
-                    }
-                  }}
-                >
-                  <PlaceData>{d.place_name}</PlaceData>
-                  <PlaceData>{d.address_name}</PlaceData>
-                  <PhoneNum>{d.phone}</PhoneNum>
-                </div>
-                <ButtonContainer>
-                  <PlaceLinkButton
-                    onClick={() => {setMapCenterPosition({lat: d.y, lng: d.x})}}
-                  >
-                    위치 보기
-                  </PlaceLinkButton>
-                  <PlaceLinkButton
-                    onClick={() => window.open(`${d.place_url}`, "_blank")}
-                  >
-                    가게 정보
-                  </PlaceLinkButton>
-                </ButtonContainer>
-              </ResultList>
-            ))}
-            <PageNumber id="pagination">{console.log(pagination)}</PageNumber>
-          </SearchResult>
-        )}
-      </SearchArea>
+          {postData.map((post) => (
+            <Circle
+              key={post.postID}
+              center={{
+                lat: post.place.y,
+                lng: post.place.x,
+              }}
+              radius={100}
+              strokeWeight={2} // 선의 두께입니다
+              strokeColor={"#ff954e"} // 선의 색깔입니다
+              strokeOpacity={2} // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+              strokeStyle={"solid"} // 선의 스타일 입니다
+              fillColor={"#ff954e"} // 채우기 색깔입니다
+              fillOpacity={0.7} // 채우기 불투명도 입니다
+              onMouseover={() => setCurrentMouseOver(post)}
+              onMouseout={() => debounce(4000)}
+            />
+          ))}
+          {currentMouseOver ? (
+            <MapMarker
+              key={currentMouseOver.postID}
+              position={{
+                lat: currentMouseOver.place.y,
+                lng: currentMouseOver.place.x,
+              }}
+              onMouseover={() => setCurrentMouseOver(currentMouseOver)}
+            >
+              <MarkerInfo>{currentMouseOver.place.place_name}</MarkerInfo>
+            </MapMarker>
+          ) : null}
+          <SearchArea>
+            <SearchForm onSubmit={submitKeyword}>
+              <SearchMapInput value={inputValue} onChange={keywordInputChange} placeholder="검색어를 입력해주세요" />
+              <SearchButton>
+                <FontAwesomeIcon icon={faMagnifyingGlass} />
+              </SearchButton>
+            </SearchForm>
+            {!searchKeyword ? null : (
+              <SearchResult id="result-wrapper">
+                <ResultText className="result-keyword">{searchKeyword}&nbsp; 검색 결과</ResultText>
+                {data?.map((d, index) => (
+                  <ResultList key={d.id}>
+                    <span>{index + 1}</span>
+                    <div
+                      onClick={() => {
+                        if (user === null) {
+                          return alert("글을 작성하려면 로그인해주세요!");
+                        }
+                        if (d.category_group_name === "음식점" || d.category_group_name === "카페") {
+                          setClickedData(d);
+                          showModal();
+                        } else {
+                          alert("해당 장소는 음식점이 아닙니다!");
+                        }
+                      }}
+                    >
+                      <PlaceData>{d.place_name}</PlaceData>
+                      <PlaceData>{d.address_name}</PlaceData>
+                      <PhoneNum>{d.phone}</PhoneNum>
+                    </div>
+                    <ButtonContainer>
+                      <PlaceLinkButton
+                        onClick={() => {
+                          setMapCenterPosition({ lat: d.y, lng: d.x });
+                        }}
+                      >
+                        위치 보기
+                      </PlaceLinkButton>
+                      <PlaceLinkButton onClick={() => window.open(`${d.place_url}`, "_blank")}>
+                        가게 정보
+                      </PlaceLinkButton>
+                    </ButtonContainer>
+                  </ResultList>
+                ))}
+                <PageNumber id="pagination">{console.log(pagination)}</PageNumber>
+              </SearchResult>
+            )}
+          </SearchArea>
         </Map>
       )}
     </>
@@ -263,7 +243,7 @@ export default KakaoMap;
 const MarkerInfo = styled.div`
   padding: 10px;
   width: 190px;
-`
+`;
 
 const SearchArea = styled.div`
   position: absolute;
@@ -273,7 +253,7 @@ const SearchArea = styled.div`
   justify-content: right;
   margin-top: 6vh;
   top: 6rem;
-  right: 35vw;
+  right: 31.5vw;
 `;
 
 const SearchForm = styled.form`
@@ -336,14 +316,14 @@ const ButtonContainer = styled.div`
 
 const PlaceLinkButton = styled.button`
   background-color: white;
-  border: 1px solid #D0D0DE;
+  border: 1px solid #d0d0de;
   border-radius: 30px;
   width: 70px;
   height: 30px;
   margin-left: 5px;
   cursor: pointer;
-  &:hover{
-    background-color: #D0D0DE;
+  &:hover {
+    background-color: #d0d0de;
   }
 `;
 
