@@ -154,7 +154,7 @@ function KakaoMap({ showModal }) {
               {info && info.content === marker.content && <MarkerInfo>{marker.content}</MarkerInfo>}
             </MapMarker>
           ))}
-          {postData.map((post) => (
+          {postData?.map((post) => (
             <Circle
               key={post.postID}
               center={{
