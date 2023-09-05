@@ -136,9 +136,8 @@ function KakaoMap({ showModal }) {
         <Map // 로드뷰를 표시할 Container
           center={mapCenterPosition}
           style={{
-            width: "65vw",
-            height: "80vh",
-            margin: "5vh 4vw",
+            width: "56vw",
+            height: "61vh",
             position: "relative",
             borderRadius: "15px",
           }}
@@ -154,7 +153,7 @@ function KakaoMap({ showModal }) {
               {info && info.content === marker.content && <MarkerInfo>{marker.content}</MarkerInfo>}
             </MapMarker>
           ))}
-          {postData.map((post) => (
+          {postData?.map((post) => (
             <Circle
               key={post.postID}
               center={{
@@ -197,12 +196,25 @@ function KakaoMap({ showModal }) {
           ) : null}
           <SearchArea>
             <SearchForm onSubmit={submitKeyword}>
-              <SearchMapInput value={inputValue} onChange={keywordInputChange} placeholder="검색어를 입력해주세요" />
+              <SearchMapInput
+              value={inputValue}
+              onChange={keywordInputChange}
+              placeholder="가게를 검색해보세요!" />
               <SearchButton>
-                <FontAwesomeIcon icon={faMagnifyingGlass} />
+                <FontAwesomeIcon icon={faMagnifyingGlass}/>
               </SearchButton>
             </SearchForm>
-            {!searchKeyword ? null : (
+            {!searchKeyword ?
+              <CurrentLocationContentsWrapper>
+                <div>
+                  <p>현재 나의 위치</p>
+                  <p>기록한 가게 | 좋아요 누른 가게</p>
+                </div>
+                <div>
+                  <p>최근 리뷰</p>
+                </div>
+              </CurrentLocationContentsWrapper>
+            : (
               <SearchResult id="result-wrapper">
                 <ResultText className="result-keyword">{searchKeyword}&nbsp; 검색 결과</ResultText>
                 {data?.map((d, index) => (
@@ -269,42 +281,51 @@ const MarkerImage = styled.img`
 `
 
 const SearchArea = styled.div`
-  position: absolute;
+  width: 20.5vw;
+  height: 61vh;
   display: flex;
-  width: 18rem;
-  height: 80vh;
-  justify-content: right;
-  margin-top: 6vh;
-  top: 6rem;
-  right: 31.5vw;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-left: auto;
 `;
 
 const SearchForm = styled.form`
-  width: 16.5rem;
-  height: 2.5rem;
+  width: 100%;
+  height: 2.2rem;
+  display: flex;
+  align-items: center;  
+  justify-content: right;
 `;
 
 const SearchMapInput = styled.input`
   position: absolute;
-  font-size: 17px;
-  z-index: 2;
+  font-size: 0.9rem;
   padding-left: 1rem;
-  width: 16.5rem;
+  width: 20.5vw;
   height: 2.2rem;
-  border: 1.2px solid #696969;
+  border: none;
   border-radius: 30px;
 `;
 
 const SearchButton = styled.button`
-  position: absolute;
-  z-index: 3;
+  position: relative;
   color: #696969;
-  cursor: pointer;
   background: none;
   border: none;
-  font-size: 18px;
-  margin: 0.4rem 0 0 14rem;
+  font-size: 1.1rem;
+  margin-right: 0.7rem;
+  cursor: pointer;
 `;
+
+const CurrentLocationContentsWrapper = styled.div`
+  width: 100%;
+  height: 53vh;
+  background-color: white;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+`
+
 const SearchResult = styled.div`
   position: absolute;
   z-index: 3;

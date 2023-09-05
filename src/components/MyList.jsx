@@ -106,12 +106,11 @@ function MyList() {
 
   return (
     <ListCardsContainer>
-      <ListTop>
+      <CollectionCard>
         <ListTitle>나의 컬렉션 리스트</ListTitle>
-        {addActive ? <AddButton onClick={() => setAddActive(false)}>--</AddButton> : <AddButton onClick={addMyCollection}>+</AddButton>}
-      </ListTop>
       {addActive ? (
-        <ListCard>
+      <>
+       <AddButton onClick={() => setAddActive(false)}>--</AddButton>
           <NewCollectionCover img={collectionInput.coverImage}></NewCollectionCover>
           <NewCollectionForm onSubmit={onSubmit}>
             <CollectionTitleInput
@@ -126,12 +125,16 @@ function MyList() {
               커버 이미지 선택
             </ImageUploadButton>
           </NewCollectionForm>
-        </ListCard>
-      ) : null}
-      <CardsBox addActive={addActive}>
+      </>
+      ) :
+      <>
+        <AddButton onClick={addMyCollection}>+</AddButton>
+      </>
+      }
+      </CollectionCard>
         {myTags?.map((tag) => (
           <>
-            <ListCard key={tag.collectionID}>
+            <CollectionCard key={tag.collectionID}>
               <ImageBox img={tag.coverImage}></ImageBox>
               <CardTitle>
                 {tag.title}
@@ -142,7 +145,7 @@ function MyList() {
                   </DeleteButton>
                 </ButtonBox>
               </CardTitle>
-            </ListCard>
+            </CollectionCard>
             {toggleOpen === tag.collectionID ? (
               <PostLists>
                 {postData
@@ -159,7 +162,6 @@ function MyList() {
             ) : null}
           </>
         ))}
-      </CardsBox>
     </ListCardsContainer>
   );
 }
@@ -167,26 +169,12 @@ function MyList() {
 export default MyList;
 
 const ListCardsContainer = styled.div`
-  width: 100%;
-  height: 80vh;
-  margin: 5vh 4vw 5vh 0vw;
-  background-color: white;
-  border-radius: 15px;
-  padding: 20px;
-`;
-
-const CardsBox = styled.div`
-  width: 100%;
-  max-height: ${(props) => (props.addActive ? "calc(75vh - 140px)" : "calc(75vh - 40px)")};
-  overflow-y: scroll;
-`;
-
-const ListTop = styled.div`
+  width: 75vw;
+  height: 30vh;
+  margin: 13vh auto;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  height: 5vh;
+  border-radius: 15px;
 `;
 
 const ListTitle = styled.h1`
@@ -195,10 +183,16 @@ const ListTitle = styled.h1`
   color: #c8c8c8;
 `;
 
-const ListCard = styled.div`
+const CollectionCard = styled.div`
+  width: 15vw;
   display: flex;
-  margin-top: 20px;
+  margin: 0 1vw;
+  border-radius: 15px;
+  background-color: white;
+  flex-direction: column;
+  align-items: center;
 `;
+
 const ImageBox = styled.div`
   width: 80px;
   height: 80px;

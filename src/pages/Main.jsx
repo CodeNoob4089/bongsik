@@ -30,9 +30,17 @@ export default Main;
 
 const Container = styled.div`
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14vh 7.8vw;
   width: 100%;
   height: 100%;
 `;
 const MapContainer = styled.div`
   width: 100%;
+  height: 61vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 `

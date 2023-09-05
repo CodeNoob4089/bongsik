@@ -20,7 +20,7 @@ import PostingModal from "./CommentsModal";
 import Heart from "./Heart";
 
 function BarPost() {
-  const userId = auth.currentUser.uid;
+  const userId = auth.currentUser?.uid;
   //모달
   const [openModal, setOpenModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
