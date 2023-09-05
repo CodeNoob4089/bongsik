@@ -29,12 +29,12 @@ const BadgeContainer = styled.div`
   flex-direction: column;
   width: 95%;
   height: 100%;
-  border-radius: 18px;
+  border-radius: 1.8rem;
   background-color: white;
 `;
 
 const Title = styled.h1`
-  font-size: 24px;
+  font-size: 2.4rem;
   font-weight: bold;
   color: gray;
 `;
@@ -42,7 +42,7 @@ const Title = styled.h1`
 const GridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 2rem;
   overflow-y: scroll;
 `;
 
@@ -56,8 +56,8 @@ const BadgeCard = styled.div`
 `;
 
 const Badgeimg = styled.img`
-  width: 130px;
-  height: 130px;
+  width: 8rem;
+  height: 8rem;
   margin: 0.7rem;
   object-fit: contain;
   border-radius: 30%;

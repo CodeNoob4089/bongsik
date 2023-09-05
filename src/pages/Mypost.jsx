@@ -155,8 +155,8 @@ const PostCardsContainer = styled.div`
   margin: 5vh auto;
   display: flex;
   flex-direction: column;
-  width: 95%;
-  height: 100%;
+  // width: 95%;
+  // height: 100%;
   border-radius: 18px;
   background-color: white;
 `;

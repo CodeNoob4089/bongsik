@@ -7,14 +7,16 @@ import Signin from "../pages/Signin";
 import Mypage from "../pages/Mypage";
 import Community from "../pages/Community";
 import Admin from "../pages/Admin";
+import Intro from "../pages/Intro";
 
 function Router() {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" element={<Main />} />
-          <Route path="/Mypage" element={<Mypage />} />
+          <Route path="/" element={<Intro/>} />
+          <Route path="/main" element={<Main />} />
+          <Route path="/mypage" element={<Mypage />} />
           <Route path="/community" element={<Community />} />
           <Route path="/admin" element={<Admin />} />
         </Route>
