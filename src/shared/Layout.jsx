@@ -8,6 +8,7 @@ import { styled } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 
 function Layout() {
   const authStore = useAuthStore();
@@ -16,7 +17,10 @@ function Layout() {
   const displayName = authStore.user?.displayName;
   const [currentPage, setCurrentPage] = useState("")
   const navigate = useNavigate();
+const location=useLocation();
 
+const MypageCss=location.pathname==="/mypage"
+console.log(MypageCss)
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -28,7 +32,7 @@ function Layout() {
   };
 
   return (
-    <LayoutContainer>
+    <LayoutContainer style={{ MinHeigh: MypageCss ? "100vh" :"auto" }}>
       <Header>
         <LogoContent>
           <LogoImg
@@ -37,7 +41,7 @@ function Layout() {
             }
             onClick={() => {
               setCurrentPage("")
-              navigate("/");
+              navigate("/main");
             }}
           />
         </LogoContent>
@@ -45,13 +49,14 @@ function Layout() {
           <>
             <NavigationBar>
               Hello, {displayName}님
-              <Button
-              id="mypage"
-              onClick={() =>
-              {setCurrentPage("mypage")
-              navigate("/mypage")}}
-              currentPage={currentPage}
-              >My page</Button>
+            <Button
+             id="intro"
+             onClick={() => {
+               setCurrentPage("intro")
+               navigate("/");
+             }}
+             currentPage={currentPage}
+            >사이트 소개</Button>
               <Button
                 id="community"
                 onClick={() => {
@@ -62,6 +67,13 @@ function Layout() {
                 >
                 Community
               </Button>
+              <Button
+              id="mypage"
+              onClick={() =>
+              {setCurrentPage("mypage")
+              navigate("/mypage")}}
+              currentPage={currentPage}
+              >My page</Button>
               <Button
               id="log-out"
               onClick={handleLogout}>Log out</Button>
@@ -92,15 +104,15 @@ function Layout() {
           </div>
         )}
       </Header>
-      <MainContent>
-        <Outlet />
+      <MainContent >
+        <Outlet style={{ Heigh: MypageCss ? "calc(100vh - 18rem)" : "100vh"}}/>
       </MainContent>
-      <Footer>
+      <Footer style={{}}>
         <FooterContent>© 2023 KIMBONGSIK</FooterContent>
         <FooterButton onClick={() => window.open("https://github.com/Kim-bongsik/bongsik", "_blank")}>
           <FontAwesomeIcon icon={faGithub}/>
           </FooterButton>
-      </Footer>
+      </Footer >
     </LayoutContainer>
   );
 }
@@ -132,7 +144,7 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  height: 80px;
+  height: 6rem;
   padding: 0 20px;
 `;
 
@@ -148,10 +160,10 @@ const LogoImg = styled.img`
 `;
 
 const Footer = styled.div`
-  bottom: 0;
+  // bottom: 0;
   background: white;
   width: 100%;
-  height: 90px;
+  height: 5rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -172,5 +184,6 @@ const FooterButton = styled.button`
 `
 
 const MainContent = styled.div`
-  flex: 1;
+  // flex: 1;
+  // min-height: 100vh;
 `;

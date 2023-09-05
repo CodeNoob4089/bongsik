@@ -162,14 +162,14 @@ export default Mypage;
 
 //스타일컴포넌트
 const Container = styled.div`
-  min-height: 100vh;
+// min-height: calc(100vh - 6rem-7rem)
 `;
 
 const UserInfo = styled.div`
   background-color: white;
   border-radius: 10px;
-  width: 30vw;
-  height: 35vh;
+  width: 20rem;
+  height: 17rem;
   margin: 5vh auto;
   padding: 2.5rem;
   display: flex;
@@ -222,7 +222,8 @@ const SettingButton = styled.button`
 const UserTabsBox = styled.div`
   background-color: #f2f2f5;
   margin-top: 2.5rem;
-  border-radius: 10px;
+  border-radius: 1rem;
+  height: 5rem;
   overflow: hidden;
   display: flex;
   flex-direction: row;
@@ -230,7 +231,7 @@ const UserTabsBox = styled.div`
 `;
 const UserTabButton = styled.button`
   font-size: 15px;
-  height: 5rem;
+  height: 100%;
   width: 50%;
   line-height: 1.4rem;
   border: none;
@@ -285,8 +286,8 @@ const MyListBox = styled.div`
 `;
 
 const RightContents = styled.div`
-  width: 68vw;
-  height: 80vh;
+  width: 60rem;
+  height: 70vh;
 `;
 const LevelImg = styled.img`
   width: 25px;

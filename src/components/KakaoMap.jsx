@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import { Circle, Map, MapMarker } from "react-kakao-maps-sdk";
+import { faMagnifyingGlass, faStar } from "@fortawesome/free-solid-svg-icons";
+import { Circle, Map, MapMarker, Rectangle } from "react-kakao-maps-sdk";
 import useMapDataStore from "../store/mapdata";
 import useClickedDataStore from "../store/modalData";
 import useAuthStore from "../store/auth";
@@ -181,7 +181,18 @@ function KakaoMap({ showModal }) {
               }}
               onMouseover={() => setCurrentMouseOver(currentMouseOver)}
             >
-              <MarkerInfo>{currentMouseOver.place.place_name}</MarkerInfo>
+              <MarkerInfo>
+                <div>
+                {currentMouseOver.place.place_name} &nbsp;
+                {Array(currentMouseOver.star)
+                  .fill()
+                  .map((_, index) => (
+                    <FontAwesomeIcon key={index} icon={faStar} style={{ color: "#ff4e50" }} />
+                  ))}
+                  </div>
+              {currentMouseOver.photo?
+              <MarkerImage src={currentMouseOver.photo}></MarkerImage> : null}
+              </MarkerInfo>
             </MapMarker>
           ) : null}
           <SearchArea>
@@ -198,17 +209,7 @@ function KakaoMap({ showModal }) {
                   <ResultList key={d.id}>
                     <span>{index + 1}</span>
                     <div
-                      onClick={() => {
-                        if (user === null) {
-                          return alert("글을 작성하려면 로그인해주세요!");
-                        }
-                        if (d.category_group_name === "음식점" || d.category_group_name === "카페") {
-                          setClickedData(d);
-                          showModal();
-                        } else {
-                          alert("해당 장소는 음식점이 아닙니다!");
-                        }
-                      }}
+                       onClick={() => window.open(`${d.place_url}`, "_blank")}
                     >
                       <PlaceData>{d.place_name}</PlaceData>
                       <PlaceData>{d.address_name}</PlaceData>
@@ -222,8 +223,20 @@ function KakaoMap({ showModal }) {
                       >
                         위치 보기
                       </PlaceLinkButton>
-                      <PlaceLinkButton onClick={() => window.open(`${d.place_url}`, "_blank")}>
-                        가게 정보
+                      <PlaceLinkButton
+                        onClick={() => {
+                          if (user === null) {
+                            return alert("글을 작성하려면 로그인해주세요!");
+                          }
+                          if (d.category_group_name === "음식점" || d.category_group_name === "카페") {
+                            setClickedData(d);
+                            showModal();
+                          } else {
+                            alert("해당 장소는 음식점이 아닙니다!");
+                          }
+                        }}
+                      >
+                        기록하기
                       </PlaceLinkButton>
                     </ButtonContainer>
                   </ResultList>
@@ -242,8 +255,18 @@ export default KakaoMap;
 
 const MarkerInfo = styled.div`
   padding: 10px;
-  width: 190px;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 `;
+
+const MarkerImage = styled.img`
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+`
 
 const SearchArea = styled.div`
   position: absolute;
