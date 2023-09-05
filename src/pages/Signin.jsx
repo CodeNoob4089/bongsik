@@ -18,7 +18,7 @@ function SignIn() {
       const { emailVerified } = userCredential.user;
 
       if (emailVerified) {
-        navigate("/");
+        navigate("/main");
       } else {
         alert("이메일 인증을 확인해주세요.");
         signOut(auth);

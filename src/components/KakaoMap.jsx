@@ -209,17 +209,7 @@ function KakaoMap({ showModal }) {
                   <ResultList key={d.id}>
                     <span>{index + 1}</span>
                     <div
-                      onClick={() => {
-                        if (user === null) {
-                          return alert("글을 작성하려면 로그인해주세요!");
-                        }
-                        if (d.category_group_name === "음식점" || d.category_group_name === "카페") {
-                          setClickedData(d);
-                          showModal();
-                        } else {
-                          alert("해당 장소는 음식점이 아닙니다!");
-                        }
-                      }}
+                       onClick={() => window.open(`${d.place_url}`, "_blank")}
                     >
                       <PlaceData>{d.place_name}</PlaceData>
                       <PlaceData>{d.address_name}</PlaceData>
@@ -233,8 +223,20 @@ function KakaoMap({ showModal }) {
                       >
                         위치 보기
                       </PlaceLinkButton>
-                      <PlaceLinkButton onClick={() => window.open(`${d.place_url}`, "_blank")}>
-                        가게 정보
+                      <PlaceLinkButton
+                        onClick={() => {
+                          if (user === null) {
+                            return alert("글을 작성하려면 로그인해주세요!");
+                          }
+                          if (d.category_group_name === "음식점" || d.category_group_name === "카페") {
+                            setClickedData(d);
+                            showModal();
+                          } else {
+                            alert("해당 장소는 음식점이 아닙니다!");
+                          }
+                        }}
+                      >
+                        기록하기
                       </PlaceLinkButton>
                     </ButtonContainer>
                   </ResultList>
