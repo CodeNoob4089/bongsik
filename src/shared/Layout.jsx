@@ -81,6 +81,14 @@ console.log(MypageCss)
           </>
         ) : (
           <div>
+             <Button
+             id="intro"
+             onClick={() => {
+               setCurrentPage("intro")
+               navigate("/");
+             }}
+             currentPage={currentPage}
+            >사이트 소개</Button>
             <Button
               id="signin"
               onClick={() => {
