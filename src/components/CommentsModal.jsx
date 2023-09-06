@@ -22,14 +22,13 @@ import {
   UserNameAndLevel,
   Nickname,
   ProfileCircle,
-  ProfileImage,
   ModalLocation,
   InputArea,
 } from "./TabPostStyled";
 import { nanoid } from "nanoid";
 import { faStar, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelectedPostId }) {
+function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId }) {
   const authStore = useAuthStore();
   const displayName = authStore.user?.displayName;
   const isLogIn = authStore.user !== null;
@@ -154,11 +153,10 @@ function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelect
   const handleSaveEdit = async (commentId, postId) => {
     const commentsCollectionRef = collection(db, "postComments");
 
-    // 댓글의 commentId를 사용하여 해당 댓글 문서를 찾음
     const querySnapshot = await getDocs(query(commentsCollectionRef, where("commentId", "==", commentId)));
 
     if (!querySnapshot.empty) {
-      const commentDocRef = querySnapshot.docs[0].ref; // 첫 번째 문서의 참조를 가져옴
+      const commentDocRef = querySnapshot.docs[0].ref;
 
       const updatedComment = {
         nickName: displayName,
@@ -171,7 +169,6 @@ function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelect
         edited: "수정됨",
       };
 
-      // 업데이트할 필드의 경로를 지정하여 업데이트 수행
       await updateDoc(commentDocRef, updatedComment);
 
       queryClient.invalidateQueries("fetchPostComments");
@@ -204,31 +201,42 @@ function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelect
             <CloseButton onClick={handleCloseModal}>X</CloseButton>
             <UserInfo>
               <UserProfile>
-                <ProfileCircle>
-                  <ProfileBox photo={selectedPost.userPhoto}></ProfileBox>
-                </ProfileCircle>
+                <ProfileBox photo={selectedPost.userPhoto} />
                 <UserNameAndLevel>
                   <Nickname>
                     {selectedPost.userName}&nbsp;Lv.
                     <br />
-                    {selectedPost.timestamp?.toDate().toLocaleDateString()}
+                    <DateDiv>{selectedPost.timestamp?.toDate().toLocaleDateString()}</DateDiv>
                   </Nickname>
                 </UserNameAndLevel>
               </UserProfile>
             </UserInfo>
             <ModalLocation>
               <p>
-                {selectedPost.place.place_name}&nbsp;
-                {Array(selectedPost.star)
-                  .fill()
-                  .map((_, index) => (
-                    <FontAwesomeIcon key={index} icon={faStar} style={{ color: "#ff4e50" }} />
-                  ))}
+                <Place>
+                  {selectedPost.place.place_name}&nbsp;
+                  {Array(selectedPost.star)
+                    .fill()
+                    .map((_, index) => (
+                      <FontAwesomeIcon key={index} icon={faStar} style={{ color: "#ff4e50" }} size="sm" />
+                    ))}
+                </Place>
                 <br />
-                <FontAwesomeIcon icon={faLocationDot} size="lg" />
-                &nbsp;
-                {selectedPost.place.address_name}
-                <br />
+                <DetailLocation>
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/location.png?alt=media&token=4850f645-0cac-41c4-91f5-595f28d33b79"
+                    style={{
+                      width: "0.9rem",
+                      height: "1rem",
+                      marginTop: "0.3rem",
+                      marginRight: "0.3rem",
+                      float: "left",
+                    }}
+                  />
+
+                  {selectedPost.place.address_name}
+                  <br />
+                </DetailLocation>
               </p>
             </ModalLocation>
             {selectedPost && <img src={selectedPost.photo} alt="Post" />}
@@ -336,4 +344,16 @@ const ProfileBox = styled.div`
   background-position: center center;
   background-repeat: no-repeat;
 `;
-const Circle = styled.div``;
+const Place = styled.div`
+  float: left;
+`;
+const DetailLocation = styled.span`
+  color: #5a5a68;
+  font-size: 0.9rem;
+  float: left;
+  margin-left: 0.2rem;
+`;
+const DateDiv = styled.span`
+  color: #5a5a68;
+  font-size: 0.9rem;
+`;
