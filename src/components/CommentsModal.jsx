@@ -5,7 +5,7 @@ import { collection, addDoc, where, query, getDocs, deleteDoc, doc, updateDoc, g
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
 import useAuthStore from "../store/auth";
-
+import styled from "styled-components";
 import {
   ModalWrapper,
   ModalContent,
@@ -119,6 +119,7 @@ function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelect
       comment: comment,
       date: new Date().toISOString(),
       commentId: nanoid(),
+      commentPhoto: user.photoUrl,
     };
 
     await addCommentMutation.mutateAsync(newComment);
@@ -166,6 +167,8 @@ function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelect
         comment: editedComment,
         commentId: commentId,
         date: new Date().toISOString(),
+        commentPhoto: user.photoUrl,
+        edited: "수정됨",
       };
 
       // 업데이트할 필드의 경로를 지정하여 업데이트 수행
@@ -202,7 +205,7 @@ function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelect
             <UserInfo>
               <UserProfile>
                 <ProfileCircle>
-                  <ProfileImage src={user.photoURL} alt="프로필 사진" />
+                  <ProfileBox photo={selectedPost.userPhoto}></ProfileBox>
                 </ProfileCircle>
                 <UserNameAndLevel>
                   <Nickname>
@@ -235,7 +238,7 @@ function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelect
             </ContentArea>
             <InputArea>
               <ProfileCircle style={{ marginLeft: "2rem" }}>
-                <ProfileImage src={user.photoURL} alt="프로필 사진" />
+                <ProfileBox photo={user.photoUrl} />
               </ProfileCircle>
               <Form onSubmit={(e) => handleSubmit(e, selectedPost.postId)}>
                 <InputBox name="comment" placeholder="댓글을 작성해주세요"></InputBox>
@@ -247,12 +250,13 @@ function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelect
                 comment.postId === selectedPost.postId && (
                   <CommentWrap key={comment.commentId}>
                     <div style={{ marginLeft: "2rem", display: "flex" }}>
-                      <ProfileCircle style={{}}>
-                        <ProfileImage src={user.photoURL} alt="프로필 사진" />
-                      </ProfileCircle>
+                      <ProfileBox photo={comment.commentPhoto}></ProfileBox>
                       <div style={{ display: "column" }}>
                         <Nickname style={{ marginTop: "1rem", display: "flex" }}>
-                          {comment.nickName} &nbsp;<p>{elapsedTime(comment.date)}</p>
+                          {comment.nickName} &nbsp;
+                          <p>
+                            {elapsedTime(comment.date)}&nbsp;{comment.edited}
+                          </p>
                         </Nickname>
 
                         {editingCommentId === comment.commentId ? (
@@ -322,3 +326,14 @@ function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelect
 }
 
 export default PostingModal;
+const ProfileBox = styled.div`
+  width: 4em;
+  height: 4rem;
+  border-radius: 50%;
+  background-color: #ffffff;
+  background-image: url(${(props) => props.photo});
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+`;
+const Circle = styled.div``;

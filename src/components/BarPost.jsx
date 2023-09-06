@@ -12,8 +12,7 @@ import {
 import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
-import { faLocationDot, faStar, faArrowUpFromBracket } from "@fortawesome/free-solid-svg-icons";
-
+import { faLocationDot, faStar } from "@fortawesome/free-solid-svg-icons";
 import { db, auth } from "../firebase";
 import { useQuery } from "react-query";
 import PostingModal from "./CommentsModal";
@@ -88,10 +87,7 @@ function BarPost() {
               </>
             ) : (
               <>
-                <PostImgBox>
-                  <PostImgUrl> </PostImgUrl>
-                  사진 없음
-                </PostImgBox>
+                <PostImgBox>{/* <PostImgUrl src={}> 사진 없음 </PostImgUrl> */}</PostImgBox>
               </>
             )}
             <PostContent>
@@ -121,9 +117,6 @@ function BarPost() {
                   <FontAwesomeIcon icon={faComment} size="lg" />
                 </Button>
                 <LikeCount>{item.commentCount}</LikeCount>
-                <Button>
-                  <FontAwesomeIcon icon={faArrowUpFromBracket} size="lg" />
-                </Button>
               </ButtonSet>
             </PostBottomBar>
           </div>

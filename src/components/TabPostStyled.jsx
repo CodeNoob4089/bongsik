@@ -181,11 +181,12 @@ export const UserInfo = styled.div`
   background-color: white;
   border-radius: 10px;
   margin-left: 2.8rem;
-  display: flex;
   margin-bottom: 1.5rem;
+  flex-direction: column;
 `;
 
 export const UserProfile = styled.div`
+  flex-direction: row;
   display: flex;
 `;
 export const UserNameAndLevel = styled.div`
@@ -206,18 +207,21 @@ export const Nickname = styled.p`
 `;
 
 export const ProfileCircle = styled.div`
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  border-radius: 70%; /*둥그런 원으로 만들기 위함*/
   overflow: hidden;
-  /* display: inline-block; */
+  text-align: center;
+  line-height: center;
 `;
 
 export const ProfileImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  background-position: center center;
+  background-size: 3rem;
+  margin: 0 auto;
 `;
 export const ModalLocation = styled.div`
   width: 40vw;

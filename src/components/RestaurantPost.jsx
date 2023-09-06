@@ -12,9 +12,7 @@ import {
 import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
-import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
-import { faArrowUpFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { faStar, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { db, auth } from "../firebase";
 import { useQuery } from "react-query";
 import PostingModal from "./CommentsModal";
@@ -119,9 +117,6 @@ function RestaurantPost() {
                   <FontAwesomeIcon icon={faComment} size="lg" />
                 </Button>
                 <LikeCount>{item.commentCount}</LikeCount>
-                <Button>
-                  <FontAwesomeIcon icon={faArrowUpFromBracket} size="lg" />
-                </Button>
               </ButtonSet>
             </PostBottomBar>
           </div>
