@@ -1,12 +1,16 @@
 import { faFaceSadTear, faRoadBarrier } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
 function Intro() {
+  const navigate = useNavigate();
   return (
     <div style={{width:"100%", height:"100%", backgroundColor:"#95ddfb", display: "flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
-    <h1 style={{fontSize: "30px", fontWeight:"bold", marginTop:"3rem"}}>아직 개발중입니다. 이용에 불편을 드려 죄송합니다..!</h1>
+    <Button onClick={() => navigate("/main") }>시작하기</Button>
+    <h1 style={{fontSize: "30px", fontWeight:"bold", marginTop:"3rem"}}>사이트 설명 추가중입니다. 이용에 불편을 드려 죄송합니다..!
+    <br/>위 버튼을 눌러 사이트를 구경해보세요!</h1>
     <br/>
     <br/>
     <div>
@@ -20,3 +24,21 @@ function Intro() {
 }
 
 export default Intro
+
+const Button = styled.button`
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 5rem;
+  width: 20rem;
+  height: 5rem;
+  background-color: #fe4c4f;
+  color: white;
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  transition-duration: 0.5s;
+  &:hover{
+    background-color: #fdb9ba;
+    color: white;
+  }
+`
