@@ -133,6 +133,7 @@ function KakaoMap({ showModal }) {
       {loadingLocation ? (
         <div>위치 정보를 가져오는 중...</div>
       ) : (
+        <>
         <Map // 로드뷰를 표시할 Container
           center={mapCenterPosition}
           style={{
@@ -194,6 +195,7 @@ function KakaoMap({ showModal }) {
               </MarkerInfo>
             </MapMarker>
           ) : null}
+          </Map>
           <SearchArea>
             <SearchForm onSubmit={submitKeyword}>
               <SearchMapInput
@@ -216,7 +218,19 @@ function KakaoMap({ showModal }) {
               </CurrentLocationContentsWrapper>
             : (
               <SearchResult id="result-wrapper">
-                <ResultText className="result-keyword">{searchKeyword}&nbsp; 검색 결과</ResultText>
+                <ResultText className="result-keyword">{searchKeyword}&nbsp; 검색 결과
+                <button
+                style={{
+                  border: "none",
+                  background: "none",
+                  cursor: "pointer",
+                }}
+                onClick={() =>{
+                  setSearchKeyword("")
+                  setInputValue("")
+                }}
+                >X</button>
+                </ResultText>
                 {data?.map((d, index) => (
                   <ResultList key={d.id}>
                     <span>{index + 1}</span>
@@ -257,7 +271,7 @@ function KakaoMap({ showModal }) {
               </SearchResult>
             )}
           </SearchArea>
-        </Map>
+        </>
       )}
     </>
   );
@@ -327,19 +341,21 @@ const CurrentLocationContentsWrapper = styled.div`
 `
 
 const SearchResult = styled.div`
-  position: absolute;
-  z-index: 3;
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 15px;
-  width: 15rem;
-  height: auto;
-  max-height: 70vh;
+  width: 100%;
+  height: 53vh;
+  background-color: white;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
   padding: 0.7rem;
-  margin-top: 2.2rem;
   overflow-y: scroll;
 `;
 const ResultText = styled.p`
   margin-bottom: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 `;
 const ResultList = styled.div`
   display: flex;
