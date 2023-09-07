@@ -43,6 +43,7 @@ function MyList() {
   const [toggleOpen, setToggleOpen] = useState("");
   const { loading, data: myTags } = useQuery(GET_MY_TAGS, getMyTags);
   const { data: postData } = useQuery(`fetchPostData`, getPosts);
+  const [isModalOpen, setIsMoadlOpen] = useState(false);
 
   const addMutation = useMutation(
     async () => {
@@ -109,6 +110,11 @@ function MyList() {
 
   const onToggleOpenButtonClick = (tagID) => {
     setToggleOpen(tagID);
+    setIsMoadlOpen(true);
+  };
+  const closeModal = () => {
+    setIsMoadlOpen(false);
+    setToggleOpen("");
   };
 
   const onDeleteButtonClick = (key) => {
@@ -119,6 +125,8 @@ function MyList() {
       return;
     }
   };
+
+  console.log(postData);
 
   return (
     <>
@@ -149,7 +157,6 @@ function MyList() {
             </>
           )}
         </CollectionCard>
-
         {!loading && myTags && (
           <CarouselBox
             responsive={responsive}
@@ -168,7 +175,7 @@ function MyList() {
                         {toggleOpen !== tag.collectionID ? (
                           <ToggleButton onClick={() => onToggleOpenButtonClick(tag.collectionID)}>▼</ToggleButton>
                         ) : (
-                          <ToggleButton onClick={() => setToggleOpen("")}>▲</ToggleButton>
+                          <ToggleButton onClick={closeModal}>▲</ToggleButton>
                         )}
                         <DeleteButton onClick={() => onDeleteButtonClick(tag.collectionID)}>
                           <FontAwesomeIcon icon={faTrashCan} />
@@ -176,26 +183,26 @@ function MyList() {
                       </ButtonBox>
                     </CardTitle>
                   </CollectionCard>
-                  {toggleOpen === tag.collectionID ? (
-                    <PostLists>
-                      {postData
-                        ?.filter((post) => post.collectionTag === tag.collectionID)
-                        .map((p) => (
-                          <CollectedPosts key={p.postID}>
-                            <ImageBox img={p.photo}></ImageBox>
-                            <TextBox>
-                              <h2>{p.place.place_name}</h2>
-                            </TextBox>
-                          </CollectedPosts>
-                        ))}
-                    </PostLists>
-                  ) : null}
                 </>
               );
             })}
           </CarouselBox>
         )}
       </ListCardsContainer>
+      {isModalOpen ? (
+        <PostLists open={isModalOpen}>
+          {postData
+            ?.filter((post) => post.collectionTag === toggleOpen)
+            .map((p) => (
+              <CollectedPosts key={p.postID}>
+                <ImageBox src={p.photo}></ImageBox>
+                <TextBox>
+                  <h2>{p.place.place_name}</h2>
+                </TextBox>
+              </CollectedPosts>
+            ))}
+        </PostLists>
+      ) : null}
     </>
   );
 }
@@ -203,6 +210,7 @@ function MyList() {
 export default MyList;
 
 const ListCardsContainer = styled.div`
+  position: relative;
   width: 75vw;
   height: 30vh;
   margin: 13vh auto;
@@ -219,7 +227,7 @@ const ListTitle = styled.h1`
 
 const CollectionCard = styled.div`
   width: 15vw;
-  height: 30vh;
+  height: 15rem;
   display: flex;
   margin: 0 1vw;
   border-radius: 1.5rem;
@@ -231,8 +239,12 @@ const CollectionCard = styled.div`
 
 const CarouselBox = styled(Carousel)`
   width: 60rem;
-  height: 18rem;
-  z-index: 9999;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  z-index: 49;
   .carousel-button-left {
     position: fixed;
     left: 20px;
@@ -269,13 +281,13 @@ const CardTitle = styled.h2`
   max-height: 80px;
   overflow: hidden;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
 `;
 
 const ButtonBox = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   height: 100%;
   justify-content: space-between;
 `;
@@ -292,9 +304,12 @@ const ToggleButton = styled.button`
 const PostLists = styled.div`
   background-color: #dccdc5;
   border-radius: 15px;
+  width: 20rem;
+  height: 10rem;
 `;
 
 const CollectedPosts = styled.div`
+  background-color: white;
   display: flex;
   margin-top: 20px;
 `;
