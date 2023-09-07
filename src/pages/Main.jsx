@@ -4,7 +4,6 @@ import { styled } from "styled-components";
 import PostAddModal from "../components/PostAddModal";
 import { useState } from "react";
 
-
 function Main() {
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -12,16 +11,16 @@ function Main() {
     setModalOpen(true);
     document.body.style.overflow = "hidden";
   };
-  
+
   return (
     <>
-    {modalOpen && <PostAddModal modalOpen={modalOpen} setModalOpen={setModalOpen}/>}
-    <Container>
-      <MapContainer>
-      <KakaoMap showModal={showModal}/>
-      </MapContainer>
-      <MyList />
-    </Container>
+      {modalOpen && <PostAddModal modalOpen={modalOpen} setModalOpen={setModalOpen} />}
+      <Container>
+        <MapContainer>
+          <KakaoMap showModal={showModal} />
+        </MapContainer>
+        <MyList />
+      </Container>
     </>
   );
 }
@@ -43,4 +42,4 @@ const MapContainer = styled.div`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-`
+`;

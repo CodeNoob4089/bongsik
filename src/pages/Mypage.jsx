@@ -11,6 +11,7 @@ import MyLikePost from "../components/MyLikePost";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGear, faHeart, faMedal } from "@fortawesome/free-solid-svg-icons";
 import EditUserModal from "../components/EditUserModal";
+import MyPageList from "../components/MyPageList";
 
 function Mypage() {
   const [currentTab, setCurrentTab] = useState(1);
@@ -95,7 +96,7 @@ function Mypage() {
             {currentTab === 1 ? (
               <PostContents>
                 <MyListBox>
-                  <MyList />
+                  <MyPageList />
                 </MyListBox>
                 <RightContents>
                   <Mypost />
@@ -162,7 +163,7 @@ export default Mypage;
 
 //스타일컴포넌트
 const Container = styled.div`
-// min-height: calc(100vh - 6rem-7rem)
+  // min-height: calc(100vh - 6rem-7rem)
 `;
 
 const UserInfo = styled.div`
