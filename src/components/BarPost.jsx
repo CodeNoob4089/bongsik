@@ -8,12 +8,13 @@ import {
   Button,
   ButtonSet,
   LikeCount,
+  DetailLocation,
+  PostContainer,
 } from "../components/TabPostStyled";
 import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
-import { faLocationDot, faStar, faArrowUpFromBracket } from "@fortawesome/free-solid-svg-icons";
-
+import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { db, auth } from "../firebase";
 import { useQuery } from "react-query";
 import PostingModal from "./CommentsModal";
@@ -79,7 +80,7 @@ function BarPost() {
     <>
       {filterdPosts?.map((item) => (
         <CommunityPosting key={item.postId}>
-          <div>
+          <PostContainer>
             {item.photo ? (
               <>
                 <PostImgBox>
@@ -88,10 +89,7 @@ function BarPost() {
               </>
             ) : (
               <>
-                <PostImgBox>
-                  <PostImgUrl> </PostImgUrl>
-                  사진 없음
-                </PostImgBox>
+                <PostImgBox>{/* <PostImgUrl src={}> 사진 없음 </PostImgUrl> */}</PostImgBox>
               </>
             )}
             <PostContent>
@@ -100,16 +98,29 @@ function BarPost() {
                 {Array(item.star)
                   .fill()
                   .map((_, index) => (
-                    <FontAwesomeIcon key={index} icon={faStar} style={{ color: "#ff4e50" }} size="lg" />
+                    <FontAwesomeIcon key={index} icon={faStar} style={{ color: "#ff4e50" }} />
                   ))}
               </h2>
               <p>
-                <FontAwesomeIcon icon={faLocationDot} size="lg" />
-                &nbsp;{item.place.address_name}
+                <DetailLocation>
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/location.png?alt=media&token=4850f645-0cac-41c4-91f5-595f28d33b79"
+                    style={{
+                      width: "0.9rem",
+                      height: "1.1rem",
+
+                      marginRight: "0.3rem",
+                      float: "left",
+                    }}
+                  />
+
+                  {item.place.address_name}
+                </DetailLocation>
+                <br />
+                <hr />
               </p>
             </PostContent>
             <PostBottomBar>
-              <hr />
               <ButtonSet>
                 <Heart userData={userData} item={item} />
                 <LikeCount>{item.likeCount}</LikeCount>
@@ -118,15 +129,20 @@ function BarPost() {
                     handlePostClick(item);
                   }}
                 >
-                  <FontAwesomeIcon icon={faComment} size="lg" />
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%8C%93%EA%B8%80%20%EC%95%84%EC%9D%B4%EC%BD%98.png?alt=media&token=0f14a325-e157-47ae-aaa9-92adfb4a8434"
+                    style={{
+                      width: "1.2rem",
+                      height: "1.1rem",
+                      marginRight: "0.3rem",
+                      float: "left",
+                    }}
+                  />
                 </Button>
                 <LikeCount>{item.commentCount}</LikeCount>
-                <Button>
-                  <FontAwesomeIcon icon={faArrowUpFromBracket} size="lg" />
-                </Button>
               </ButtonSet>
             </PostBottomBar>
-          </div>
+          </PostContainer>
         </CommunityPosting>
       ))}
       <PostingModal

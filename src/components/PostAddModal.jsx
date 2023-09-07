@@ -42,6 +42,7 @@ function PostAddModal({ modalOpen, setModalOpen }) {
     category: clickedCategory,
     commentCount: 0,
     timestamp: new Date(),
+    userPhoto: user.photoUrl,
   });
   const initialStars = [false, false, false, false, false];
   const [stars, setStars] = useState(initialStars);
