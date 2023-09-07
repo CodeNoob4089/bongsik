@@ -15,12 +15,12 @@ function Layout() {
   const { id } = useParams();
   const isLoggedIn = authStore.user !== null;
   const displayName = authStore.user?.displayName;
-  const [currentPage, setCurrentPage] = useState("")
+  const [currentPage, setCurrentPage] = useState("");
   const navigate = useNavigate();
-const location=useLocation();
+  const location = useLocation();
 
-const MypageCss=location.pathname==="/mypage"
-console.log(MypageCss)
+  const MypageCss = location.pathname === "/mypage";
+  console.log(MypageCss);
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -32,14 +32,14 @@ console.log(MypageCss)
   };
 
   return (
-    <LayoutContainer style={{ MinHeigh: MypageCss ? "100vh" :"auto" }}>
+    <LayoutContainer style={{ MinHeight: MypageCss ? "100%" : "auto" }}>
       <Header>
           <LogoImg
             src={
               "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/ETG%20%E1%84%83%E1%85%A2%E1%84%86%E1%85%AE%E1%86%AB%E1%84%8C%E1%85%A1%E1%84%89%E1%85%AE%E1%84%8C%E1%85%A5%E1%86%BC%E1%84%85%E1%85%A9%E1%84%80%E1%85%A9.png?alt=media&token=ee0210fe-744c-40ef-a806-be5ba8fc08fc"
             }
             onClick={() => {
-              setCurrentPage("")
+              setCurrentPage("");
               navigate("/main");
             }}
           />
@@ -58,23 +58,26 @@ console.log(MypageCss)
               <Button
                 id="community"
                 onClick={() => {
-                  setCurrentPage("community")
+                  setCurrentPage("community");
                   navigate("/community");
                 }}
                 currentPage={currentPage}
-                >
+              >
                 Community
               </Button>
               <Button
-              id="mypage"
-              onClick={() =>
-              {setCurrentPage("mypage")
-              navigate("/mypage")}}
-              currentPage={currentPage}
-              >My page</Button>
-              <Button
-              id="log-out"
-              onClick={handleLogout}>Log out</Button>
+                id="mypage"
+                onClick={() => {
+                  setCurrentPage("mypage");
+                  navigate("/mypage");
+                }}
+                currentPage={currentPage}
+              >
+                My page
+              </Button>
+              <Button id="log-out" onClick={handleLogout}>
+                Log out
+              </Button>
             </NavigationBar>
           </>
         ) : (
@@ -90,7 +93,7 @@ console.log(MypageCss)
             <Button
               id="signin"
               onClick={() => {
-                setCurrentPage("signin")
+                setCurrentPage("signin");
                 navigate("/signin");
               }}
               currentPage={currentPage}
@@ -100,7 +103,7 @@ console.log(MypageCss)
             <Button
               id="signup"
               onClick={() => {
-                setCurrentPage("signup")
+                setCurrentPage("signup");
                 navigate("/signup");
               }}
               currentPage={currentPage}
@@ -110,15 +113,15 @@ console.log(MypageCss)
           </div>
         )}
       </Header>
-      <MainContent >
-        <Outlet style={{ Heigh: MypageCss ? "calc(100vh - 18rem)" : "100vh"}}/>
+      <MainContent>
+        <Outlet />
       </MainContent>
-      <Footer style={{}}>
+      <Footer>
         <FooterContent>© 2023 KIMBONGSIK</FooterContent>
         <FooterButton onClick={() => window.open("https://github.com/Kim-bongsik/bongsik", "_blank")}>
-          <FontAwesomeIcon icon={faGithub}/>
-          </FooterButton>
-      </Footer >
+          <FontAwesomeIcon icon={faGithub} />
+        </FooterButton>
+      </Footer>
     </LayoutContainer>
   );
 }
@@ -128,7 +131,8 @@ export default Layout;
 const LayoutContainer = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: #FAF7F7;
+  background-color: #faf7f7;
+  /* height: 100vh; */
 `;
 
 const Button = styled.button`
@@ -139,9 +143,7 @@ const Button = styled.button`
   background: none;
   cursor: pointer;
 `;
-const NavigationBar = styled.div`
-
-`;
+const NavigationBar = styled.div``;
 
 const Header = styled.div`
   font-size: 0.8rem;
@@ -166,8 +168,8 @@ const LogoImg = styled.img`
 `;
 
 const Footer = styled.div`
-  // bottom: 0;
-  background: white;
+  bottom: 0;
+  background: #e8dddd;
   width: 100%;
   height: 5rem;
   display: flex;
@@ -185,9 +187,9 @@ const FooterButton = styled.button`
   font-size: 30px;
   color: #452828;
   margin-right: 3vw;
-  background-color: rgba(0,0,0,0);
+  background-color: rgba(0, 0, 0, 0);
   cursor: pointer;
-`
+`;
 
 const MainContent = styled.div`
   // flex: 1;

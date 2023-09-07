@@ -199,8 +199,6 @@ const addNeighborhoodPolygon = async () => {
 
   if (loadingLocation) return <div>위치 정보를 가져오는 중...</div>;
 
-  console.log(postData);
-
   return (
     <>
       {loadingLocation ? (
@@ -320,10 +318,10 @@ const addNeighborhoodPolygon = async () => {
               onChange={keywordInputChange}
               />
               <SearchButton>
-                <FontAwesomeIcon icon={faMagnifyingGlass}/>
+                <FontAwesomeIcon icon={faMagnifyingGlass} />
               </SearchButton>
             </SearchForm>
-            {!searchKeyword ?
+            {!searchKeyword ? (
               <CurrentLocationContentsWrapper>
                 <CurrentLocationInfo>
                 <div>
@@ -340,7 +338,7 @@ const addNeighborhoodPolygon = async () => {
                   <p>최근 리뷰</p>
                 </div>
               </CurrentLocationContentsWrapper>
-            : (
+            ) : (
               <SearchResult id="result-wrapper">
                 <ResultText className="result-keyword">{searchKeyword}&nbsp; 검색 결과
                 <button
@@ -359,9 +357,7 @@ const addNeighborhoodPolygon = async () => {
                 {data?.map((d, index) => (
                   <ResultList key={d.id}>
                     <span>{index + 1}</span>
-                    <div
-                       onClick={() => window.open(`${d.place_url}`, "_blank")}
-                    >
+                    <div onClick={() => window.open(`${d.place_url}`, "_blank")}>
                       <PlaceData>{d.place_name}</PlaceData>
                       <PlaceData>{d.address_name}</PlaceData>
                       <PhoneNum>{d.phone}</PhoneNum>
