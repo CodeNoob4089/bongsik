@@ -22,7 +22,6 @@ function Mypost() {
   const [openModal, setOpenModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [, setSelectedPostId] = useState(null);
-  console.log(postData);
   //모달 열기
   const handlePostClick = (post) => {
     // 배경 페이지 스크롤 막기
@@ -53,7 +52,6 @@ function Mypost() {
 
   const categoryButtonClickHandler = (category) => {
     setCurrentCategory(category);
-    console.log(category, currentCategory);
   };
   const handleEditButtonClick = (postData) => {
     setCurrentPostData(postData);
@@ -89,6 +87,7 @@ function Mypost() {
         <PostCards>
           {postData
             ?.filter((post) => post.category === currentCategory)
+            .sort((a, b) => b.timestamp?.toDate().getTime() - a.timestamp?.toDate().getTime())
             .map((post) => (
               <PostCard key={post.docID}>
                 <TimeLine>
@@ -155,8 +154,8 @@ const PostCardsContainer = styled.div`
   margin: 5vh auto;
   display: flex;
   flex-direction: column;
-  // width: 95%;
-  // height: 100%;
+  width: 95%;
+  height: 73vh;
   border-radius: 18px;
   background-color: white;
 `;

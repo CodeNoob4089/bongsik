@@ -5,7 +5,7 @@ import { collection, addDoc, where, query, getDocs, deleteDoc, doc, updateDoc, g
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
 import useAuthStore from "../store/auth";
-
+import styled from "styled-components";
 import {
   ModalWrapper,
   ModalContent,
@@ -22,14 +22,18 @@ import {
   UserNameAndLevel,
   Nickname,
   ProfileCircle,
-  ProfileImage,
   ModalLocation,
   InputArea,
+  PostBottomBar,
+  Button,
+  ButtonSet,
+  LikeCount,
 } from "./TabPostStyled";
+import Heart from "./Heart";
 import { nanoid } from "nanoid";
-import { faStar, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelectedPostId }) {
+function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId }) {
   const authStore = useAuthStore();
   const displayName = authStore.user?.displayName;
   const isLogIn = authStore.user !== null;
@@ -37,6 +41,7 @@ function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelect
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);
+
   // 댓글 수정
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editedComment, setEditedComment] = useState("");
@@ -89,8 +94,6 @@ function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelect
           commentCount: currentCommentCount + 1,
         });
         queryClient.invalidateQueries("fetchPostComments");
-        // fetchPublicPosts 쿼리 다시 호출하여 게시물 리스트 업데이트
-        queryClient.invalidateQueries("fetchPublicPosts");
       },
     }
   );
@@ -119,6 +122,7 @@ function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelect
       comment: comment,
       date: new Date().toISOString(),
       commentId: nanoid(),
+      commentPhoto: user.photoUrl ? user.photoUrl : "",
     };
 
     await addCommentMutation.mutateAsync(newComment);
@@ -142,7 +146,7 @@ function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelect
       commentCount: currentCommentCount - 1,
     });
     queryClient.invalidateQueries("fetchPostComments");
-    queryClient.invalidateQueries("fetchPublicPosts");
+    // queryClient.invalidateQueries("fetchPublicPosts");
   });
   // 댓글 수정
   const handleEdit = (commentId, currentComment) => {
@@ -153,11 +157,10 @@ function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelect
   const handleSaveEdit = async (commentId, postId) => {
     const commentsCollectionRef = collection(db, "postComments");
 
-    // 댓글의 commentId를 사용하여 해당 댓글 문서를 찾음
     const querySnapshot = await getDocs(query(commentsCollectionRef, where("commentId", "==", commentId)));
 
     if (!querySnapshot.empty) {
-      const commentDocRef = querySnapshot.docs[0].ref; // 첫 번째 문서의 참조를 가져옴
+      const commentDocRef = querySnapshot.docs[0].ref;
 
       const updatedComment = {
         nickName: displayName,
@@ -166,9 +169,10 @@ function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelect
         comment: editedComment,
         commentId: commentId,
         date: new Date().toISOString(),
+        commentPhoto: user.photoUrl ? user.photoUrl : "",
+        edited: "수정됨",
       };
 
-      // 업데이트할 필드의 경로를 지정하여 업데이트 수행
       await updateDoc(commentDocRef, updatedComment);
 
       queryClient.invalidateQueries("fetchPostComments");
@@ -192,6 +196,23 @@ function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelect
     if (days < 7) return `${Math.floor(days)}일 전`;
     return `${start.toLocaleDateString()}`;
   };
+  console.log(selectedPost);
+  //유저 좋아요 정보 가져오기
+  const getUserData = async () => {
+    const userDocRef = doc(db, "users", userId);
+    const docSnapshot = await getDoc(userDocRef);
+    if (docSnapshot.exists()) {
+      const userData = docSnapshot.data();
+      return {
+        userLikes: userData?.userLikes || [],
+      };
+    } else {
+      return {
+        userLikes: [],
+      };
+    }
+  };
+  const { data: userData } = useQuery("fetchUserData", getUserData);
 
   return (
     <>
@@ -201,31 +222,42 @@ function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelect
             <CloseButton onClick={handleCloseModal}>X</CloseButton>
             <UserInfo>
               <UserProfile>
-                <ProfileCircle>
-                  <ProfileImage src={user.photoURL} alt="프로필 사진" />
-                </ProfileCircle>
+                <ProfileBox photo={selectedPost.userPhoto} />
                 <UserNameAndLevel>
                   <Nickname>
                     {selectedPost.userName}&nbsp;Lv.
                     <br />
-                    {selectedPost.timestamp?.toDate().toLocaleDateString()}
+                    <DateDiv>{selectedPost.timestamp?.toDate().toLocaleDateString()}</DateDiv>
                   </Nickname>
                 </UserNameAndLevel>
               </UserProfile>
             </UserInfo>
             <ModalLocation>
               <p>
-                {selectedPost.place.place_name}&nbsp;
-                {Array(selectedPost.star)
-                  .fill()
-                  .map((_, index) => (
-                    <FontAwesomeIcon key={index} icon={faStar} style={{ color: "#ff4e50" }} />
-                  ))}
+                <Place>
+                  {selectedPost.place.place_name}&nbsp;
+                  {Array(selectedPost.star)
+                    .fill()
+                    .map((_, index) => (
+                      <FontAwesomeIcon key={index} icon={faStar} style={{ color: "#ff4e50" }} size="sm" />
+                    ))}
+                </Place>
                 <br />
-                <FontAwesomeIcon icon={faLocationDot} size="lg" />
-                &nbsp;
-                {selectedPost.place.address_name}
-                <br />
+                <DetailLocation>
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/location.png?alt=media&token=4850f645-0cac-41c4-91f5-595f28d33b79"
+                    style={{
+                      width: "0.9rem",
+                      height: "1rem",
+                      marginTop: "0.3rem",
+                      marginRight: "0.3rem",
+                      float: "left",
+                    }}
+                    alt="위치 아이콘"
+                  />
+                  {selectedPost.place.address_name}
+                  <br />
+                </DetailLocation>
               </p>
             </ModalLocation>
             {selectedPost && <img src={selectedPost.photo} alt="Post" />}
@@ -233,9 +265,28 @@ function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelect
             <ContentArea>
               {selectedPost.content} <hr />
             </ContentArea>
+            <PostBottomBar>
+              <ButtonSet>
+                <Heart userData={userData} selectedPost={selectedPost} />
+                <LikeCount>{selectedPost.likeCount}</LikeCount>
+                <Button>
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%8C%93%EA%B8%80%20%EC%95%84%EC%9D%B4%EC%BD%98.png?alt=media&token=0f14a325-e157-47ae-aaa9-92adfb4a8434"
+                    style={{
+                      width: "1.2rem",
+                      height: "1.1rem",
+                      marginRight: "0.3rem",
+                      float: "left",
+                    }}
+                    alt="댓글 아이콘"
+                  />
+                </Button>
+                <LikeCount>{selectedPost.commentCount}</LikeCount>
+              </ButtonSet>
+            </PostBottomBar>
             <InputArea>
               <ProfileCircle style={{ marginLeft: "2rem" }}>
-                <ProfileImage src={user.photoURL} alt="프로필 사진" />
+                <ProfileBox photo={user.photoUrl} />
               </ProfileCircle>
               <Form onSubmit={(e) => handleSubmit(e, selectedPost.postId)}>
                 <InputBox name="comment" placeholder="댓글을 작성해주세요"></InputBox>
@@ -247,12 +298,13 @@ function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelect
                 comment.postId === selectedPost.postId && (
                   <CommentWrap key={comment.commentId}>
                     <div style={{ marginLeft: "2rem", display: "flex" }}>
-                      <ProfileCircle style={{}}>
-                        <ProfileImage src={user.photoURL} alt="프로필 사진" />
-                      </ProfileCircle>
+                      <ProfileBox photo={comment.commentPhoto}></ProfileBox>
                       <div style={{ display: "column" }}>
                         <Nickname style={{ marginTop: "1rem", display: "flex" }}>
-                          {comment.nickName} &nbsp;<p>{elapsedTime(comment.date)}</p>
+                          {comment.nickName} &nbsp;
+                          <p>
+                            {elapsedTime(comment.date)}&nbsp;{comment.edited}
+                          </p>
                         </Nickname>
 
                         {editingCommentId === comment.commentId ? (
@@ -322,3 +374,26 @@ function PostingModal({ Button, openModal, setOpenModal, selectedPost, setSelect
 }
 
 export default PostingModal;
+const ProfileBox = styled.div`
+  width: 3em;
+  height: 3rem;
+  border-radius: 50%;
+  background-color: #ffffff;
+  background-image: url(${(props) => props.photo});
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+`;
+const Place = styled.div`
+  float: left;
+`;
+const DetailLocation = styled.span`
+  color: #5a5a68;
+  font-size: 0.9rem;
+  float: left;
+  margin-left: 0.2rem;
+`;
+const DateDiv = styled.span`
+  color: #5a5a68;
+  font-size: 0.9rem;
+`;

@@ -3,12 +3,13 @@ import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
 import React, { useEffect, useState } from "react";
 import RestaurantPost from "../components/RestaurantPost";
-import CafePost from "../components/CafePost";
-import BarPost from "../components/BarPost";
 
 function Community() {
   const [currentTab, setCurrentTab] = useState(1);
   const [isTopVisible, setIsTopVisible] = useState(false);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // 페이지 상단으로 부드럽게 스크롤하는 함수
   const scrollToTop = () => {
@@ -32,19 +33,19 @@ function Community() {
       id: 1,
       tabTitle: "맛집",
       title: "title",
-      content: <RestaurantPost />,
+      content: <RestaurantPost category={"맛집"} />,
     },
     {
       id: 2,
       tabTitle: "술집",
       title: "title",
-      content: <BarPost />,
+      content: <RestaurantPost category={"술집"} />,
     },
     {
       id: 3,
       tabTitle: "카페",
       title: "title",
-      content: <CafePost />,
+      content: <RestaurantPost category={"카페"} />,
     },
   ];
 
@@ -108,16 +109,18 @@ const Container = styled.div`
 `;
 const CommunityLeft = styled.div`
   /* background-color: #6e2789; */
-  margin-left: 5rem;
+  margin-left: 6rem;
   margin-top: 2rem;
-  width: 63vw;
+  width: 59.55497382198953vw;
   height: auto;
   position: relative;
 `;
 const CategoryBar = styled.div`
   width: 21vw;
   display: flex;
-  margin-bottom: 5rem;
+  margin-bottom: 2.5rem;
+  margin-left: 3.5rem;
+  height: 7vh;
 `;
 const Button = styled.button`
   font-weight: bold;
@@ -133,10 +136,10 @@ const Button = styled.button`
 
 const SearchArea = styled.div`
   position: fixed;
-  margin-left: 3.7rem;
-  padding-bottom: 30px;
+  margin-left: 3rem;
   top: 6rem;
   width: 18rem;
+  margin-top: 6rem;
 `;
 
 const SearchForm = styled.form`
@@ -149,21 +152,22 @@ const SearchInput = styled.input`
   font-size: 17px;
   z-index: 2;
   padding-left: 1rem;
-  width: 16.5rem;
+  width: 18.97vw;
   height: 2.2rem;
   border: 1.2px solid #696969;
   border-radius: 30px;
 `;
 
 const SearchButton = styled.button`
-  position: absolute;
+  position: relative;
+  margin-right: 2rem;
   z-index: 3;
   color: #696969;
   cursor: pointer;
   background: none;
   border: none;
   font-size: 18px;
-  margin: 0.4rem 0 0 14rem;
+  margin: 0.4rem 0 0 16rem;
 `;
 const CommunityRight = styled.div`
   /* background-color: #63914b; */
@@ -176,15 +180,14 @@ const MonthlyPost = styled.div`
   position: fixed;
   flex-direction: row;
   background-color: #c8c8c8;
-  width: 17.2vw;
-  height: 45vh;
+  width: 18.97vw;
+  height: 55.9vh;
   border-radius: 0.3rem;
-  margin-left: 3.7rem;
+  margin-left: 3rem;
   margin-bottom: 3rem;
-  margin-top: 3rem;
+  margin-top: 11rem;
 `;
 const MonthlyContent = styled.div`
-  position: fixed;
   display: flex;
   /* background-color: #bf85a1; */
   width: 17.2vw;
@@ -192,7 +195,6 @@ const MonthlyContent = styled.div`
   border-radius: 0.3rem;
 `;
 const MonthlyTitle = styled.p`
-  position: fixed;
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
   z-index: 1;

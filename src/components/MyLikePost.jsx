@@ -5,10 +5,25 @@ import styled from "styled-components";
 import useAuthStore from "../store/auth";
 import { getDoc, doc } from "@firebase/firestore";
 import { db } from "../firebase";
+import PostingModal from "./CommentsModal";
 
 function MyLikePost() {
   const user = useAuthStore((state) => state.user);
   const [likedPosts, setLikedPosts] = useState([]);
+
+  //모달
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [, setSelectedPostId] = useState(null);
+
+  //모달 열기
+  const handlePostClick = (post) => {
+    // 배경 페이지 스크롤 막기
+    document.body.style.overflow = "hidden";
+    setSelectedPost(post);
+    setSelectedPostId(post.postId);
+    setOpenModal(true);
+  };
 
   const getLikedPosts = async (userLikes) => {
     const promises = userLikes.map(async ({ likePostId }) => {
@@ -16,7 +31,7 @@ function MyLikePost() {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        return { id: likePostId, ...docSnap.data() };
+        return { ...docSnap.data(), postId: likePostId };
       } else {
         console.log("None");
         return null;
@@ -43,7 +58,12 @@ function MyLikePost() {
         <Posts>
           {likedPosts.map((post) => (
             <PostContainer key={post.id}>
-              <PostImage src={post.photo} />
+              <PostImage
+                src={post.photo}
+                onClick={() => {
+                  handlePostClick(post, post.postId);
+                }}
+              />
               <PostDetails>
                 <div>
                   <ShopName>{post.place.place_name}</ShopName>
@@ -58,6 +78,12 @@ function MyLikePost() {
           ))}
         </Posts>
       </PostCardsContainer>
+      <PostingModal
+        selectedPost={selectedPost}
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+        setSelectedPostId={setSelectedPost}
+      />
     </>
   );
 }

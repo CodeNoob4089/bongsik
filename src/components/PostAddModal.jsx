@@ -26,8 +26,6 @@ function PostAddModal({ modalOpen, setModalOpen }) {
       ? "술집"
       : "맛집";
 
-  console.log(clickedData?.category_name?.split(">"));
-
   const [inputValue, setInputValue] = useState({
     place: clickedData,
     content: "",
@@ -42,6 +40,7 @@ function PostAddModal({ modalOpen, setModalOpen }) {
     category: clickedCategory,
     commentCount: 0,
     timestamp: new Date(),
+    userPhoto: user.photoUrl ? user.photoUrl : "",
   });
   const initialStars = [false, false, false, false, false];
   const [stars, setStars] = useState(initialStars);
