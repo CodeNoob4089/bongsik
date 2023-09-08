@@ -2,19 +2,15 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faStar } from "@fortawesome/free-solid-svg-icons";
-import { Circle, Map, MapInfoWindow, MapMarker, Rectangle } from "react-kakao-maps-sdk";
+import { Circle, Map, MapMarker } from "react-kakao-maps-sdk";
 import useMapDataStore from "../store/mapdata";
 import useClickedDataStore from "../store/modalData";
 import useAuthStore from "../store/auth";
-import { useQuery } from "react-query";
-import { getPosts } from "../api/collection";
 import proj4 from "proj4";
 
 const { kakao } = window;
 
-function KakaoMap({ showModal }) {
-  let timerId = null;
-  const { data: postData } = useQuery(`fetchPostData`, getPosts);
+function KakaoMap({ showModal, postData }) {
   const [inputValue, setInputValue] = useState("");
   const [searchKeyword, setSearchKeyword] = useState("");
   const [info, setInfo] = useState();
@@ -23,6 +19,10 @@ function KakaoMap({ showModal }) {
   const [pagination, setPagination] = useState({});
   const [currentMouseOver, setCurrentMouseOver] = useState();
   const [mapCenterPosition, setMapCenterPosition] = useState({
+    lat: 35.6632102,
+    lng: 128.556077,
+  });
+  const [userLocation, setUserLocation] = useState({
     lat: 35.6632102,
     lng: 128.556077,
   });
@@ -43,15 +43,6 @@ function KakaoMap({ showModal }) {
     setSearchKeyword(inputValue);
   };
 
-  // const debounce = (delay) => {
-  //   if (timerId) {
-  //     clearTimeout(timerId);
-  //   }
-  //   timerId = setTimeout(() => {
-  //     setCurrentMouseOver();
-  //   }, delay);
-  // };
-
   useEffect(() => {
     const getLocation = new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(resolve, reject, {
@@ -64,10 +55,14 @@ function KakaoMap({ showModal }) {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
 
-        setMapCenterPosition({
+        setUserLocation({
           lat: userLat,
           lng: userLng,
         });
+        setMapCenterPosition({
+          lat: userLat,
+          lng: userLng,
+        })
       })
       .catch((error) => console.error(error))
       .finally(() => setLoadingLocation(false));
@@ -125,15 +120,14 @@ function KakaoMap({ showModal }) {
     );
   }, [searchKeyword, map]);
 
-  // -----------------폴리곤 그려주기-----------------
-  useEffect(() => {
   const findNeighborhood = () => {
     return new Promise((resolve, reject) => {
       const geocoder = new window.kakao.maps.services.Geocoder();
+      
 
       const callback = (result, status) => {
         if (status === window.kakao.maps.services.Status.OK) {
-          resolve(result[0].region_3depth_name);
+          resolve(result[0].code);
         } else {
           reject(status);
         }
@@ -143,58 +137,95 @@ function KakaoMap({ showModal }) {
     });
   };
 
-const findNeighborhoodCoordinates = async (neighborhoodName) => {
-  const response = await fetch("emd.zip.geojson", {
-	  headers: {
-	    Accept: "application / json",
-	  },
-	  method: "GET",
-	});
-
-  console.log("response",response)
-
-  const data = await response.json();
-  for (const feature of data.features) {
-      if (neighborhoodName === feature.properties.EMD_KOR_NM) {
-      return feature.geometry.coordinates;
-      }
-  }
-  console.log("data",data)
-  return false;
-  };
-
-const addNeighborhoodPolygon = async () => {
-  const neighborhoodName = await findNeighborhood();
-  const coordinates = await findNeighborhoodCoordinates(neighborhoodName);
-  console.log("받아왔니 데이터", coordinates);
-    const polygonPath = [];
-    const utmk =
-        "+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs";
-    const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
-    const transformer = proj4(utmk, wgs84);
-
-    coordinates.forEach((coordinateArray) => {
-        coordinateArray.forEach((coordinate) => {
-        const [longi, lati] = transformer.forward(coordinate);
-        polygonPath.push(new window.kakao.maps.LatLng(lati, longi));
-      });
-    });
-    // console.log("폴리곤데이터!!!",polygonPath);
-    const polygon = new window.kakao.maps.Polygon({
-      path: polygonPath,
-      strokeColor: "#925CE9",
-      fillColor: "#925CE9",
-      fillOpacity: 0.7,
-    });
-    
-    polygon.setMap(map);
-
-};
-    if (map) {
-    addNeighborhoodPolygon();
+  const onPostAddButtonClick = async(d) => {
+    if (user === null) {
+      return alert("글을 작성하려면 로그인해주세요!");
     }
+    if (d.category_group_name === "음식점" || d.category_group_name === "카페") {
+      await setMapCenterPosition({
+        lat: d.y,
+        lng: d.x,
+      });
+      const neighborhoodName = await findNeighborhood()
+      const dongCode = neighborhoodName.substr(0,8)
+      setClickedData({...d, dongCode});
+      showModal();
+    } else {
+      alert("해당 장소는 음식점이 아닙니다!");
+    }
+  }
+
+  // -----------------폴리곤 그려주기-----------------
+  // useEffect(() => {
+  // const findNeighborhood = () => {
+  //   return new Promise((resolve, reject) => {
+  //     const geocoder = new window.kakao.maps.services.Geocoder();
+  //     console.log("geocoder",geocoder)
+
+  //     const callback = (result, status) => {
+  //       if (status === window.kakao.maps.services.Status.OK) {
+  //         resolve(result[0].region_3depth_name);
+  //       } else {
+  //         reject(status);
+  //       }
+  //     };
+
+  //     geocoder.coord2RegionCode(mapCenterPosition.lng, mapCenterPosition.lat, callback);
+  //   });
+  // };
+
+// const findNeighborhoodCoordinates = async (neighborhoodName) => {
+//   const response = await fetch("emd.zip.geojson", {
+// 	  headers: {
+// 	    Accept: "application / json",
+// 	  },
+// 	  method: "GET",
+// 	});
+
+//   console.log("response",response)
+
+//   const data = await response.json();
+//   for (const feature of data.features) {
+//       if (neighborhoodName === feature.properties.EMD_KOR_NM) {
+//       return feature.geometry.coordinates;
+//       }
+//   }
+//   console.log("data",data)
+//   return false;
+//   };
+
+// const addNeighborhoodPolygon = async () => {
+//   const neighborhoodName = await findNeighborhood();
+//   const coordinates = await findNeighborhoodCoordinates(neighborhoodName);
+//   console.log("받아왔니 데이터", coordinates);
+//     const polygonPath = [];
+//     const utmk =
+//         "+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs";
+//     const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+//     const transformer = proj4(utmk, wgs84);
+
+//     coordinates.forEach((coordinateArray) => {
+//         coordinateArray.forEach((coordinate) => {
+//         const [longi, lati] = transformer.forward(coordinate);
+//         polygonPath.push(new window.kakao.maps.LatLng(lati, longi));
+//       });
+//     });
+//     // console.log("폴리곤데이터!!!",polygonPath);
+//     const polygon = new window.kakao.maps.Polygon({
+//       path: polygonPath,
+//       strokeColor: "#925CE9",
+//       fillColor: "#925CE9",
+//       fillOpacity: 0.7,
+//     });
+    
+//     polygon.setMap(map);
+
+// };
+//     if (map) {
+//     addNeighborhoodPolygon();
+//     }
   
-}, [mapCenterPosition, map]);
+// }, [mapCenterPosition, map]);
 
 
   if (loadingLocation) return <div>위치 정보를 가져오는 중...</div>;
@@ -223,8 +254,8 @@ const addNeighborhoodPolygon = async () => {
         >
           <MapMarker
           position={{
-            lat: mapCenterPosition.lat,
-            lng: mapCenterPosition.lng
+            lat: userLocation.lat,
+            lng: userLocation.lng
           }}
           image={{
             src: "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/free-icon-circle-button-458511.png?alt=media&token=a349691b-e938-41f6-95c0-38d20d8b968a", // 마커이미지의 주소입니다
@@ -306,9 +337,6 @@ const addNeighborhoodPolygon = async () => {
           :null}
             </div>
           ))}
-        
-
-        
           </Map>
           </MapBox>
           <SearchArea>
@@ -321,26 +349,31 @@ const addNeighborhoodPolygon = async () => {
                 <FontAwesomeIcon icon={faMagnifyingGlass} />
               </SearchButton>
             </SearchForm>
+            <CurrentLocationContentsWrapper>
             {!searchKeyword ? (
-              <CurrentLocationContentsWrapper>
-                <CurrentLocationInfo>
+                <div>
+                   <CurrentLocationInfo>
                 <div>
                   <p>현재 나의 위치
                 <CurrentLocationButton
                 onClick={() =>
-                  map.setCenter(new kakao.maps.LatLng(mapCenterPosition.lat, mapCenterPosition.lng))}
+                  map.setCenter(new kakao.maps.LatLng(userLocation.lat, userLocation.lng))}
                 ></CurrentLocationButton></p>
                   <p>기록한 가게 | 좋아요 누른 가게</p>
                 </div>
        
                 </CurrentLocationInfo>
-                <div>
                   <p>최근 리뷰</p>
                 </div>
-              </CurrentLocationContentsWrapper>
             ) : (
-              <SearchResult id="result-wrapper">
-                <ResultText className="result-keyword">{searchKeyword}&nbsp; 검색 결과
+              <>
+                <ResultText className="result-keyword">
+                  <p>
+                    <CurrentLocationButton
+                    onClick={() =>
+                      map.setCenter(new kakao.maps.LatLng(userLocation.lat, userLocation.lng))}
+                    ></CurrentLocationButton>&nbsp;{searchKeyword}&nbsp; 검색 결과
+                </p>
                 <button
                 style={{
                   border: "none",
@@ -371,17 +404,7 @@ const addNeighborhoodPolygon = async () => {
                         위치 보기
                       </PlaceLinkButton>
                       <PlaceLinkButton
-                        onClick={() => {
-                          if (user === null) {
-                            return alert("글을 작성하려면 로그인해주세요!");
-                          }
-                          if (d.category_group_name === "음식점" || d.category_group_name === "카페") {
-                            setClickedData(d);
-                            showModal();
-                          } else {
-                            alert("해당 장소는 음식점이 아닙니다!");
-                          }
-                        }}
+                        onClick={() => onPostAddButtonClick(d)}
                       >
                         기록하기
                       </PlaceLinkButton>
@@ -389,8 +412,9 @@ const addNeighborhoodPolygon = async () => {
                   </ResultList>
                 ))}
                 <PageNumber id="pagination">{console.log(pagination)}</PageNumber>
-              </SearchResult>
+                </>
             )}
+            </CurrentLocationContentsWrapper>
           </SearchArea>
         </>
       )}
@@ -484,13 +508,15 @@ const SearchButton = styled.button`
 
 const CurrentLocationContentsWrapper = styled.div`
   width: 100%;
-  height: 90%;
+  height: 70vh;
   background-color: white;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   padding: 0.9rem 1.2rem;
   box-shadow: 2px 2px 2px #d2d2d2;
+
+  overflow-y: scroll;
 `
 const CurrentLocationInfo = styled.div`
   display: flex;
@@ -498,6 +524,7 @@ const CurrentLocationInfo = styled.div`
   height: 4.2rem;
   border-bottom: 1px solid gray;
   line-height: 1.3rem;
+  
 `
 
 const CurrentLocationButton = styled.button`
@@ -514,16 +541,6 @@ const CurrentLocationButton = styled.button`
   cursor: pointer;
 `
 
-const SearchResult = styled.div`
-  width: 100%;
-  height: 53vh;
-  background-color: white;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  padding: 0.7rem;
-  overflow-y: scroll;
-`;
 const ResultText = styled.p`
   margin-bottom: 10px;
   display: flex;

@@ -3,9 +3,12 @@ import MyList from "../components/MyList";
 import { styled } from "styled-components";
 import PostAddModal from "../components/PostAddModal";
 import { useState } from "react";
+import { useQuery } from "react-query";
+import { getPosts } from "../api/collection";
 
 function Main() {
   const [modalOpen, setModalOpen] = useState(false);
+  const { data: postData } = useQuery(`fetchPostData`, getPosts);
 
   const showModal = () => {
     setModalOpen(true);
@@ -17,7 +20,7 @@ function Main() {
       {modalOpen && <PostAddModal modalOpen={modalOpen} setModalOpen={setModalOpen} />}
       <Container>
         <MapContainer>
-          <KakaoMap showModal={showModal} />
+          <KakaoMap showModal={showModal} postData={postData} />
         </MapContainer>
         <MyList />
       </Container>

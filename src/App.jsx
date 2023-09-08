@@ -7,7 +7,14 @@ import useAuthStore from "./store/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import { getDoc, doc } from "@firebase/firestore";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+  queries: {
+  staleTime: 1000 * 60 * 30, // 30분마다 호출
+  cacheTime: 1000 * 60 * 60, // 1시간마다 호출
+  },
+  },
+  });
 
 function App() {
   const setUser = useAuthStore((state) => state.setUser);

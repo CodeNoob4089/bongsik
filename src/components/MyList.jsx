@@ -87,7 +87,7 @@ function MyList() {
       const imageRef = ref(storage, `${auth.currentUser.email}/${image.name}`);
       await uploadBytes(imageRef, image);
       const downloadURL = await getDownloadURL(imageRef);
-      console.log(downloadURL);
+      console.log("downloadURL",downloadURL);
       setCollectionInput({ ...collectionInput, coverImage: downloadURL });
     }
   };

@@ -48,9 +48,7 @@ function SignUp() {
         };
         return badgeObj;
       }, {});
-      alert("회원가입 완료! 이메일을 인증해주세요.");
-      navigate("/main");
-      signOut(auth);
+      
       await setDoc(doc(db, "users", auth.currentUser.uid), {
         myTags: [],
         userLikes: [],
@@ -59,6 +57,10 @@ function SignUp() {
         level: 1,
         exp: 0,
       });
+      alert("회원가입 완료! 이메일을 인증해주세요.");
+      navigate("/main");
+      signOut(auth);
+
     } catch ({ code, message }) {
       alert(code);
     }
@@ -78,7 +80,7 @@ function SignUp() {
     return state.emailError || state.passwordError || state.confirmPasswordError;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!handleErrorCheck()) {
       joinWithVerification(state.name, state.email, state.password, state.photoURL);

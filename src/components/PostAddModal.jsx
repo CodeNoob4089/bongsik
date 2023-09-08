@@ -26,7 +26,6 @@ function PostAddModal({ modalOpen, setModalOpen }) {
       ? "술집"
       : "맛집";
 
-  console.log(clickedData?.category_name?.split(">"));
 
   const [inputValue, setInputValue] = useState({
     place: clickedData,
@@ -42,16 +41,15 @@ function PostAddModal({ modalOpen, setModalOpen }) {
     category: clickedCategory,
     commentCount: 0,
     timestamp: new Date(),
-    userPhoto: user.photoUrl,
+    userPhoto: user.photoUrl? user.photoUrl:"",
   });
   const initialStars = [false, false, false, false, false];
   const [stars, setStars] = useState(initialStars);
 
   const starClickHandler = (index) => {
     if (index + 1 === stars.filter((s) => s === true).length) {
-      console.log("여기유", stars.filter((s) => s === true).length, index);
       setInputValue({ ...inputValue, star: 0 });
-      console.log(inputValue.star);
+      console.log("star",inputValue.star);
       setStars(initialStars);
       return;
     }
