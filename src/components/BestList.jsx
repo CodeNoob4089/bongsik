@@ -76,7 +76,7 @@ const PostCard = styled.div`
   height: 15rem;
   display: flex;
   border-radius: 1rem;
-  box-shadow: 0.05rem 0.05rem 0.05rem 0.05rem gray;
+  box-shadow: 3px 3px 3px #bbbbbb;
   align-items: center;
 `;
 const InfoBox = styled.div`

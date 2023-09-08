@@ -9,6 +9,9 @@ import BarPost from "../components/BarPost";
 function Community() {
   const [currentTab, setCurrentTab] = useState(1);
   const [isTopVisible, setIsTopVisible] = useState(false);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // 페이지 상단으로 부드럽게 스크롤하는 함수
   const scrollToTop = () => {
