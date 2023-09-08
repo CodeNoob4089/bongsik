@@ -1,5 +1,3 @@
-// import { faFaceSadTear, faRoadBarrier } from "@fortawesome/free-solid-svg-icons";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGratipay } from "@fortawesome/free-brands-svg-icons";
 import { faRotate } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
@@ -26,12 +24,16 @@ function Intro() {
   };
   const getPublicPosts = async () => {
     const postsCollectionRef = collection(db, "posts");
-    return {
-      ...data,
-      postId: postDoc.id,
-    };
+    const querySnapshot = await getDocs(query(postsCollectionRef, where("isPublic", "==", true)));
+    const PublicPosts = querySnapshot.docs.map((postDoc) => {
+      const data = postDoc.data();
+      return {
+        ...data,
+        postId: postDoc.id,
+      };
+    });
+    return PublicPosts;
   };
-  return PublicPosts;
   const { data: PublicPosts } = useQuery("fetchPublicPosts", getPublicPosts);
   const randomPosts = PublicPosts?.sort(() => 0.4 - Math.random()).slice(0, 4);
   console.log(randomPosts);
@@ -71,9 +73,11 @@ function Intro() {
       {/* 뱃지/레벨 시스템 이미지 */}
       <MiddleContentsRight>
         <div>
-          <MiddleTitle>뱃지/레벨 시스템</MiddleTitle>
-          <MiddleDescription style={{ textAlign: "right", marginRight: "2.5rem" }}>
-            활동에 따라 뱃지를 획득하고 레벨을 올려보세요
+          <MiddleTitle>
+            <p>뱃지/레벨 시스템</p>
+          </MiddleTitle>
+          <MiddleDescription>
+            <div>활동에 따라 뱃지를 획득하고 레벨을 올려보세요</div>
           </MiddleDescription>
         </div>
         <img
@@ -104,7 +108,7 @@ function Intro() {
           fontSize: "50px",
         }}
       >
-        <div style={{ marginTop: "5rem" }}>이용방법</div>
+        <div style={{ marginTop: "5rem", color: "white" }}>이용방법</div>
         <img
           style={{ marginTop: "5rem" }}
           src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%9D%B4%EC%9A%A9%EB%B0%A9%EB%B2%95.png?alt=media&token=2cb6dd88-8af0-497b-b4cb-e007e1b30e6d"
@@ -208,11 +212,10 @@ const MiddleTitle = styled.h1`
   font-weight: 700;
   font-size: 1.75rem;
   color: #2d2d30;
-  // display: inline-block;
-  // vertical-align: top;
-  // margin-left: 2.5rem;
-  // padding: 10px 0px;
-  // margin-top: 6.5rem;
+  p {
+    font-weight: bold;
+    text-align: right;
+  }
 `;
 
 const MiddleDescription = styled.div`
@@ -220,6 +223,12 @@ const MiddleDescription = styled.div`
   font-weight: 500;
   line-height: 1.5rem;
   margin-top: 2rem;
+  font-size: 1.5rem;
+  color: #2d2d30;
+  div {
+    float: right;
+    font-size: 1.5rem;
+  }
 `;
 
 const Button = styled.button`
