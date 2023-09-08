@@ -118,7 +118,7 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
       comment: comment,
       date: new Date().toISOString(),
       commentId: nanoid(),
-      commentPhoto: user.photoUrl,
+      commentPhoto: user.photoUrl ? user.photoUrl : "",
     };
 
     await addCommentMutation.mutateAsync(newComment);
