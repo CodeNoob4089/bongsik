@@ -18,10 +18,13 @@ import { db, auth } from "../firebase";
 import { useQuery } from "react-query";
 import PostingModal from "./CommentsModal";
 import Heart from "./Heart";
-
+import useAuthStore from "../store/auth";
+import { useNavigate } from "react-router";
 function RestaurantPost({ category }) {
+  const authStore = useAuthStore();
+  const navigate = useNavigate();
   const userId = auth.currentUser?.uid;
-
+  const isLogIn = authStore.user !== null;
   //모달
   const [openModal, setOpenModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
@@ -29,6 +32,11 @@ function RestaurantPost({ category }) {
   //모달 열기
   const handlePostClick = (post) => {
     // 배경 페이지 스크롤 막기
+    if (!isLogIn) {
+      alert("로그인 후 이용해주세요!");
+      navigate("/signin");
+      return;
+    }
     document.body.style.overflow = "hidden";
     setSelectedPost(post);
     setSelectedPostId(post.postId);
