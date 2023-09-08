@@ -6,14 +6,11 @@ import { Circle, Map, MapMarker, Rectangle } from "react-kakao-maps-sdk";
 import useMapDataStore from "../store/mapdata";
 import useClickedDataStore from "../store/modalData";
 import useAuthStore from "../store/auth";
-import { useQuery } from "react-query";
-import { getPosts } from "../api/collection";
 
 const { kakao } = window;
 
-function KakaoMap({ showModal }) {
+function KakaoMap({ showModal, postData }) {
   let timerId = null;
-  const { data: postData } = useQuery(`fetchPostData`, getPosts);
   const [inputValue, setInputValue] = useState("");
   const [searchKeyword, setSearchKeyword] = useState("");
   const [info, setInfo] = useState();
@@ -134,79 +131,75 @@ function KakaoMap({ showModal }) {
         <div>위치 정보를 가져오는 중...</div>
       ) : (
         <>
-        <Map // 로드뷰를 표시할 Container
-          center={mapCenterPosition}
-          style={{
-            width: "56vw",
-            height: "61vh",
-            position: "relative",
-            borderRadius: "15px",
-          }}
-          level={5}
-          onCreate={setMap}
-        >
-          {markers?.map((marker) => (
-            <MapMarker
-              key={`marker-${marker.content}-${marker.position.lat},${marker.position.lng}`}
-              position={marker.position}
-              onMouseOver={() => setInfo(marker)}
-            >
-              {info && info.content === marker.content && <MarkerInfo>{marker.content}</MarkerInfo>}
-            </MapMarker>
-          ))}
-          {postData?.map((post) => (
-            <Circle
-              key={post.postID}
-              center={{
-                lat: post.place.y,
-                lng: post.place.x,
-              }}
-              radius={100}
-              strokeWeight={2} // 선의 두께입니다
-              strokeColor={"#ff954e"} // 선의 색깔입니다
-              strokeOpacity={2} // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
-              strokeStyle={"solid"} // 선의 스타일 입니다
-              fillColor={"#ff954e"} // 채우기 색깔입니다
-              fillOpacity={0.7} // 채우기 불투명도 입니다
-              onMouseover={() => setCurrentMouseOver(post)}
-              onMouseout={() => debounce(4000)}
-            />
-          ))}
-          {currentMouseOver ? (
-            <MapMarker
-              key={currentMouseOver.postID}
-              position={{
-                lat: currentMouseOver.place.y,
-                lng: currentMouseOver.place.x,
-              }}
-              onMouseover={() => setCurrentMouseOver(currentMouseOver)}
-            >
-              <MarkerInfo>
-                <div>
-                {currentMouseOver.place.place_name} &nbsp;
-                {Array(currentMouseOver.star)
-                  .fill()
-                  .map((_, index) => (
-                    <FontAwesomeIcon key={index} icon={faStar} style={{ color: "#ff4e50" }} />
-                  ))}
+          <Map // 로드뷰를 표시할 Container
+            center={mapCenterPosition}
+            style={{
+              width: "56vw",
+              height: "61vh",
+              position: "relative",
+              borderRadius: "15px",
+            }}
+            level={5}
+            onCreate={setMap}
+          >
+            {markers?.map((marker) => (
+              <MapMarker
+                key={`marker-${marker.content}-${marker.position.lat},${marker.position.lng}`}
+                position={marker.position}
+                onMouseOver={() => setInfo(marker)}
+              >
+                {info && info.content === marker.content && <MarkerInfo>{marker.content}</MarkerInfo>}
+              </MapMarker>
+            ))}
+            {postData?.map((post) => (
+              <Circle
+                key={post.postID}
+                center={{
+                  lat: post.place.y,
+                  lng: post.place.x,
+                }}
+                radius={100}
+                strokeWeight={2} // 선의 두께입니다
+                strokeColor={"#ff954e"} // 선의 색깔입니다
+                strokeOpacity={2} // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+                strokeStyle={"solid"} // 선의 스타일 입니다
+                fillColor={"#ff954e"} // 채우기 색깔입니다
+                fillOpacity={0.7} // 채우기 불투명도 입니다
+                onMouseover={() => setCurrentMouseOver(post)}
+                onMouseout={() => debounce(4000)}
+              />
+            ))}
+            {currentMouseOver ? (
+              <MapMarker
+                key={currentMouseOver.postID}
+                position={{
+                  lat: currentMouseOver.place.y,
+                  lng: currentMouseOver.place.x,
+                }}
+                onMouseover={() => setCurrentMouseOver(currentMouseOver)}
+              >
+                <MarkerInfo>
+                  <div>
+                    {currentMouseOver.place.place_name} &nbsp;
+                    {Array(currentMouseOver.star)
+                      .fill()
+                      .map((_, index) => (
+                        <FontAwesomeIcon key={index} icon={faStar} style={{ color: "#ff4e50" }} />
+                      ))}
                   </div>
-              {currentMouseOver.photo?
-              <MarkerImage src={currentMouseOver.photo}></MarkerImage> : null}
-              </MarkerInfo>
-            </MapMarker>
-          ) : null}
+                  {currentMouseOver.photo ? <MarkerImage src={currentMouseOver.photo}></MarkerImage> : null}
+                </MarkerInfo>
+              </MapMarker>
+            ) : null}
           </Map>
           <SearchArea>
             <SearchForm onSubmit={submitKeyword}>
-              <SearchMapInput
-              value={inputValue}
-              onChange={keywordInputChange}
-              placeholder="가게를 검색해보세요!" />
+              <SearchMapInput value={inputValue} onChange={keywordInputChange} placeholder="가게를 검색해보세요!" />
               <SearchButton>
-                <FontAwesomeIcon icon={faMagnifyingGlass}/>
+                <FontAwesomeIcon icon={faMagnifyingGlass} />
               </SearchButton>
             </SearchForm>
-            {!searchKeyword ?
+            {!searchKeyword ? (
               <CurrentLocationContentsWrapper>
                 <div>
                   <p>현재 나의 위치</p>
@@ -216,27 +209,28 @@ function KakaoMap({ showModal }) {
                   <p>최근 리뷰</p>
                 </div>
               </CurrentLocationContentsWrapper>
-            : (
+            ) : (
               <SearchResult id="result-wrapper">
-                <ResultText className="result-keyword">{searchKeyword}&nbsp; 검색 결과
-                <button
-                style={{
-                  border: "none",
-                  background: "none",
-                  cursor: "pointer",
-                }}
-                onClick={() =>{
-                  setSearchKeyword("")
-                  setInputValue("")
-                }}
-                >X</button>
+                <ResultText className="result-keyword">
+                  {searchKeyword}&nbsp; 검색 결과
+                  <button
+                    style={{
+                      border: "none",
+                      background: "none",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      setSearchKeyword("");
+                      setInputValue("");
+                    }}
+                  >
+                    X
+                  </button>
                 </ResultText>
                 {data?.map((d, index) => (
                   <ResultList key={d.id}>
                     <span>{index + 1}</span>
-                    <div
-                       onClick={() => window.open(`${d.place_url}`, "_blank")}
-                    >
+                    <div onClick={() => window.open(`${d.place_url}`, "_blank")}>
                       <PlaceData>{d.place_name}</PlaceData>
                       <PlaceData>{d.address_name}</PlaceData>
                       <PhoneNum>{d.phone}</PhoneNum>
@@ -292,7 +286,7 @@ const MarkerImage = styled.img`
   width: 180px;
   height: 180px;
   object-fit: cover;
-`
+`;
 
 const SearchArea = styled.div`
   width: 20.5vw;
@@ -307,7 +301,7 @@ const SearchForm = styled.form`
   width: 100%;
   height: 2.2rem;
   display: flex;
-  align-items: center;  
+  align-items: center;
   justify-content: right;
 `;
 
@@ -338,7 +332,7 @@ const CurrentLocationContentsWrapper = styled.div`
   border-radius: 10px;
   display: flex;
   flex-direction: column;
-`
+`;
 
 const SearchResult = styled.div`
   width: 100%;

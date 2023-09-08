@@ -3,25 +3,27 @@ import MyList from "../components/MyList";
 import { styled } from "styled-components";
 import PostAddModal from "../components/PostAddModal";
 import { useState } from "react";
-
-
+import { useQuery } from "react-query";
+import { getPosts } from "../api/collection";
+import { useQueryClient } from "react-query";
 function Main() {
+  const queryClient = useQueryClient();
   const [modalOpen, setModalOpen] = useState(false);
-
+  const { data: postData } = useQuery(`fetchPostData`, getPosts);
   const showModal = () => {
     setModalOpen(true);
     document.body.style.overflow = "hidden";
   };
-  
+
   return (
     <>
-    {modalOpen && <PostAddModal modalOpen={modalOpen} setModalOpen={setModalOpen}/>}
-    <Container>
-      <MapContainer>
-      <KakaoMap showModal={showModal}/>
-      </MapContainer>
-      <MyList />
-    </Container>
+      {modalOpen && <PostAddModal modalOpen={modalOpen} setModalOpen={setModalOpen} />}
+      <Container>
+        <MapContainer>
+          <KakaoMap showModal={showModal} postData={postData} />
+        </MapContainer>
+        <MyList />
+      </Container>
     </>
   );
 }
@@ -43,4 +45,4 @@ const MapContainer = styled.div`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-`
+`;

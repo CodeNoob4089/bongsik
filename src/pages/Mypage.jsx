@@ -11,11 +11,8 @@ import MyLikePost from "../components/MyLikePost";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGear, faHeart, faMedal } from "@fortawesome/free-solid-svg-icons";
 import EditUserModal from "../components/EditUserModal";
-import { useLocation } from "react-router-dom";
 
 function Mypage() {
-  const location = useLocation();
-  const isMypage = location.pathname === "/mypage";
   const [currentTab, setCurrentTab] = useState(1);
   const user = useAuthStore((state) => state.user);
   const badges = useBadgeStore((state) => state.badges);

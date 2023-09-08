@@ -24,9 +24,14 @@ import {
   ProfileCircle,
   ModalLocation,
   InputArea,
+  PostBottomBar,
+  Button,
+  ButtonSet,
+  LikeCount,
 } from "./TabPostStyled";
+import Heart from "./Heart";
 import { nanoid } from "nanoid";
-import { faStar, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId }) {
   const authStore = useAuthStore();
@@ -36,6 +41,7 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);
+
   // 댓글 수정
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editedComment, setEditedComment] = useState("");
@@ -88,8 +94,6 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
           commentCount: currentCommentCount + 1,
         });
         queryClient.invalidateQueries("fetchPostComments");
-        // fetchPublicPosts 쿼리 다시 호출하여 게시물 리스트 업데이트
-        queryClient.invalidateQueries("fetchPublicPosts");
       },
     }
   );
@@ -118,7 +122,7 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
       comment: comment,
       date: new Date().toISOString(),
       commentId: nanoid(),
-      commentPhoto: user.photoUrl,
+      commentPhoto: user.photoUrl ? user.photoUrl : "",
     };
 
     await addCommentMutation.mutateAsync(newComment);
@@ -142,7 +146,7 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
       commentCount: currentCommentCount - 1,
     });
     queryClient.invalidateQueries("fetchPostComments");
-    queryClient.invalidateQueries("fetchPublicPosts");
+    // queryClient.invalidateQueries("fetchPublicPosts");
   });
   // 댓글 수정
   const handleEdit = (commentId, currentComment) => {
@@ -165,7 +169,7 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
         comment: editedComment,
         commentId: commentId,
         date: new Date().toISOString(),
-        commentPhoto: user.photoUrl,
+        commentPhoto: user.photoUrl ? user.photoUrl : "",
         edited: "수정됨",
       };
 
@@ -192,6 +196,23 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
     if (days < 7) return `${Math.floor(days)}일 전`;
     return `${start.toLocaleDateString()}`;
   };
+  console.log(selectedPost);
+  //유저 좋아요 정보 가져오기
+  const getUserData = async () => {
+    const userDocRef = doc(db, "users", userId);
+    const docSnapshot = await getDoc(userDocRef);
+    if (docSnapshot.exists()) {
+      const userData = docSnapshot.data();
+      return {
+        userLikes: userData?.userLikes || [],
+      };
+    } else {
+      return {
+        userLikes: [],
+      };
+    }
+  };
+  const { data: userData } = useQuery("fetchUserData", getUserData);
 
   return (
     <>
@@ -232,8 +253,8 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
                       marginRight: "0.3rem",
                       float: "left",
                     }}
+                    alt="위치 아이콘"
                   />
-
                   {selectedPost.place.address_name}
                   <br />
                 </DetailLocation>
@@ -244,6 +265,25 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
             <ContentArea>
               {selectedPost.content} <hr />
             </ContentArea>
+            <PostBottomBar>
+              <ButtonSet>
+                <Heart userData={userData} selectedPost={selectedPost} />
+                <LikeCount>{selectedPost.likeCount}</LikeCount>
+                <Button>
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%8C%93%EA%B8%80%20%EC%95%84%EC%9D%B4%EC%BD%98.png?alt=media&token=0f14a325-e157-47ae-aaa9-92adfb4a8434"
+                    style={{
+                      width: "1.2rem",
+                      height: "1.1rem",
+                      marginRight: "0.3rem",
+                      float: "left",
+                    }}
+                    alt="댓글 아이콘"
+                  />
+                </Button>
+                <LikeCount>{selectedPost.commentCount}</LikeCount>
+              </ButtonSet>
+            </PostBottomBar>
             <InputArea>
               <ProfileCircle style={{ marginLeft: "2rem" }}>
                 <ProfileBox photo={user.photoUrl} />
@@ -335,8 +375,8 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
 
 export default PostingModal;
 const ProfileBox = styled.div`
-  width: 4em;
-  height: 4rem;
+  width: 3em;
+  height: 3rem;
   border-radius: 50%;
   background-color: #ffffff;
   background-image: url(${(props) => props.photo});
