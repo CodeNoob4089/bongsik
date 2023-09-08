@@ -126,8 +126,6 @@ function MyList() {
     }
   };
 
-  console.log(postData);
-
   return (
     <>
       <ListCardsContainer>
