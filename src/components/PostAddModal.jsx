@@ -26,8 +26,6 @@ function PostAddModal({ modalOpen, setModalOpen }) {
       ? "술집"
       : "맛집";
 
-  console.log(clickedData?.category_name?.split(">"));
-
   const [inputValue, setInputValue] = useState({
     place: clickedData,
     content: "",

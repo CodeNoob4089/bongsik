@@ -3,11 +3,12 @@ import MyList from "../components/MyList";
 import { styled } from "styled-components";
 import PostAddModal from "../components/PostAddModal";
 import { useState } from "react";
+import BestList from "../components/BestList";
+import WorstList from "../components/WorstList";
 import { useQuery } from "react-query";
 import { getPosts } from "../api/collection";
-import { useQueryClient } from "react-query";
+
 function Main() {
-  const queryClient = useQueryClient();
   const [modalOpen, setModalOpen] = useState(false);
   const { data: postData } = useQuery(`fetchPostData`, getPosts);
   const showModal = () => {
@@ -23,6 +24,10 @@ function Main() {
           <KakaoMap showModal={showModal} postData={postData} />
         </MapContainer>
         <MyList />
+        <ListContainer>
+          <BestList />
+          <WorstList />
+        </ListContainer>
       </Container>
     </>
   );
@@ -34,15 +39,22 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 14vh 7.8vw;
+  justify-content: center;
+  padding: 3vh 9vw;
   width: 100%;
   height: 100%;
 `;
+
 const MapContainer = styled.div`
   width: 100%;
-  height: 61vh;
+  height: 81vh;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
+`;
+
+const ListContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
 `;

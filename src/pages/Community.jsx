@@ -7,6 +7,9 @@ import RestaurantPost from "../components/RestaurantPost";
 function Community() {
   const [currentTab, setCurrentTab] = useState(1);
   const [isTopVisible, setIsTopVisible] = useState(false);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // 페이지 상단으로 부드럽게 스크롤하는 함수
   const scrollToTop = () => {
@@ -136,7 +139,7 @@ const SearchArea = styled.div`
   margin-left: 3rem;
   top: 6rem;
   width: 18rem;
-  margin-top: 8rem;
+  margin-top: 6rem;
 `;
 
 const SearchForm = styled.form`
@@ -182,7 +185,7 @@ const MonthlyPost = styled.div`
   border-radius: 0.3rem;
   margin-left: 3rem;
   margin-bottom: 3rem;
-  margin-top: 10.5rem;
+  margin-top: 11rem;
 `;
 const MonthlyContent = styled.div`
   display: flex;

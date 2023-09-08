@@ -24,7 +24,7 @@ function Layout() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      navigate("/");
+      navigate("/main");
       alert("정상적으로 로그아웃 되었습니다.");
     } catch (error) {
       alert("로그아웃 도중 에러가 발생했습니다.", error);
@@ -34,17 +34,15 @@ function Layout() {
   return (
     <LayoutContainer style={{ MinHeight: MypageCss ? "100%" : "auto" }}>
       <Header>
-        <LogoContent>
-          <LogoImg
-            src={
-              "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%A1%9C%EA%B3%A07.png?alt=media&token=b0943697-3adc-40ab-9bec-fe12259408e1"
-            }
-            onClick={() => {
-              setCurrentPage("");
-              navigate("/main");
-            }}
-          />
-        </LogoContent>
+        <LogoImg
+          src={
+            "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/ETG%20%E1%84%83%E1%85%A2%E1%84%86%E1%85%AE%E1%86%AB%E1%84%8C%E1%85%A1%E1%84%89%E1%85%AE%E1%84%8C%E1%85%A5%E1%86%BC%E1%84%85%E1%85%A9%E1%84%80%E1%85%A9.png?alt=media&token=ee0210fe-744c-40ef-a806-be5ba8fc08fc"
+          }
+          onClick={() => {
+            setCurrentPage("");
+            navigate("/main");
+          }}
+        />
         {isLoggedIn ? (
           <>
             <NavigationBar>
@@ -57,7 +55,7 @@ function Layout() {
                 }}
                 currentPage={currentPage}
               >
-                사이트 소개
+                About
               </Button>
               <Button
                 id="community"
@@ -86,14 +84,16 @@ function Layout() {
           </>
         ) : (
           <div>
-             <Button
-             id="intro"
-             onClick={() => {
-               setCurrentPage("intro")
-               navigate("/");
-             }}
-             currentPage={currentPage}
-            >사이트 소개</Button>
+            <Button
+              id="intro"
+              onClick={() => {
+                setCurrentPage("intro");
+                navigate("/");
+              }}
+              currentPage={currentPage}
+            >
+              About
+            </Button>
             <Button
               id="signin"
               onClick={() => {
@@ -142,38 +142,32 @@ const LayoutContainer = styled.div`
 const Button = styled.button`
   border: none;
   height: 60px;
-  width: 120px;
-  font-size: 18px;
-  color: ${(props) => (props.id === props.currentPage ? "red" : "black")};
-  background-color: rgba(0, 0, 0, 0);
+  width: 5rem;
+  color: ${(props) => (props.id === props.currentPage ? "#FF4E50" : "black")};
+  background: none;
   cursor: pointer;
 `;
 const NavigationBar = styled.div``;
 
 const Header = styled.div`
+  font-size: 0.8rem;
   background: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  height: 6rem;
-  padding: 0 20px;
+  height: 3.5rem;
+  padding: 0 6rem;
 `;
 
-const LogoContent = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 20px;
-`;
 const LogoImg = styled.img`
-  height: 37px;
-  margin-left: 0.5rem;
+  height: 1.7rem;
   cursor: pointer;
 `;
 
 const Footer = styled.div`
   bottom: 0;
-  background: #e8dddd;
+  background: white;
   width: 100%;
   height: 5rem;
   display: flex;
@@ -182,7 +176,6 @@ const Footer = styled.div`
 `;
 
 const FooterContent = styled.div`
-  /* max-width: 1200px; */
   margin: 0 auto;
 `;
 

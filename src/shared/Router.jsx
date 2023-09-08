@@ -8,6 +8,7 @@ import Mypage from "../pages/Mypage";
 import Community from "../pages/Community";
 import Admin from "../pages/Admin";
 import Intro from "../pages/Intro";
+import Dongdong from "../mapFeatureCollection/Dongdong";
 
 function Router() {
   return (
@@ -20,6 +21,7 @@ function Router() {
           <Route path="/community" element={<Community />} />
           <Route path="/admin" element={<Admin />} />
         </Route>
+        <Route path="/donginfo" element={<Dongdong />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<Signin />} />
       </Routes>
