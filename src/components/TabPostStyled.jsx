@@ -1,23 +1,31 @@
 import styled from "styled-components";
 export const CommunityPosting = styled.div`
-  background-color: #f3f1f1;
-  height: 80vh;
-  width: 60.5vw;
-  margin-top: 0.8rem;
+  /* background-color: #bd6767; */
+  /* height: 80vh;
+  width: 60vw; */
+  margin-bottom: 2.5rem;
+  margin-left: 3.5rem;
   border-radius: 0.3rem;
+  display: flex;
+`;
+export const PostContainer = styled.div`
+  height: 91.10169491525424vh;
+  width: 59.55497382198953vw;
+  border-radius: 0.4rem;
+  background-color: #ffffff;
 `;
 export const PostImgBox = styled.div`
-  background-color: #f3f1f1;
-  height: 55vh;
-  width: 56.5vw;
+  /* background-color: black; */
+  height: 54vh;
+  width: 53vw;
   display: flex;
-  margin-left: 1.7rem;
   border-radius: 0.3rem;
-  margin: 0 auto;
+  margin-top: 3rem;
+  margin-left: 1.4rem;
 `;
 export const PostImgUrl = styled.img`
   /* background-color: #3511a3; */
-  height: 50vh;
+  height: 53.67231638418079vh;
   width: 48vw;
   margin-top: 1.5rem;
   margin-left: 3.2rem;
@@ -29,15 +37,19 @@ export const PostImgUrl = styled.img`
 export const PostContent = styled.div`
   /* background-color: #5e44ad; */
   width: 48vw;
-  margin-left: 6rem;
+  margin-top: 1.25rem;
+  margin-left: 3.7rem;
   p {
     margin-top: 0.5rem;
+  }
+  hr {
+    margin-top: 1.56rem;
   }
 `;
 export const PostBottomBar = styled.div`
   /* background-color: #1f961f; */
   width: 48vw;
-  margin-left: 5.5rem;
+  margin-left: 3.7rem;
   margin-top: 1rem;
   margin-bottom: 80px;
 `;
@@ -49,7 +61,8 @@ export const Button = styled.button`
   max-height: 5vh;
   border: none;
   font-size: 1rem;
-  margin-left: 3rem;
+  margin-left: 2.5rem;
+  background-color: transparent;
 `;
 export const ModalWrapper = styled.div`
   position: fixed;
@@ -181,11 +194,12 @@ export const UserInfo = styled.div`
   background-color: white;
   border-radius: 10px;
   margin-left: 2.8rem;
-  display: flex;
   margin-bottom: 1.5rem;
+  flex-direction: column;
 `;
 
 export const UserProfile = styled.div`
+  flex-direction: row;
   display: flex;
 `;
 export const UserNameAndLevel = styled.div`
@@ -206,33 +220,48 @@ export const Nickname = styled.p`
 `;
 
 export const ProfileCircle = styled.div`
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  border-radius: 70%; /*둥그런 원으로 만들기 위함*/
   overflow: hidden;
-  /* display: inline-block; */
+  text-align: center;
+  line-height: center;
 `;
 
 export const ProfileImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  background-position: center center;
+  background-size: 3rem;
+  margin: 0 auto;
 `;
 export const ModalLocation = styled.div`
   width: 40vw;
-  height: 4rem;
+  height: 5rem;
   background-color: #f2f2f5;
   border-radius: 0.35rem;
-  display: block;
+  /* display: block; */
   margin-bottom: 3rem;
   margin-left: 2.8rem;
   p {
     margin-left: 1rem;
     margin-top: 1rem;
+    line-height: 1.5rem;
+    text-align: center;
+    float: left;
   }
 `;
 
 export const InputArea = styled.div`
   display: flex;
+`;
+export const DetailLocation = styled.span`
+  color: #5a5a68;
+  font-size: 0.9rem;
+  float: left;
+  margin-left: 0.2rem;
+`;
+export const Place = styled.div`
+  float: left;
 `;
