@@ -5,10 +5,12 @@ import PostAddModal from "../components/PostAddModal";
 import { useState } from "react";
 import BestList from "../components/BestList";
 import WorstList from "../components/WorstList";
+import { useQuery } from "react-query";
+import { getPosts } from "../api/collection";
 
 function Main() {
   const [modalOpen, setModalOpen] = useState(false);
-
+  const { data: postData } = useQuery(`fetchPostData`, getPosts);
   const showModal = () => {
     setModalOpen(true);
     document.body.style.overflow = "hidden";
@@ -19,7 +21,7 @@ function Main() {
       {modalOpen && <PostAddModal modalOpen={modalOpen} setModalOpen={setModalOpen} />}
       <Container>
         <MapContainer>
-          <KakaoMap showModal={showModal} />
+          <KakaoMap showModal={showModal} postData={postData} />
         </MapContainer>
         <MyList />
         <ListContainer>
