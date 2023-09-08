@@ -1,5 +1,3 @@
-// import { faFaceSadTear, faRoadBarrier } from "@fortawesome/free-solid-svg-icons";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGratipay } from "@fortawesome/free-brands-svg-icons";
 import { faRotate } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
@@ -26,12 +24,16 @@ function Intro() {
   };
   const getPublicPosts = async () => {
     const postsCollectionRef = collection(db, "posts");
-    return {
-      ...data,
-      postId: postDoc.id,
-    };
+    const querySnapshot = await getDocs(query(postsCollectionRef, where("isPublic", "==", true)));
+    const PublicPosts = querySnapshot.docs.map((postDoc) => {
+      const data = postDoc.data();
+      return {
+        ...data,
+        postId: postDoc.id,
+      };
+    });
+    return PublicPosts;
   };
-  return PublicPosts;
   const { data: PublicPosts } = useQuery("fetchPublicPosts", getPublicPosts);
   const randomPosts = PublicPosts?.sort(() => 0.4 - Math.random()).slice(0, 4);
   console.log(randomPosts);
