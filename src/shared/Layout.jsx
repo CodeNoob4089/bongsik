@@ -160,12 +160,6 @@ const Header = styled.div`
   padding: 0 6rem;
 `;
 
-// const LogoContent = styled.div`
-//   display: flex;
-//   align-items: center;
-//   gap: 20px;
-// `;
-
 const LogoImg = styled.img`
   height: 1.7rem;
   cursor: pointer;
@@ -173,7 +167,7 @@ const LogoImg = styled.img`
 
 const Footer = styled.div`
   bottom: 0;
-  background: #e8dddd;
+  background: white;
   width: 100%;
   height: 5rem;
   display: flex;
@@ -182,7 +176,6 @@ const Footer = styled.div`
 `;
 
 const FooterContent = styled.div`
-  /* max-width: 1200px; */
   margin: 0 auto;
 `;
 

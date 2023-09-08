@@ -3,8 +3,6 @@ import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
 import React, { useEffect, useState } from "react";
 import RestaurantPost from "../components/RestaurantPost";
-import CafePost from "../components/CafePost";
-import BarPost from "../components/BarPost";
 
 function Community() {
   const [currentTab, setCurrentTab] = useState(1);
@@ -35,19 +33,19 @@ function Community() {
       id: 1,
       tabTitle: "맛집",
       title: "title",
-      content: <RestaurantPost />,
+      content: <RestaurantPost category={"맛집"} />,
     },
     {
       id: 2,
       tabTitle: "술집",
       title: "title",
-      content: <BarPost />,
+      content: <RestaurantPost category={"술집"} />,
     },
     {
       id: 3,
       tabTitle: "카페",
       title: "title",
-      content: <CafePost />,
+      content: <RestaurantPost category={"카페"} />,
     },
   ];
 
@@ -141,7 +139,7 @@ const SearchArea = styled.div`
   margin-left: 3rem;
   top: 6rem;
   width: 18rem;
-  margin-top: 8rem;
+  margin-top: 6rem;
 `;
 
 const SearchForm = styled.form`
@@ -187,7 +185,7 @@ const MonthlyPost = styled.div`
   border-radius: 0.3rem;
   margin-left: 3rem;
   margin-bottom: 3rem;
-  margin-top: 10.5rem;
+  margin-top: 11rem;
 `;
 const MonthlyContent = styled.div`
   display: flex;
