@@ -6,8 +6,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { db, auth } from "../firebase";
 import { useMutation } from "react-query";
+import useAuthStore from "../store/auth";
+import { useNavigate } from "react-router";
 function Heart({ userData, item, selectedPost }) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const authStore = useAuthStore();
+  const isLogIn = authStore.user !== null;
   const userId = auth.currentUser?.uid;
   const [isClickProcessing, setIsClickProcessing] = useState(false);
 
@@ -42,16 +47,16 @@ function Heart({ userData, item, selectedPost }) {
     const userSnapshot = await getDoc(userDocRef);
     const updatedUserData = userSnapshot.data();
 
-    return updatedUserData; // 리턴 값은 mutation 성공 시 반환할 데이터입니다.
+    return updatedUserData;
   });
   const clickHeart = async () => {
-    // 클릭 처리 중인 경우 클릭 방지
+    if (!isLogIn) {
+      alert("로그인 후 이용해주세요!");
+      navigate("/signin");
+      return;
+    }
     if (mutation.isLoading) return;
-
-    // mutation 함수를 호출하여 비동기 작업 수행
-    mutation.mutate(); // mutation 호출
-
-    // 클릭 처리 완료 후 클릭 활성화
+    mutation.mutate();
     setTimeout(() => {
       setIsClickProcessing(false);
     }, 10);
