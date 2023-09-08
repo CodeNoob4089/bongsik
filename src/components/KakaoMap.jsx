@@ -6,15 +6,13 @@ import { Circle, Map, MapInfoWindow, MapMarker, Rectangle } from "react-kakao-ma
 import useMapDataStore from "../store/mapdata";
 import useClickedDataStore from "../store/modalData";
 import useAuthStore from "../store/auth";
-import { useQuery } from "react-query";
-import { getPosts } from "../api/collection";
+
 import proj4 from "proj4";
 
 const { kakao } = window;
 
 function KakaoMap({ showModal, postData }) {
   let timerId = null;
-
   const [inputValue, setInputValue] = useState("");
   const [searchKeyword, setSearchKeyword] = useState("");
   const [info, setInfo] = useState();
