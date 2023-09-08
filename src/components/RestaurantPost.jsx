@@ -13,16 +13,18 @@ import {
 } from "../components/TabPostStyled";
 import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComment } from "@fortawesome/free-regular-svg-icons";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { db, auth } from "../firebase";
 import { useQuery } from "react-query";
 import PostingModal from "./CommentsModal";
 import Heart from "./Heart";
-
-function RestaurantPost() {
+import useAuthStore from "../store/auth";
+import { useNavigate } from "react-router";
+function RestaurantPost({ category }) {
+  const authStore = useAuthStore();
+  const navigate = useNavigate();
   const userId = auth.currentUser?.uid;
-
+  const isLogIn = authStore.user !== null;
   //모달
   const [openModal, setOpenModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
@@ -30,17 +32,25 @@ function RestaurantPost() {
   //모달 열기
   const handlePostClick = (post) => {
     // 배경 페이지 스크롤 막기
+    if (!isLogIn) {
+      alert("로그인 후 이용해주세요!");
+      navigate("/signin");
+      return;
+    }
     document.body.style.overflow = "hidden";
     setSelectedPost(post);
     setSelectedPostId(post.postId);
     setOpenModal(true);
   };
-  const getPublicPosts = async () => {
+  // 음식점 공개 게시물 가져오기
+  const getPublicRestaurantPosts = async () => {
     const postsCollectionRef = collection(db, "posts");
 
-    const querySnapshot = await getDocs(query(postsCollectionRef, where("isPublic", "==", true)));
+    const querySnapshot = await getDocs(
+      query(postsCollectionRef, where("isPublic", "==", true) && where("category", "==", category))
+    );
 
-    const PublicPosts = querySnapshot.docs.map((postDoc) => {
+    const RestaurantPublicPosts = querySnapshot.docs.map((postDoc) => {
       const data = postDoc.data();
 
       return {
@@ -48,7 +58,7 @@ function RestaurantPost() {
         postId: postDoc.id,
       };
     });
-    return PublicPosts;
+    return RestaurantPublicPosts;
   };
 
   //유저 좋아요 정보 가져오기
@@ -68,19 +78,22 @@ function RestaurantPost() {
   };
 
   const { data: userData } = useQuery("fetchUserData", getUserData);
-  const { data: PublicPosts } = useQuery("fetchPublicPosts", getPublicPosts);
+  const { data: RestaurantPublicPosts } = useQuery("fetchPublicRestaurantPosts", getPublicRestaurantPosts);
 
-  const filterdPosts = PublicPosts?.filter((post) => post?.category === "맛집");
-  console.log(filterdPosts);
   return (
     <>
-      {filterdPosts?.map((item) => (
+      {RestaurantPublicPosts?.map((item) => (
         <CommunityPosting key={item.postId}>
           <PostContainer>
             {item.photo ? (
               <>
                 <PostImgBox>
-                  <PostImgUrl src={item.photo}></PostImgUrl>
+                  <PostImgUrl
+                    src={item.photo}
+                    onClick={() => {
+                      handlePostClick(item);
+                    }}
+                  ></PostImgUrl>
                 </PostImgBox>
               </>
             ) : (
@@ -110,6 +123,7 @@ function RestaurantPost() {
                       marginRight: "0.3rem",
                       float: "left",
                     }}
+                    alt="위치 아이콘"
                   />
                   {item.place.address_name}
                 </DetailLocation>
@@ -134,6 +148,7 @@ function RestaurantPost() {
                       marginRight: "0.3rem",
                       float: "left",
                     }}
+                    alt="댓글 아이콘"
                   />
                 </Button>
                 <LikeCount>{item.commentCount}</LikeCount>
@@ -147,6 +162,7 @@ function RestaurantPost() {
         openModal={openModal}
         setOpenModal={setOpenModal}
         setSelectedPostId={setSelectedPost}
+        RestaurantPublicPosts={RestaurantPublicPosts}
       />
     </>
   );

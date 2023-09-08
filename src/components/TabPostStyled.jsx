@@ -97,7 +97,7 @@ export const ModalContent = styled.div`
 
   img {
     width: 40vw;
-    height: 45vh;
+    height: 23.75rem;
     margin-bottom: 10px;
     margin: auto;
     display: block;
@@ -108,22 +108,23 @@ export const SubmitButton = styled.button`
   color: white;
   font-weight: bold;
   background-color: #ff4e50;
-  width: 4rem;
+  width: 3rem;
   height: 2.3rem;
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  margin-left: 1rem;
+  margin-left: 0.2rem;
+  margin: 0.7rem;
 `;
 export const InputBox = styled.input`
   font-weight: bold;
   text-align: center;
-  width: 30rem;
+  width: 31rem;
   height: 2.3rem;
   border-radius: 10px;
   background-color: #f2f2f5;
   border: none;
-  margin-left: 1rem;
+  float: left;
   margin-top: 0.8rem;
 `;
 export const Form = styled.form`
@@ -136,10 +137,12 @@ export const CommentWrap = styled.div`
   height: auto;
   border-radius: 10px;
 `;
-export const Like = styled.span`
+export const Like = styled.button`
   padding: 0.5rem;
   border-radius: 100%;
   cursor: pointer;
+  background-color: transparent;
+  border: none;
   color: ${(props) => (props.isLiked ? "red" : "black")};
 `;
 export const LikeCount = styled.div`
