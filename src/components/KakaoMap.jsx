@@ -13,6 +13,7 @@ const { kakao } = window;
 
 function KakaoMap({ showModal, postData }) {
   let timerId = null;
+  const { data: postData } = useQuery(`fetchPostData`, getPosts);
   const [inputValue, setInputValue] = useState("");
   const [searchKeyword, setSearchKeyword] = useState("");
   const [info, setInfo] = useState();

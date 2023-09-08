@@ -7,7 +7,13 @@ import useAuthStore from "./store/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import { getDoc, doc } from "@firebase/firestore";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function App() {
   const setUser = useAuthStore((state) => state.setUser);

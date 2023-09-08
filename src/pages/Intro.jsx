@@ -6,28 +6,35 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Badge from "../components/Badge";
-import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
-import { db, auth } from "../firebase";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../firebase";
 import { useQuery } from "react-query";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart, faComment } from "@fortawesome/free-solid-svg-icons";
+import useAuthStore from "../store/auth";
 
 function Intro() {
+  const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
-
-  // const getPublicPosts = async() => {
-  //   const postsCollectionRef = collection(db, "posts");
-  //   const querySnapshot = await getDocs(query(postsCollectionRef, where("isPublic", "==", true)));
-  //   const PublicPosts = querySnapshot.docs.map((postDoc) => {
-  //     const data = postDoc.data();
-  //     return {
-  //       ...data,
-  //       postId: postDoc.id,
-  //     };
-  //   });
-  //   return PublicPosts;
-  // };
-
-  // const { data: PublicPosts } = useQuery("fetchPublicPosts", getPublicPosts);
-
+  const handlePostcard = () => {
+    if (user !== null) {
+      navigate("/community");
+    } else {
+      alert("해당 서비스는 로그인 후 이용 가능합니다.");
+      navigate("/signin");
+    }
+  };
+  const getPublicPosts = async () => {
+    const postsCollectionRef = collection(db, "posts");
+    return {
+      ...data,
+      postId: postDoc.id,
+    };
+  };
+  return PublicPosts;
+  const { data: PublicPosts } = useQuery("fetchPublicPosts", getPublicPosts);
+  const randomPosts = PublicPosts?.sort(() => 0.4 - Math.random()).slice(0, 4);
+  console.log(randomPosts);
   return (
     <>
       <TopImage>
@@ -37,7 +44,6 @@ function Intro() {
           모아놓은 맛 기록 다이어리
         </Title>
         <Description>
-          {" "}
           ETG는 'Eat the ground'의 약자로, 나만의 음식점을 기록하면 지도에 색이 칠해지는 재미를 더한 서비스입니다.
           <br />맛 기록을 컬렉션으로 저장하고, 다른 사람의 맛 기록도 구경해보세요
         </Description>
@@ -104,6 +110,45 @@ function Intro() {
           src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%9D%B4%EC%9A%A9%EB%B0%A9%EB%B2%95.png?alt=media&token=2cb6dd88-8af0-497b-b4cb-e007e1b30e6d"
         />
       </div>
+      <MorePostContainer>
+        <PostContainer>
+          <PostTitle>최근 게시물</PostTitle>
+          <PostCards>
+            {randomPosts?.map((post) => {
+              return (
+                <PostCard key={post.postId} onClick={handlePostcard}>
+                  <ImageBox src={post.photo ? post.photo : ""} />
+                  <InfoBox>
+                    <PostName>{post.place.place_name}</PostName>
+                    <Address>
+                      <Ping src="https://firebasestorage.googleapis.com/v0/b/bongsikmk3.appspot.com/o/ping.png?alt=media&token=d1ee5d83-0158-4208-9250-31d448731c5a" />
+                      <div>{post.place.address_name}</div>
+                    </Address>
+                  </InfoBox>
+                  <HeartComment>
+                    <Heart>
+                      <FontAwesomeIcon icon={faHeart} color="#ff4e50" size="lg" />
+                      <Count>{post.likeCount}</Count>
+                    </Heart>
+                    <PostComment>
+                      <FontAwesomeIcon icon={faComment} size="lg" />
+                      <Count>{post.commentCount}</Count>
+                    </PostComment>
+                  </HeartComment>
+                </PostCard>
+              );
+            })}
+          </PostCards>
+        </PostContainer>
+        <MoreButton
+          onClick={() => {
+            navigate("/community");
+          }}
+        >
+          더보기
+          <ButtonImg src="https://firebasestorage.googleapis.com/v0/b/bongsikmk3.appspot.com/o/%EC%98%A4%EB%A5%B8%EC%AA%BD%20%EB%B2%84%ED%8A%BC.png?alt=media&token=40a874fe-efec-467e-a6a8-a08569236d2b" />
+        </MoreButton>
+      </MorePostContainer>
     </>
   );
 }
@@ -195,3 +240,107 @@ const Button = styled.button`
 `;
 
 //16px : 1rem
+const MorePostContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+const PostContainer = styled.div`
+  width: 90vw;
+  height: 70vh;
+  margin-top: 8rem;
+  margin-left: 5rem;
+`;
+const PostTitle = styled.h2`
+  margin-bottom: 7rem;
+  font-size: 1.8rem;
+  font-weight: bold;
+`;
+const PostCards = styled.div`
+  width: 90vw;
+  display: flex;
+  justify-content: space-between;
+`;
+const PostCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: white;
+  width: 20rem;
+  height: 25rem;
+  border-radius: 1rem;
+  padding-top: 1rem;
+  box-sizing: border-box;
+  box-shadow: 3px 3px 3px #bbbbbb;
+  cursor: pointer;
+  transition: transform 0.2s;
+  &:hover {
+    transform: scale(1.05);
+    z-index: 1;
+  }
+`;
+const ImageBox = styled.img`
+  width: 90%;
+  height: 60%;
+  border-radius: 1rem;
+  object-fit: cover;
+`;
+const InfoBox = styled.div`
+  margin-top: 1rem;
+  align-self: self-start;
+  margin-left: 1rem;
+  font-size: 1.1rem;
+`;
+const PostName = styled.p`
+  font-weight: bold;
+  margin-bottom: 1rem;
+`;
+const Address = styled.div`
+  display: flex;
+`;
+const Ping = styled.img`
+  width: 1.3rem;
+  height: 1.3rem;
+`;
+const HeartComment = styled.div`
+  width: 90%;
+  display: flex;
+  margin-top: 2rem;
+  align-self: self-start;
+  margin-left: 1rem;
+  gap: 2rem;
+  border-top: 1px solid #d9d9d9;
+  padding-top: 1rem;
+`;
+const Heart = styled.div`
+  display: flex;
+  gap: 0.4rem;
+`;
+const Count = styled.p`
+  font-size: 1.15rem;
+  font-weight: 500;
+`;
+const PostComment = styled.div`
+  display: flex;
+  gap: 0.4rem;
+`;
+const MoreButton = styled.button`
+  margin-top: -3rem;
+  margin-bottom: 5rem;
+  width: 30%;
+  height: 3rem;
+  border: none;
+  background-color: #ffffff;
+  transition-duration: 0.3s;
+  font-size: 1.2rem;
+  cursor: pointer;
+  &:hover {
+    background-color: #f0f0f0;
+  }
+`;
+const ButtonImg = styled.img`
+  width: 1.2rem;
+  height: 1.2rem;
+  object-fit: cover;
+`;
