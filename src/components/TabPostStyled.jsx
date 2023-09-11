@@ -14,7 +14,8 @@ export const PostContainer = styled.div`
   border-radius: 0.7rem;
   background-color: white;
   display: flex;
-  box-shadow: 2px 2px 2px #bbbbbb;
+  box-shadow: 1px 1px 1px #e7e7e7;
+  cursor: pointer;
 `;
 export const PostImgBox = styled.div`
   /* background-color: black; */
