@@ -10,7 +10,7 @@ import { useQuery } from "react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faComment } from "@fortawesome/free-solid-svg-icons";
 import useAuthStore from "../store/auth";
-
+import { getPublicPosts } from "../api/collection";
 function Intro() {
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
@@ -22,21 +22,10 @@ function Intro() {
       navigate("/signin");
     }
   };
-  const getPublicPosts = async () => {
-    const postsCollectionRef = collection(db, "posts");
-    const querySnapshot = await getDocs(query(postsCollectionRef, where("isPublic", "==", true)));
-    const PublicPosts = querySnapshot.docs.map((postDoc) => {
-      const data = postDoc.data();
-      return {
-        ...data,
-        postId: postDoc.id,
-      };
-    });
-    return PublicPosts;
-  };
+
   const { data: PublicPosts } = useQuery("fetchPublicPosts", getPublicPosts);
   const randomPosts = PublicPosts?.sort(() => 0.4 - Math.random()).slice(0, 4);
-  console.log(randomPosts);
+
   return (
     <>
       <TopImage>

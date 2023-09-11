@@ -24,7 +24,6 @@ import {
   ProfileCircle,
   ModalLocation,
   InputArea,
-  PostBottomBar,
   Button,
   ButtonSet,
   LikeCount,
@@ -102,6 +101,7 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
   const handleSubmit = async (e, postId) => {
     e.preventDefault();
     console.log(postId);
+
     const commentInput = e.target.comment;
     const comment = commentInput.value;
 
@@ -114,20 +114,21 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
       alert("댓글을 입력해주세요");
       return;
     }
+    if (window.confirm("작성하시겠습니까?")) {
+      const newComment = {
+        nickName: displayName,
+        postId: postId,
+        userId: userId,
+        comment: comment,
+        date: new Date().toISOString(),
+        commentId: nanoid(),
+        commentPhoto: user.photoUrl ? user.photoUrl : "",
+      };
 
-    const newComment = {
-      nickName: displayName,
-      postId: postId,
-      userId: userId,
-      comment: comment,
-      date: new Date().toISOString(),
-      commentId: nanoid(),
-      commentPhoto: user.photoUrl ? user.photoUrl : "",
-    };
-
-    await addCommentMutation.mutateAsync(newComment);
-
-    commentInput.value = "";
+      await addCommentMutation.mutateAsync(newComment);
+      queryClient.invalidateQueries("fetchPublicRestaurantPosts");
+      commentInput.value = "";
+    }
   };
   // 댓글 삭제
   const deleteCommentMutation = useMutation(async (commentId) => {
@@ -146,7 +147,7 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
       commentCount: currentCommentCount - 1,
     });
     queryClient.invalidateQueries("fetchPostComments");
-    // queryClient.invalidateQueries("fetchPublicPosts");
+    queryClient.invalidateQueries("fetchPublicRestaurantPosts");
   });
   // 댓글 수정
   const handleEdit = (commentId, currentComment) => {
@@ -265,25 +266,23 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
             <ContentArea>
               {selectedPost.content} <hr />
             </ContentArea>
-            <PostBottomBar>
-              <ButtonSet>
-                <Heart userData={userData} selectedPost={selectedPost} />
-                <LikeCount>{selectedPost.likeCount}</LikeCount>
-                <Button>
-                  <img
-                    src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%8C%93%EA%B8%80%20%EC%95%84%EC%9D%B4%EC%BD%98.png?alt=media&token=0f14a325-e157-47ae-aaa9-92adfb4a8434"
-                    style={{
-                      width: "1.2rem",
-                      height: "1.1rem",
-                      marginRight: "0.3rem",
-                      float: "left",
-                    }}
-                    alt="댓글 아이콘"
-                  />
-                </Button>
-                <LikeCount>{selectedPost.commentCount}</LikeCount>
-              </ButtonSet>
-            </PostBottomBar>
+            <ButtonSet style={{ marginLeft: "3rem" }}>
+              <Heart userData={userData} selectedPost={selectedPost} />
+              <LikeCount>{selectedPost.likeCount}</LikeCount>
+              <Button>
+                <img
+                  src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%8C%93%EA%B8%80%20%EC%95%84%EC%9D%B4%EC%BD%98.png?alt=media&token=0f14a325-e157-47ae-aaa9-92adfb4a8434"
+                  style={{
+                    width: "1.2rem",
+                    height: "1.1rem",
+                    marginRight: "0.3rem",
+                    float: "left",
+                  }}
+                  alt="댓글 아이콘"
+                />
+              </Button>
+              <LikeCount>{selectedPost.commentCount}</LikeCount>
+            </ButtonSet>
             <InputArea>
               <ProfileCircle style={{ marginLeft: "2rem" }}>
                 <ProfileBox photo={user.photoUrl} />
