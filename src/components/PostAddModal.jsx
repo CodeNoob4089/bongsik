@@ -1,23 +1,25 @@
 import { faLock, faLockOpen, faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { addDoc, collection, doc, getDoc, increment, updateDoc } from "firebase/firestore";
+import { addDoc, arrayUnion, collection, doc, getDoc, increment, setDoc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { nanoid } from "nanoid";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import styled from "styled-components";
-import { getMyTags, getPosts } from "../api/collection";
+import { getPosts } from "../api/collection";
 import { db, storage } from "../firebase";
 import useAuthStore from "../store/auth";
 import useClickedDataStore from "../store/modalData";
 
-function PostAddModal({ modalOpen, setModalOpen }) {
+function PostAddModal({ modalOpen, setModalOpen, myTags }) {
   const queryClient = useQueryClient();
-  const { data: myTags } = useQuery("getMyTags", getMyTags);
-
   const clickedData = useClickedDataStore((state) => state.clickedData);
   const setClickedData = useClickedDataStore((state) => state.setClickedData);
   const user = useAuthStore((state) => state.user);
+  const setUser = useAuthStore((state) => state.setUser)
+  const [dongCounts, setDongCounts] = useState(user.dongCounts)
+
+ 
 
   const clickedCategory =
     clickedData?.category_group_name === "카페"
@@ -25,7 +27,6 @@ function PostAddModal({ modalOpen, setModalOpen }) {
       : clickedData?.category_name?.split(">").includes(" 술집 ")
       ? "술집"
       : "맛집";
-
 
   const [inputValue, setInputValue] = useState({
     place: clickedData,
@@ -41,7 +42,7 @@ function PostAddModal({ modalOpen, setModalOpen }) {
     category: clickedCategory,
     commentCount: 0,
     timestamp: new Date(),
-    userPhoto: user.photoUrl? user.photoUrl:"",
+    userPhoto: user.photoUrl ? user.photoUrl : "",
   });
   const initialStars = [false, false, false, false, false];
   const [stars, setStars] = useState(initialStars);
@@ -80,9 +81,11 @@ function PostAddModal({ modalOpen, setModalOpen }) {
 
   const mutation = useMutation(
     async () => {
-      const usersRef = doc(db, "users", user.uid);
+      const newDongCounts = dongCounts.push(clickedData.dongCode)
+      await setDongCounts(newDongCounts)
+      const usersRef = doc(db, "users", user.uid)
       await addDoc(collection(db, "posts"), inputValue);
-      await updateDoc(usersRef, { postCounts: increment(1) });
+      await updateDoc(usersRef, { postCounts: increment(1), dongCounts: dongCounts});
     },
     {
       onSuccess: () => {

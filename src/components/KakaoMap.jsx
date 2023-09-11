@@ -5,12 +5,13 @@ import { faMagnifyingGlass, faStar } from "@fortawesome/free-solid-svg-icons";
 import { Circle, Map, MapMarker } from "react-kakao-maps-sdk";
 import useMapDataStore from "../store/mapdata";
 import useClickedDataStore from "../store/modalData";
-import useAuthStore from "../store/auth";
 import proj4 from "proj4";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
 const { kakao } = window;
 
-function KakaoMap({ showModal, postData }) {
+function KakaoMap({ showModal, postData, user }) {
   const [inputValue, setInputValue] = useState("");
   const [searchKeyword, setSearchKeyword] = useState("");
   const [info, setInfo] = useState();
@@ -31,7 +32,7 @@ function KakaoMap({ showModal, postData }) {
   const data = useMapDataStore((state) => state.data);
   const setData = useMapDataStore((state) => state.setData);
   const setClickedData = useClickedDataStore((state) => (state ? state.setClickedData : []));
-  const user = useAuthStore((state) => state.user);
+ 
 
   const keywordInputChange = (e) => {
     e.preventDefault();
@@ -133,9 +134,9 @@ function KakaoMap({ showModal, postData }) {
         }
       };
 
-      geocoder.coord2RegionCode(mapCenterPosition.lng, mapCenterPosition.lat, callback);
-    });
-  };
+        geocoder.coord2RegionCode(mapCenterPosition.lng, mapCenterPosition.lat, callback);
+      });
+    };
 
   const onPostAddButtonClick = async(d) => {
     if (user === null) {
@@ -156,76 +157,63 @@ function KakaoMap({ showModal, postData }) {
   }
 
   // -----------------폴리곤 그려주기-----------------
-  // useEffect(() => {
-  // const findNeighborhood = () => {
-  //   return new Promise((resolve, reject) => {
-  //     const geocoder = new window.kakao.maps.services.Geocoder();
-  //     console.log("geocoder",geocoder)
+  useEffect(() => {
+    if(!user) return
+    const result = user?.dongCounts?.reduce((acc, cur) => {
+      if (acc[cur]) {
+        acc[cur] += 1;
+      } else {
+        acc[cur] = 1; // acc.cur이 없으면 선언함
+      }
+      return acc;
+     }, {});
+     console.log("user", user)
+     console.log("result",result)
 
-  //     const callback = (result, status) => {
-  //       if (status === window.kakao.maps.services.Status.OK) {
-  //         resolve(result[0].region_3depth_name);
-  //       } else {
-  //         reject(status);
-  //       }
-  //     };
+    //  const keysOfResult = () => {
+    //    if(result)
+    //     return Object.keys(result)
+    //  }
 
-  //     geocoder.coord2RegionCode(mapCenterPosition.lng, mapCenterPosition.lat, callback);
-  //   });
-  // };
+    const keysOfResult = Object.keys(result)
+    const coloredDongs =  keysOfResult?.filter((key) => result[key] >= 3);
+    const polygonList = [];
 
-// const findNeighborhoodCoordinates = async (neighborhoodName) => {
-//   const response = await fetch("emd.zip.geojson", {
-// 	  headers: {
-// 	    Accept: "application / json",
-// 	  },
-// 	  method: "GET",
-// 	});
+    coloredDongs?.map(async(dong) => {
+      const dongRef = doc(db, "location", dong)
+      const dongSnap = await getDoc(dongRef)
+      const dongCoordinates = dongSnap.data().coordinates
+      const coordinates = JSON.parse(dongCoordinates)
+      console.log("coordinates",coordinates)
+      const polygonPath = [];
+      const utmk =
+          "+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs";
+      const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+      const transformer = proj4(utmk, wgs84);
 
-//   console.log("response",response)
-
-//   const data = await response.json();
-//   for (const feature of data.features) {
-//       if (neighborhoodName === feature.properties.EMD_KOR_NM) {
-//       return feature.geometry.coordinates;
-//       }
-//   }
-//   console.log("data",data)
-//   return false;
-//   };
-
-// const addNeighborhoodPolygon = async () => {
-//   const neighborhoodName = await findNeighborhood();
-//   const coordinates = await findNeighborhoodCoordinates(neighborhoodName);
-//   console.log("받아왔니 데이터", coordinates);
-//     const polygonPath = [];
-//     const utmk =
-//         "+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs";
-//     const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
-//     const transformer = proj4(utmk, wgs84);
-
-//     coordinates.forEach((coordinateArray) => {
-//         coordinateArray.forEach((coordinate) => {
-//         const [longi, lati] = transformer.forward(coordinate);
-//         polygonPath.push(new window.kakao.maps.LatLng(lati, longi));
-//       });
-//     });
-//     // console.log("폴리곤데이터!!!",polygonPath);
-//     const polygon = new window.kakao.maps.Polygon({
-//       path: polygonPath,
-//       strokeColor: "#925CE9",
-//       fillColor: "#925CE9",
-//       fillOpacity: 0.7,
-//     });
+    coordinates.forEach((coordinateArray) => {
+        coordinateArray.forEach((coordinate) => {
+        const [longi, lati] = transformer.forward(coordinate);
+        polygonPath.push(new window.kakao.maps.LatLng(lati, longi));
+      });
+    });
+    const polygon = new window.kakao.maps.Polygon({
+      path: polygonPath,
+      strokeColor: "#ff694e",
+      fillColor: "#ff694e",
+      fillOpacity: 0.7,
+    });
+      polygonList.push(polygon);
+    polygon.setMap(map);
     
-//     polygon.setMap(map);
+    })
 
-// };
-//     if (map) {
-//     addNeighborhoodPolygon();
-//     }
-  
-// }, [mapCenterPosition, map]);
+    return () => {
+      polygonList.forEach((polygon) => {
+        polygon.setMap(null);
+      })
+    }
+}, [user, map]);
 
 
   if (loadingLocation) return <div>위치 정보를 가져오는 중...</div>;
@@ -290,50 +278,55 @@ function KakaoMap({ showModal, postData }) {
           {postData?.map((post) => (
             <div>
             <Circle
-              key={post.postID}
-              center={{
-                lat: post.place.y,
-                lng: post.place.x,
-              }}
-              radius={100}
-              strokeWeight={2} // 선의 두께입니다
-              strokeColor={"#ff804e"} // 선의 색깔입니다
-              strokeOpacity={1} // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
-              strokeStyle={"solid"} // 선의 스타일 입니다
-              fillColor={"#ff804e"} // 채우기 색깔입니다
-              fillOpacity={0.7} // 채우기 불투명도 입니다
-              onClick={() =>
-                setCurrentMouseOver(post)}
+                zIndex={500}
+                key={post.postID}
+                center={{
+                  lat: post.place.y,
+                  lng: post.place.x,
+                }}
+                radius={100}
+                strokeWeight={2} // 선의 두께입니다
+                strokeColor={"#ff694e0"} // 선의 색깔입니다
+                strokeOpacity={1} // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+                strokeStyle={"solid"} // 선의 스타일 입니다
+                fillColor={"#ff694e"} // 채우기 색깔입니다
+                fillOpacity={0.7} // 채우기 불투명도 입니다
+                // onMouseover={() =>
+                //   setCurrentMouseOver(post)}
+                // onMouseout={() =>
+                //     setCurrentMouseOver()}
+                onMousedown={() => {
+                  currentMouseOver === post?
+                  setCurrentMouseOver()
+                  :setCurrentMouseOver(post)}}
             />
-            {post === currentMouseOver?
-                  <MapMarker
-                  key={currentMouseOver.postID}
-                  position={{
-                    lat: currentMouseOver.place.y,
-                    lng: currentMouseOver.place.x,
-                  }}
-                  image={{
-                    src:"https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/location-pin.png?alt=media&token=521f1383-9b3f-453f-b60a-2d747ed36b7d",
-                    size: {
-                      width: 40,
-                      height: 40,
-                    }, // 마커이미지의 크기입니다
-                  }}
-                  // onMouseover={() => setCurrentMouseOver(post)}
-                >
-                  <MarkerInfo>
-                    {currentMouseOver.place.place_name}
-                    <div>
-                    {Array(currentMouseOver.star)
-                      .fill()
-                      .map((_, index) => (
-                        <FontAwesomeIcon key={index} icon={faStar} style={{ color: "#ff4e50" }} />
-                      ))}
-                    </div>
-                  {currentMouseOver.photo?
-                  <MarkerImage src={currentMouseOver.photo}></MarkerImage> : null}
-                  </MarkerInfo>
-                </MapMarker>
+              {post === currentMouseOver ?
+                <MapMarker
+                zIndex={0}
+                key={currentMouseOver.postID}
+                position={{
+                  lat: currentMouseOver.place.y,
+                  lng: currentMouseOver.place.x,
+                }}
+                image={{
+                  src:"https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/location-pin.png?alt=media&token=521f1383-9b3f-453f-b60a-2d747ed36b7d",
+                  size: {
+                    width: 40,
+                    height: 40,
+                  }, // 마커이미지의 크기입니다
+                }}
+                onClick={() => {setCurrentMouseOver()}}
+              >
+                <MarkerInfo>
+                  {currentMouseOver.place.place_name}
+                  <div>
+                      <FontAwesomeIcon icon={faStar} style={{ color: "#ff4e50" }} />
+                      {currentMouseOver.star}
+                  </div>
+                {currentMouseOver.photo?
+                <MarkerImage src={currentMouseOver.photo}></MarkerImage> : null}
+                </MarkerInfo>
+              </MapMarker>
           :null}
             </div>
           ))}
@@ -341,10 +334,7 @@ function KakaoMap({ showModal, postData }) {
           </MapBox>
           <SearchArea>
             <SearchForm onSubmit={submitKeyword}>
-              <SearchMapInput
-              value={inputValue}
-              onChange={keywordInputChange}
-              />
+              <SearchMapInput value={inputValue} onChange={keywordInputChange} />
               <SearchButton>
                 <FontAwesomeIcon icon={faMagnifyingGlass} />
               </SearchButton>
@@ -392,7 +382,7 @@ function KakaoMap({ showModal, postData }) {
                     <span>{index + 1}</span>
                     <div onClick={() => window.open(`${d.place_url}`, "_blank")}>
                       <PlaceData>{d.place_name}</PlaceData>
-                      <PlaceData>{d.address_name}</PlaceData>
+                      <PlaceData>{d.road_address_name || d.address_name}</PlaceData>
                       <PhoneNum>{d.phone}</PhoneNum>
                     </div>
                     <ButtonContainer>
@@ -427,23 +417,22 @@ export default KakaoMap;
 const MapBox = styled.div`
   width: 56vw;
   height: 100%;
-`
+`;
 
 const DescriptionBox = styled.div`
   line-height: 2.2rem;
   height: 20vh;
   padding: 8vh 1vw;
-`
+`;
 
 const DescriptionTitle = styled.h1`
   font-size: 1.5rem;
   font-weight: bold;
-  color: #FF4E50;
-
-`
+  color: #ff4e50;
+`;
 const Description = styled.p`
   font-size: 0.9rem;
-`
+`;
 
 const MarkerInfo = styled.div`
   font-size: 0.8rem;
@@ -463,8 +452,7 @@ const MarkerImage = styled.img`
   height: 11rem;
   object-fit: cover;
   margin: 0.5rem;
-
-`
+`;
 
 const SearchArea = styled.div`
   width: 22vw;
@@ -480,7 +468,7 @@ const SearchForm = styled.form`
   height: 20vh;
   display: flex;
   flex-direction: column;
-  align-items: center;  
+  align-items: center;
   justify-content: right;
   padding-top: 9.5vh;
 `;
@@ -524,14 +512,13 @@ const CurrentLocationInfo = styled.div`
   height: 4.2rem;
   border-bottom: 1px solid gray;
   line-height: 1.3rem;
-  
 `
 
 const CurrentLocationButton = styled.button`
   width: 1.2rem;
   height: 1.2rem;
   background-color: white;
-  background-image: url('https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/gps_fixed.png?alt=media&token=8cbc006a-93b0-4506-917b-168d95d94a80');
+  background-image: url("https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/gps_fixed.png?alt=media&token=8cbc006a-93b0-4506-917b-168d95d94a80");
   object-fit: contain;
   background-size: 1rem;
   background-position: center center;
@@ -540,6 +527,18 @@ const CurrentLocationButton = styled.button`
   margin: 0.2rem;
   cursor: pointer;
 `
+
+const SearchResult = styled.div`
+  width: 100%;
+  height: 53vh;
+  background-color: white;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  padding: 0.7rem;
+  overflow-y: scroll;
+`;
+
 
 const ResultText = styled.p`
   margin-bottom: 10px;

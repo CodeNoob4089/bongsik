@@ -56,6 +56,7 @@ function SignUp() {
         postCounts: 0,
         level: 1,
         exp: 0,
+        dongCounts: [],
       });
       alert("회원가입 완료! 이메일을 인증해주세요.");
       navigate("/main");
