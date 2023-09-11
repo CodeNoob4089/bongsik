@@ -12,6 +12,7 @@ import { faGear, faHeart, faMedal } from "@fortawesome/free-solid-svg-icons";
 import EditUserModal from "../components/EditUserModal";
 import MyPageList from "../components/MyPageList";
 import { useLocation } from "react-router-dom";
+import getLevelImageUrl from "../shared/LevelImage";
 
 function Mypage() {
   const [currentTab, setCurrentTab] = useState(1);
@@ -35,7 +36,6 @@ function Mypage() {
     const fetchUserBadges = async () => {
       if (!user) return;
       const fetchedUserBadges = await getUserBadges(user.uid);
-      console.log(fetchedUserBadges);
       const ownedBadgesArray = Object.keys(fetchedUserBadges).filter((badgeId) => fetchedUserBadges[badgeId].isOwned);
 
       setOwnedBadges(ownedBadgesArray);
@@ -107,13 +107,20 @@ function Mypage() {
                 <UserInfo>
                   <UserProfile>
                     <ProfileCircle>
-                      <ProfileImage src={user.photoUrl} alt="프로필 사진" />
+                      <ProfileImage
+                        src={
+                          user?.photoUrl
+                            ? user.photoUrl
+                            : "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/59932b0eb046f9fa3e063b8875032edd_crop.jpeg?alt=media&token=615f79d4-7eef-46e9-ba45-d7127b0597ea"
+                        }
+                        alt="프로필 사진"
+                      />
                     </ProfileCircle>
                     <UserNameAndLevel>
                       <Nickname>{user.displayName} </Nickname>
                       <Level>
                         Lv.{user.level}
-                        <LevelImg src={user.userLevel} />
+                        <LevelImg src={getLevelImageUrl(user.level)} />
                       </Level>
                     </UserNameAndLevel>
                     <SettingButton>
@@ -169,9 +176,9 @@ const Container = styled.div`
 const UserInfo = styled.div`
   background-color: white;
   border-radius: 10px;
-  width: 20rem;
+  width: 30rem;
   height: 17rem;
-  margin: 5vh auto;
+  margin: 5vh 9vw;
   padding: 2.5rem;
   display: flex;
   flex-direction: column;
@@ -287,6 +294,7 @@ const MyListBox = styled.div`
 `;
 
 const RightContents = styled.div`
+  margin-left: 4vw;
   width: 60rem;
   height: 80vh;
 `;

@@ -134,7 +134,7 @@ export default Layout;
 const LayoutContainer = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: #faf7f7;
+  background-color: #fff8f8;
   /* height: 100vh; */
 `;
 
