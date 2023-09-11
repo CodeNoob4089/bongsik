@@ -20,7 +20,7 @@ function KakaoMap({ showModal, postData, user }) {
   const [map, setMap] = useState();
   const [pagination, setPagination] = useState({});
   const [currentMouseOver, setCurrentMouseOver] = useState();
-  const [mapLoading, setMapLoading] = useState(true);
+  const [loadingLocation, setLoadingLocation] = useState(true);
   const [mapCenterPosition, setMapCenterPosition] = useState({
     lat: 35.6632102,
     lng: 128.556077,
@@ -29,7 +29,7 @@ function KakaoMap({ showModal, postData, user }) {
     lat: 35.6632102,
     lng: 128.556077,
   });
-  const [loadingLocation, setLoadingLocation] = useState(true);
+
 
   const data = useMapDataStore((state) => state.data);
   const setData = useMapDataStore((state) => state.setData);
@@ -227,7 +227,7 @@ function KakaoMap({ showModal, postData, user }) {
             <DescriptionTitle>다녀온 곳을 검색해보세요.</DescriptionTitle>
             <Description>검색창에 다녀온 곳을 검색하고 별점과 함께 게시물을 작성해보세요.</Description>
           </DescriptionBox>
-          {mapLoading ? (
+          {loadingLocation ? (
             <Skeleton height="60vh" width="100%" />
           ) : (
             <Map // 로드뷰를 표시할 Container
