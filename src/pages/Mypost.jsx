@@ -45,9 +45,7 @@ function Mypost() {
     try {
       await mutation.mutateAsync(deletePostId);
       setIsDeleteModalOpen(false);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   const categoryButtonClickHandler = (category) => {

@@ -82,15 +82,16 @@ function RestaurantPost({ category }) {
     <>
       {RestaurantPublicPosts?.map((item) => (
         <CommunityPosting key={item.postId}>
-          <PostContainer
-            onClick={() => {
-              handlePostClick(item);
-            }}
-          >
+          <PostContainer>
             {item.photo ? (
               <>
                 <PostImgBox>
-                  <PostImgUrl src={item.photo}></PostImgUrl>
+                  <PostImgUrl
+                    src={item.photo}
+                    onClick={() => {
+                      handlePostClick(item);
+                    }}
+                  ></PostImgUrl>
                 </PostImgBox>
               </>
             ) : (
@@ -108,6 +109,9 @@ function RestaurantPost({ category }) {
                       objectFit: "cover",
                     }}
                     alt="게시물 사진 없을 때 뜨는 이미지"
+                    onClick={() => {
+                      handlePostClick(item);
+                    }}
                   />
                 </PostImgBox>
               </>
@@ -115,7 +119,12 @@ function RestaurantPost({ category }) {
             <PostContent>
               <h2>{item.place.place_name}&nbsp;</h2>
               <p>
-                <DetailLocation>
+                <DetailLocation
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    handlePostClick(item);
+                  }}
+                >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/location.png?alt=media&token=4850f645-0cac-41c4-91f5-595f28d33b79"
                     style={{
@@ -144,8 +153,12 @@ function RestaurantPost({ category }) {
                           height: "1rem",
                           marginRight: "0.1rem",
                           float: "left",
+                          cursor: "pointer",
                         }}
                         alt="댓글 아이콘"
+                        onClick={() => {
+                          handlePostClick(item);
+                        }}
                       />
                     </commentIcon>
                   </Button>

@@ -15,7 +15,6 @@ export const PostContainer = styled.div`
   background-color: white;
   display: flex;
   box-shadow: 2px 2px 2px #bbbbbb;
-  cursor: pointer;
 `;
 export const PostImgBox = styled.div`
   /* background-color: black; */
@@ -25,6 +24,7 @@ export const PostImgBox = styled.div`
   border-radius: 0.7rem;
   margin-top: 1.9rem;
   margin-left: 2.4rem;
+  cursor: pointer;
 `;
 export const PostImgUrl = styled.img`
   /* background-color: #3511a3; */

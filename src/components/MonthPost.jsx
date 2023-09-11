@@ -6,9 +6,7 @@ import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 function MonthPost() {
   const { data: PublicPosts } = useQuery(`fetchPublicPosts`, getPublicPosts);
-  console.log(PublicPosts);
   const favoritePost = PublicPosts?.sort((a, b) => b.likeCount - a.likeCount);
-  console.log("like", favoritePost);
   return (
     <div>
       {favoritePost?.slice(0, 5).map((p) => (
