@@ -4,7 +4,7 @@ import styled from "styled-components";
 import React, { useEffect, useState } from "react";
 import RestaurantPost from "../components/RestaurantPost";
 import MonthPost from "../components/MonthPost";
-function Community({ RestaurantPublicPosts }) {
+function Community() {
   const [currentTab, setCurrentTab] = useState(1);
   const [isTopVisible, setIsTopVisible] = useState(false);
 
@@ -12,22 +12,22 @@ function Community({ RestaurantPublicPosts }) {
     window.scrollTo(0, 0);
   }, []);
 
-  //   // 페이지 상단으로 부드럽게 스크롤하는 함수
-  //   const scrollToTop = () => {
-  //     window.scrollTo({ top: 0, behavior: "smooth" });
-  //   };
+  // 페이지 상단으로 부드럽게 스크롤하는 함수
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
-  //   // 스크롤 이벤트 리스너를 등록
-  //   useEffect(() => {
-  //     window.addEventListener("scroll", handleScroll);
-  //     return () => {
-  //       window.removeEventListener("scroll", handleScroll);
-  //     };
-  //   }, []);
-  //   //"Top" 버튼
-  //   const handleScroll = () => {
-  //     setIsTopVisible(window.scrollY > 300);
-  //   };
+  // 스크롤 이벤트 리스너를 등록
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+  //"Top" 버튼
+  const handleScroll = () => {
+    setIsTopVisible(window.scrollY > 300);
+  };
 
   const tabs = [
     {
@@ -153,10 +153,10 @@ const SearchArea = styled.div`
   margin-top: 3rem;
 `;
 
-// const SearchForm = styled.form`
-//   width: 16.5rem;
-//   height: 2.5rem;
-// `;
+const SearchForm = styled.form`
+  width: 16.5rem;
+  height: 2.5rem;
+`;
 
 const SearchInput = styled.input`
   position: absolute;
