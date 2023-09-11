@@ -16,7 +16,7 @@ const Skeleton = styled.div`
   border-radius: ${(props) => props.radius || "4px"};
   background-image: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0);
   background-size: 200px;
-  animation: ${Loading} 1.2s infinite linear;
+  animation: ${Loading} 1.3s infinite linear;
 `;
 
 export default Skeleton;
