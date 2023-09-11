@@ -9,7 +9,7 @@ export const getUserBadges = async (userId) => {
   if (userDoc.exists()) {
     return userDoc.data().ownedBadges || [];
   } else {
-    console.log("검색결과없음");
+    // console.log("검색결과없음");
     return [];
   }
 };

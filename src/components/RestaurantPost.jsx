@@ -18,7 +18,7 @@ import PostingModal from "./CommentsModal";
 import Heart from "./Heart";
 import useAuthStore from "../store/auth";
 import { useNavigate } from "react-router";
-function RestaurantPost({ category, search, searchResults }) {
+function RestaurantPost({ category }) {
   const authStore = useAuthStore();
   const navigate = useNavigate();
   const userId = auth.currentUser?.uid;
@@ -82,29 +82,49 @@ function RestaurantPost({ category, search, searchResults }) {
     <>
       {RestaurantPublicPosts?.map((item) => (
         <CommunityPosting key={item.postId}>
-          <PostContainer
-            onClick={() => {
-              handlePostClick(item);
-            }}
-          >
+          <PostContainer>
             {item.photo ? (
               <>
                 <PostImgBox>
-                  <PostImgUrl src={item.photo}></PostImgUrl>
+                  <PostImgUrl
+                    src={item.photo}
+                    onClick={() => {
+                      handlePostClick(item);
+                    }}
+                  ></PostImgUrl>
                 </PostImgBox>
               </>
             ) : (
               <>
                 <PostImgBox>
-                  {/* <PostImgUrl src={}> </PostImgUrl> */}
-                  무슨 사진 넣을지 고민중
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%8A%A4%ED%8C%8C%EA%B2%8C%ED%8B%B0%20ETG.png?alt=media&token=a16fadeb-f562-4c12-ad73-c4cc1118a108"
+                    style={{
+                      height: "22vh",
+                      width: "13.5vw",
+                      marginTop: "2rem",
+                      borderRadius: "0.7rem",
+                      display: "block",
+                      margin: " 0 auto",
+                      objectFit: "cover",
+                    }}
+                    alt="게시물 사진 없을 때 뜨는 이미지"
+                    onClick={() => {
+                      handlePostClick(item);
+                    }}
+                  />
                 </PostImgBox>
               </>
             )}
             <PostContent>
               <h2>{item.place.place_name}&nbsp;</h2>
               <p>
-                <DetailLocation>
+                <DetailLocation
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    handlePostClick(item);
+                  }}
+                >
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/location.png?alt=media&token=4850f645-0cac-41c4-91f5-595f28d33b79"
                     style={{
@@ -133,8 +153,12 @@ function RestaurantPost({ category, search, searchResults }) {
                           height: "1rem",
                           marginRight: "0.1rem",
                           float: "left",
+                          cursor: "pointer",
                         }}
                         alt="댓글 아이콘"
+                        onClick={() => {
+                          handlePostClick(item);
+                        }}
                       />
                     </commentIcon>
                   </Button>

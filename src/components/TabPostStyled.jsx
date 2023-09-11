@@ -15,7 +15,6 @@ export const PostContainer = styled.div`
   background-color: white;
   display: flex;
   box-shadow: 2px 2px 2px #bbbbbb;
-  cursor: pointer;
 `;
 export const PostImgBox = styled.div`
   /* background-color: black; */
@@ -25,6 +24,7 @@ export const PostImgBox = styled.div`
   border-radius: 0.7rem;
   margin-top: 1.9rem;
   margin-left: 2.4rem;
+  cursor: pointer;
 `;
 export const PostImgUrl = styled.img`
   /* background-color: #3511a3; */
@@ -35,7 +35,6 @@ export const PostImgUrl = styled.img`
   display: block;
   margin: 0 auto;
   object-fit: cover;
-  cursor: pointer;
 `;
 export const PostContent = styled.div`
   /* background-color: #5e44ad; */
@@ -124,7 +123,7 @@ export const SubmitButton = styled.button`
 export const InputBox = styled.input`
   font-weight: bold;
   text-align: center;
-  width: 31rem;
+  width: 30rem;
   height: 2.3rem;
   border-radius: 10px;
   background-color: #f2f2f5;
