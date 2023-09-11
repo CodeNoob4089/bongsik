@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import { signOut } from "firebase/auth";
+import { signOut, signInWithPopup, GoogleAuthProvider, signInWithCustomToken } from "firebase/auth";
 import styled from "styled-components";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import { db } from "../firebase";
+import { setDoc, doc } from "firebase/firestore";
+import { getBadgeData } from "../store/BadgeData";
 
 function SignIn() {
   const [email, setEmail] = useState("");
@@ -21,10 +24,52 @@ function SignIn() {
         navigate("/main");
       } else {
         alert("이메일 인증을 확인해주세요.");
-        signOut(auth);
+        await signOut(auth);
       }
     } catch (error) {
       alert("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+
+      navigate("/main");
+
+      const user = result.user;
+
+      if (user) {
+        const badges = await getBadgeData();
+
+        const userBadgeData = badges.reduce((badgeObj, badge) => {
+          badgeObj[badge.id] = {
+            isOwned: false,
+          };
+          return badgeObj;
+        }, {});
+
+        const userRef = doc(db, "users", user.uid);
+
+        await setDoc(
+          userRef,
+          {
+            name: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL,
+            myTags: [],
+            ownedBadges: userBadgeData,
+            postCounts: 0,
+            level: 1,
+            exp: 0,
+          },
+          { merge: true }
+        );
+      }
+    } catch (error) {
+      console.error(error.message);
+      alert("구글 로그인에 실패하였습니다.");
     }
   };
 
@@ -56,16 +101,19 @@ function SignIn() {
                 />
               </StyledInputDiv>
               <SignInButton type="submit">Sign In</SignInButton>
-              <GoogleSignUpButton type="button">Sign up with Google</GoogleSignUpButton>
+              <OrBox>
+                <LineLeft />
+                OR
+                <LineRight />
+              </OrBox>
+              <GoogleSignUpButton type="button" onClick={handleGoogleLogin}>
+                <GoogleLogo src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/Google__G__Logo%201.png?alt=media&token=75b51e58-8a63-44a8-86a6-fcdb851c166a" />
+                <p>Sign up with Google</p>
+              </GoogleSignUpButton>
             </StyledForm>
           </InputContainer>
           <ImageContainer>
-            <ImageLogo
-              src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%A1%9C%EA%B3%A08.png?alt=media&token=de9e2b70-f61b-41a1-802f-1c910339a984"
-              onClick={() => {
-                navigate("/");
-              }}
-            />
+            <ImageLogo src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/Frame%201321317750.png?alt=media&token=d9cd2da8-d246-47d6-b7e9-1f936956a485" />
           </ImageContainer>
         </SignInBox>
       </SignInContainer>
@@ -77,7 +125,7 @@ export default SignIn;
 
 export const SignInContainer = styled.div`
   display: flex;
-  background-color: #d9d9d9;
+  background-color: #ff4e50;
   justify-content: center;
   align-items: center;
   height: calc(100vh - 20px);
@@ -87,7 +135,7 @@ export const SignInBox = styled.div`
   display: flex;
   width: 1000px;
   max-width: calc(1000px -60px);
-  height: 700px;
+  height: 43.7rem;
 `;
 
 export const InputContainer = styled.div`
@@ -104,8 +152,8 @@ export const SigninTitle = styled.div`
   font-size: 42px;
   font-weight: bold;
   position: relative;
-  left: 80px;
-  top: 90px;
+  left: 5rem;
+  top: 6rem;
 `;
 
 export const ImageContainer = styled.div`
@@ -116,9 +164,9 @@ export const ImageContainer = styled.div`
   background-color: #f0f0f0;
 `;
 export const ImageLogo = styled.img`
-  scale: 1.3;
-  width: auto;
-  height: auto;
+  object-fit: cover;
+  width: 31.2rem;
+  height: 43.7rem;
 `;
 
 export const StyledForm = styled.form`
@@ -163,6 +211,8 @@ export const SignInButton = styled.button`
   }
 `;
 export const GoogleSignUpButton = styled.button`
+  justify-content: center;
+  display: flex;
   background-color: #ffffff;
   color: black;
   width: 20rem;
@@ -175,4 +225,29 @@ export const GoogleSignUpButton = styled.button`
   &:hover {
     color: #4285f4;
   }
+`;
+const GoogleLogo = styled.img`
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+`;
+const LineLeft = styled.div`
+  width: 33%;
+  height: 0.1rem;
+  margin-right: 0.5rem;
+  background: linear-gradient(to left, gray, #fafafa);
+`;
+const LineRight = styled.div`
+  width: 33%;
+  height: 0.1rem;
+  margin-left: 0.5rem;
+  background: linear-gradient(to right, gray, #fafafa);
+`;
+const OrBox = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+  margin-bottom: -0.5rem;
 `;

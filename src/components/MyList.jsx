@@ -88,7 +88,6 @@ function MyList() {
       const imageRef = ref(storage, `${auth.currentUser.email}/${image.name}`);
       await uploadBytes(imageRef, image);
       const downloadURL = await getDownloadURL(imageRef);
-      console.log("downloadURL",downloadURL);
       setCollectionInput({ ...collectionInput, coverImage: downloadURL });
     }
   };
@@ -162,28 +161,35 @@ function MyList() {
             customLeftArrow={<CustomArrowPrev />}
             customRightArrow={<CustomArrowNext />}
           >
-            {myTags?.map((tag) => {
-              return (
-                <>
-                  <CollectionCard key={tag.collectionID}>
-                    <ImageBox src={tag.coverImage}></ImageBox>
-                    <CardTitle>
-                      {tag.title}
-                      <ButtonBox>
-                        {toggleOpen !== tag.collectionID ? (
-                          <ToggleButton onClick={() => onToggleOpenButtonClick(tag.collectionID)}>▼</ToggleButton>
-                        ) : (
-                          <ToggleButton onClick={closeModal}>▲</ToggleButton>
-                        )}
-                        <DeleteButton onClick={() => onDeleteButtonClick(tag.collectionID)}>
-                          <FontAwesomeIcon icon={faTrashCan} />
-                        </DeleteButton>
-                      </ButtonBox>
-                    </CardTitle>
-                  </CollectionCard>
-                </>
-              );
-            })}
+            {myTags?.length > 0 ? (
+              myTags?.map((tag) => {
+                return (
+                  <>
+                    <CollectionCard key={tag.collectionID}>
+                      <ImageBox src={tag.coverImage}></ImageBox>
+                      <CardTitle>
+                        {tag.title}
+                        <ButtonBox>
+                          {toggleOpen !== tag.collectionID ? (
+                            <ToggleButton onClick={() => onToggleOpenButtonClick(tag.collectionID)}>▼</ToggleButton>
+                          ) : (
+                            <ToggleButton onClick={closeModal}>▲</ToggleButton>
+                          )}
+                          <DeleteButton onClick={() => onDeleteButtonClick(tag.collectionID)}>
+                            <FontAwesomeIcon icon={faTrashCan} />
+                          </DeleteButton>
+                        </ButtonBox>
+                      </CardTitle>
+                    </CollectionCard>
+                  </>
+                );
+              })
+            ) : (
+              <NoTag>
+                <NoTagTop>왼쪽 버튼을 눌러</NoTagTop>
+                <NoTagTBottom>컬렉션을 추가해주세요!</NoTagTBottom>
+              </NoTag>
+            )}
           </CarouselBox>
         )}
       </ListCardsContainer>
@@ -283,6 +289,26 @@ const CardTitle = styled.h2`
   justify-content: space-between;
 `;
 
+const NoTag = styled.div`
+  margin-left: -10rem;
+  width: 30rem;
+  height: 12rem;
+  margin-top: -3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  background-color: white;
+  padding: 1rem;
+  border-radius: 1rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  box-shadow: 3px 3px 3px #bbbbbb;
+`;
+const NoTagTop = styled.div``;
+const NoTagTBottom = styled.div`
+  margin-top: 1.5rem;
+`;
 const ButtonBox = styled.div`
   display: flex;
   flex-direction: row;

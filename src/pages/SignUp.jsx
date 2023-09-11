@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
 import { auth, db } from "../firebase";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getBadgeData } from "../store/BadgeData";
 import { updateUserDoc } from "../store/UserService";
 import { arrayUnion, doc, setDoc } from "firebase/firestore";
@@ -48,7 +48,10 @@ function SignUp() {
         };
         return badgeObj;
       }, {});
-      
+      alert("회원가입 완료! 이메일을 인증해주세요.");
+      await signOut(auth);
+      navigate("/main");
+
       await setDoc(doc(db, "users", auth.currentUser.uid), {
         myTags: [],
         userLikes: [],
@@ -161,16 +164,26 @@ function SignUp() {
 
                 {state.confirmPasswordError && <ErrorArea>{state.confirmPasswordError}</ErrorArea>}
               </StyledInputDiv>
-              <SignUpButton type="submit">Sign Up</SignUpButton>
+              <SignUpButton type="submit">Sign Up</SignUpButton>{" "}
+              <OrBox>
+                <LineLeft />
+                OR
+                <LineRight />
+              </OrBox>
+              <Login>
+                <p>이미 회원이신가요?</p>
+                <Logintag
+                  onClick={() => {
+                    navigate("/signin");
+                  }}
+                >
+                  로그인
+                </Logintag>
+              </Login>
             </StyledForm>
           </InputContainer>
           <ImageContainer>
-            <ImageLogo
-              src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%A1%9C%EA%B3%A08.png?alt=media&token=de9e2b70-f61b-41a1-802f-1c910339a984"
-              onClick={() => {
-                navigate("/");
-              }}
-            />
+            <ImageLogo src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/Frame%201321317750.png?alt=media&token=d9cd2da8-d246-47d6-b7e9-1f936956a485" />
           </ImageContainer>
         </SignUpBox>
       </SignUpContainer>
@@ -186,7 +199,7 @@ export const ErrorArea = styled.span`
 `;
 export const SignUpContainer = styled.div`
   display: flex;
-  background-color: #d9d9d9;
+  background-color: #ff4e50;
   justify-content: center;
   align-items: center;
   height: calc(100vh - 20px);
@@ -197,8 +210,8 @@ export const SignupTitle = styled.div`
   font-size: 42px;
   font-weight: bold;
   position: relative;
-  left: 80px;
-  top: 90px;
+  left: 4rem;
+  top: 4rem;
 `;
 
 export const SignUpBox = styled.div`
@@ -218,13 +231,14 @@ export const ImageContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
   flex-basis: 50%;
   background-color: #f0f0f0;
 `;
 export const ImageLogo = styled.img`
-  scale: 1.3;
-  width: auto;
-  height: auto;
+  object-fit: cover;
+  width: 29.4rem;
+  height: 43.7rem;
 `;
 
 export const StyledForm = styled.form`
@@ -237,13 +251,12 @@ export const StyledForm = styled.form`
 `;
 
 export const StyledInputDiv = styled.div`
-  margin-top: 20px;
-  margin-bottom: 10px;
+  margin-top: 1rem;
 `;
 export const StyledLabel = styled.label`
   display: block;
   font-size: 14px;
-  margin-bottom: 5px;
+  margin-bottom: 0.5rem;
 `;
 export const StyledInput = styled.input`
   border-radius: 5px;
@@ -264,4 +277,34 @@ export const SignUpButton = styled.button`
   &:hover {
     background-color: #ff2e30;
   }
+`;
+const LineLeft = styled.div`
+  width: 33%;
+  height: 0.1rem;
+  margin-right: 0.5rem;
+  background: linear-gradient(to left, gray, #fafafa);
+`;
+const LineRight = styled.div`
+  width: 33%;
+  height: 0.1rem;
+  margin-left: 0.5rem;
+  background: linear-gradient(to right, gray, #fafafa);
+`;
+const OrBox = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.3rem;
+  margin-bottom: 0.2rem;
+`;
+const Login = styled.div`
+  font-size: 0.8rem;
+  display: flex;
+`;
+const Logintag = styled.p`
+  text-decoration: underline;
+  color: #ff4e50;
+  cursor: pointer;
+  margin-left: 0.2rem;
 `;

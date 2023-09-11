@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 
 function Badge({ badges, ownedBadges }) {
-  console.log("뱃지",ownedBadges);
   return (
     <BadgeContainer>
       <Title>뱃지</Title>

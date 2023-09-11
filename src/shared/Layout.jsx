@@ -20,7 +20,6 @@ function Layout() {
   const location = useLocation();
 
   const MypageCss = location.pathname === "/mypage";
-  console.log(MypageCss);
   const handleLogout = async () => {
     try {
       await signOut(auth);
