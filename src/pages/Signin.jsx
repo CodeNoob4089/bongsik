@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import { signOut } from "firebase/auth";
+import { signOut, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import styled from "styled-components";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import { db } from "../firebase";
+import { setDoc, doc } from "firebase/firestore";
+import { getBadgeData } from "../store/BadgeData";
 
 function SignIn() {
   const [email, setEmail] = useState("");
@@ -25,6 +28,48 @@ function SignIn() {
       }
     } catch (error) {
       alert("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+
+      navigate("/main");
+
+      const user = result.user;
+
+      if (user) {
+        const badges = await getBadgeData();
+
+        const userBadgeData = badges.reduce((badgeObj, badge) => {
+          badgeObj[badge.id] = {
+            isOwned: false,
+          };
+          return badgeObj;
+        }, {});
+
+        const userRef = doc(db, "users", user.uid);
+
+        await setDoc(
+          userRef,
+          {
+            name: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL,
+            myTags: [],
+            ownedBadges: userBadgeData,
+            postCounts: 0,
+            level: 1,
+            exp: 0,
+          },
+          { merge: true }
+        );
+      }
+    } catch (error) {
+      console.error(error.message);
+      alert("구글 로그인에 실패하였습니다.");
     }
   };
 
@@ -56,7 +101,9 @@ function SignIn() {
                 />
               </StyledInputDiv>
               <SignInButton type="submit">Sign In</SignInButton>
-              <GoogleSignUpButton type="button">Sign up with Google</GoogleSignUpButton>
+              <GoogleSignUpButton type="button" onClick={handleGoogleLogin}>
+                Sign up with Google
+              </GoogleSignUpButton>
             </StyledForm>
           </InputContainer>
           <ImageContainer>
