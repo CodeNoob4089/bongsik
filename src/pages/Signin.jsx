@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { signOut, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { signOut, signInWithPopup, GoogleAuthProvider, signInWithCustomToken } from "firebase/auth";
 import styled from "styled-components";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
@@ -24,7 +24,7 @@ function SignIn() {
         navigate("/main");
       } else {
         alert("이메일 인증을 확인해주세요.");
-        signOut(auth);
+        await signOut(auth);
       }
     } catch (error) {
       alert("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
