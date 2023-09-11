@@ -18,12 +18,13 @@ function Heart({ userData, item, selectedPost }) {
 
   // mutation 함수 정의
 
-  const userDocRef = doc(db, "users", userId);
-
   const mutation = useMutation(
     async () => {
       const postIdToUse = item?.postId || selectedPost?.postId;
       const alreadyLikedUser = userData?.userLikes?.find((like) => like.likePostId === postIdToUse);
+
+      // mutation 함수 내부에서만 userDocRef를 생성합니다.
+      const userDocRef = doc(db, "users", userId);
 
       const postDocRef = doc(db, "posts", postIdToUse);
 
@@ -47,6 +48,7 @@ function Heart({ userData, item, selectedPost }) {
       }
 
       queryClient.invalidateQueries("fetchUserData");
+
       const userSnapshot = await getDoc(userDocRef);
       const updatedUserData = userSnapshot.data();
 
@@ -54,22 +56,30 @@ function Heart({ userData, item, selectedPost }) {
     },
     {
       onSuccess: async (updatedUserData) => {
+        // onSuccess 핸들러에서도 별도로 userDorRef를 생성합니다.
+        const userDorOnSuccess = doc(db, "users", userId);
+
         if (updatedUserData.userLikes.length >= 1 && !updatedUserData.ownedBadges?.fBQFJ6xzfDovK0N3FedE.isOwned) {
-          await updateDoc(userDocRef, {
+          await updateDoc(userDorOnSuccess, {
             "ownedBadges.fBQFJ6xzfDovK0N3FedE.isOwned": true,
           });
+
           alert("첫 좋아요 누르기 조건을 달성하여 뱃지를 획득합니다!");
         }
+
         if (updatedUserData.userLikes.length >= 10 && !updatedUserData.ownedBadges?.xplIFBYaDPZfiBUPg8nV.isOwned) {
-          await updateDoc(userDocRef, {
+          await updateDoc(userDorOnSuccess, {
             "ownedBadges.xplIFBYaDPZfiBUPg8nV.isOwned": true,
           });
+
           alert("좋아요 10개 누르기 조건을 달성하여 뱃지를 획득합니다!");
         }
+
         if (updatedUserData.userLikes.length >= 30 && !updatedUserData.ownedBadges?.wR3TzKNMDzPPwCLA8c1f.isOwned) {
-          await updateDoc(userDocRef, {
+          await updateDoc(userDorOnSuccess, {
             "ownedBadges.wR3TzKNMDzPPwCLA8c1f.isOwned": true,
           });
+
           alert("좋아요 30개 누르기 조건을 달성하여 뱃지를 획득합니다!");
         }
       },
