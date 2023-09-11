@@ -9,6 +9,7 @@ import proj4 from "proj4";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import Skeleton from "../skeleton/MapSkeleton";
+import { Description, DescriptionBox, DescriptionTitle } from "../shared/MainDescription";
 
 const { kakao } = window;
 
@@ -347,10 +348,10 @@ function KakaoMap({ showModal, postData, user }) {
                 <CurrentLocationInfo>
                   <div>
                     <p>
-                      현재 나의 위치
-                      <CurrentLocationButton
+                    <CurrentLocationButton
                         onClick={() => map.setCenter(new kakao.maps.LatLng(userLocation.lat, userLocation.lng))}
                       ></CurrentLocationButton>
+                      현재 나의 위치
                     </p>
                     <p>기록한 가게 | 좋아요 누른 가게</p>
                   </div>
@@ -419,20 +420,7 @@ const MapBox = styled.div`
   height: 100%;
 `;
 
-const DescriptionBox = styled.div`
-  line-height: 2.2rem;
-  height: 20vh;
-  padding: 8vh 1vw;
-`;
 
-const DescriptionTitle = styled.h1`
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #ff4e50;
-`;
-const Description = styled.p`
-  font-size: 0.9rem;
-`;
 
 const MarkerInfo = styled.div`
   font-size: 0.8rem;
@@ -480,7 +468,7 @@ const SearchMapInput = styled.input`
   height: 1.9rem;
   border: none;
   border-radius: 30px;
-  box-shadow: 2px 2px 2px #d2d2d2;
+  box-shadow: 1px 1px 1px #e7e7e7;
 `;
 
 const SearchButton = styled.button`
@@ -502,7 +490,7 @@ const CurrentLocationContentsWrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0.9rem 1.2rem;
-  box-shadow: 2px 2px 2px #d2d2d2;
+  box-shadow: 1px 1px 1px #e7e7e7;
 
   overflow-y: scroll;
 `;

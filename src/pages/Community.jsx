@@ -167,7 +167,7 @@ const SearchInput = styled.input`
   height: 2.2rem;
   border: none;
   border-radius: 30px;
-  box-shadow: 3px 3px 3px #bbbbbb;
+  box-shadow: 1px 1px 1px #e7e7e7;
 `;
 
 const SearchButton = styled.button`
@@ -192,7 +192,7 @@ const MonthlyPost = styled.div`
   position: fixed;
   flex-direction: row;
   background-color: white;
-  box-shadow: 1px 1px 1px 1px #bbbbbb;
+  box-shadow: 1px 1px 1px #e7e7e7;
   width: 20vw;
   height: 70vh;
   border-radius: 0.7rem;

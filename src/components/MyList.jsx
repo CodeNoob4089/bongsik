@@ -1,21 +1,28 @@
 import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import styled from "styled-components";
 import { auth, db, storage } from "../firebase";
-import useAuthStore from "../store/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { nanoid } from "nanoid";
-import { getMyTags, getPosts } from "../api/collection";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import { CustomArrowPrev } from "./CustomArrowPrev";
-import { CustomArrowNext } from "./CustomArrowNext";
+import { Description, DescriptionBox, DescriptionTitle } from "../shared/MainDescription";
 const GET_MY_TAGS = "getMyTags";
 
-function MyList() {
+function MyList({myTags, postData, user}) {
+
+  const CustomRightArrow = ({ onClick}) => {
+    // onMove means if dragging or swiping in progress.
+    return <CustomCarouselButton ref={rightButton} onClick={() => onClick()} />;
+  };
+  const CustomLeftArrow = ({ onClick}) => {
+    // onMove means if dragging or swiping in progress.
+    return <CustomCarouselButton ref={leftButton} onClick={() => onClick()} />;
+  };
+
   const responsive = {
     desktop: {
       breakpoint: { max: 3000, min: 1024 },
@@ -31,7 +38,6 @@ function MyList() {
     },
   };
   const queryClient = useQueryClient();
-  const user = useAuthStore((state) => state.user);
 
   const addImageInput = React.useRef(null);
   const [addActive, setAddActive] = useState(false);
@@ -41,9 +47,10 @@ function MyList() {
     collectionID: nanoid(),
   });
   const [toggleOpen, setToggleOpen] = useState("");
-  const { loading, data: myTags } = useQuery(GET_MY_TAGS, getMyTags);
-  const { data: postData } = useQuery(`fetchPostData`, getPosts);
   const [isModalOpen, setIsMoadlOpen] = useState(false);
+
+  const leftButton = React.useRef(null);
+  const rightButton = React.useRef(null);
 
   const addMutation = useMutation(
     async () => {
@@ -126,7 +133,11 @@ function MyList() {
   };
 
   return (
-    <>
+    <CollectionContainer>
+      <DescriptionBox>
+            <DescriptionTitle>내 컬렉션</DescriptionTitle>
+            <Description>나만의 카테고리를 만들어 게시물을 분류해보세요.</Description>
+      </DescriptionBox>
       <ListCardsContainer>
         <CollectionCard>
           <ListTitle>나의 컬렉션 리스트</ListTitle>
@@ -149,24 +160,27 @@ function MyList() {
               </NewCollectionForm>
             </>
           ) : (
-            <>
               <AddButton onClick={addMyCollection}>+</AddButton>
-            </>
           )}
         </CollectionCard>
-        {!loading && myTags && (
+        <CustomCarouselButton
+        onClick={() => leftButton.current.click()}
+        img={"https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/left_button.png?alt=media&token=87b75d4f-f08f-46a4-950b-bc96ca8963a7"}
+        />
           <CarouselBox
             responsive={responsive}
             infinite={true}
-            customLeftArrow={<CustomArrowPrev />}
-            customRightArrow={<CustomArrowNext />}
+            removeArrowOnDeviceType={["tablet", "mobile"]}
+            autoPlaySpeed={1000}
+            keyBoardControl={true}
+            customLeftArrow={<CustomLeftArrow/>}
+            customRightArrow={<CustomRightArrow />}
           >
             {myTags?.length > 0 ? (
               myTags?.map((tag) => {
                 return (
-                  <>
                     <CollectionCard key={tag.collectionID}>
-                      <ImageBox src={tag.coverImage}></ImageBox>
+                      <ImageBox src={tag.coverImage || "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%8A%A4%ED%8C%8C%EA%B2%8C%ED%8B%B0%20ETG.png?alt=media&token=a16fadeb-f562-4c12-ad73-c4cc1118a108"}></ImageBox>
                       <CardTitle>
                         {tag.title}
                         <ButtonBox>
@@ -181,7 +195,6 @@ function MyList() {
                         </ButtonBox>
                       </CardTitle>
                     </CollectionCard>
-                  </>
                 );
               })
             ) : (
@@ -191,7 +204,10 @@ function MyList() {
               </NoTag>
             )}
           </CarouselBox>
-        )}
+          <CustomCarouselButton
+          onClick={() => rightButton.current.click()}
+          img={"https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/right_button.png?alt=media&token=eaf76923-992b-40bf-a90b-aa2c80e8de8f"}
+          />
       </ListCardsContainer>
       {isModalOpen ? (
         <PostLists open={isModalOpen}>
@@ -207,19 +223,24 @@ function MyList() {
             ))}
         </PostLists>
       ) : null}
-    </>
+    </CollectionContainer>
   );
 }
 
 export default MyList;
 
+const CollectionContainer = styled.div`
+  margin: 10vh auto 13vh auto;
+  width: 100%;
+`
+
 const ListCardsContainer = styled.div`
-  position: relative;
-  width: 75vw;
-  height: 30vh;
-  margin: 13vh auto;
+  width: 100%;
+  height: 40vh;
   display: flex;
   flex-direction: row;
+  align-items: center;
+  justify-content: center;
   border-radius: 15px;
 `;
 
@@ -230,42 +251,44 @@ const ListTitle = styled.h1`
 `;
 
 const CollectionCard = styled.div`
-  width: 15vw;
-  height: 15rem;
+  width: 15.1vw;
+  height: 30.8vh;
   display: flex;
-  margin: 0 1vw;
-  border-radius: 1.5rem;
+  border-radius: 10px;
   background-color: white;
+  box-shadow: 1px 1px 1px #e7e7e7;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 `;
 
+const CustomCarouselButton = styled.button`
+    border: none;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin: 0.5rem;
+    background-color: white;
+    background-image: url(${(props)=> props.img});
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 1.5rem;
+    box-shadow: 1px 1px 1px #e7e7e7;
+    cursor: pointer;
+`
+
 const CarouselBox = styled(Carousel)`
-  width: 60rem;
+  width: 60vw;
+  padding-left: 17.5rem;
   height: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  z-index: 49;
-  .carousel-button-left {
-    position: fixed;
-    left: 20px;
-    top: calc(50% - 20px);
-  }
-  .carousel-button-right {
-    position: fixed;
-    right: 20px;
-    top: calc(50% - 20px);
-  }
 `;
 
 const ImageBox = styled.img`
-  width: 8rem;
-  height: 8rem;
+  width: 84%;
+  height: 50%;
   background-color: #c8c8c8;
-  border-radius: 15px;
+  border-radius: 10px;
+  object-fit: cover;
 `;
 
 const TextBox = styled.div`
@@ -279,14 +302,12 @@ const TextBox = styled.div`
 
 const CardTitle = styled.h2`
   font-size: 17px;
-  padding-left: 30px;
-  padding-top: 10px;
-  width: calc(100% - 80px);
-  max-height: 80px;
-  overflow: hidden;
+  width: 84%;
+  height: 40%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: space-between;
+  align-items: center;
 `;
 
 const NoTag = styled.div`
@@ -303,23 +324,31 @@ const NoTag = styled.div`
   border-radius: 1rem;
   font-size: 1.4rem;
   font-weight: 600;
-  box-shadow: 3px 3px 3px #bbbbbb;
+  box-shadow: 1px 1px 1px #e7e7e7;
 `;
 const NoTagTop = styled.div``;
 const NoTagTBottom = styled.div`
   margin-top: 1.5rem;
 `;
+
 const ButtonBox = styled.div`
   display: flex;
-  flex-direction: row;
-  height: 100%;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: space-between;  
+  height: 90%;
 `;
 
+const DeleteButton = styled.button`
+  font-size: 14px;
+  width: 50px;
+  border: none;
+  background-color: white;
+  color: gray;
+  cursor: pointer;
+`;
 const ToggleButton = styled.button`
   font-size: 18px;
   width: 50px;
-  margin-left: 15px;
   border: none;
   background-color: white;
   color: gray;
@@ -338,15 +367,7 @@ const CollectedPosts = styled.div`
   margin-top: 20px;
 `;
 
-const DeleteButton = styled.button`
-  font-size: 14px;
-  width: 50px;
-  margin-left: 15px;
-  border: none;
-  background-color: white;
-  color: gray;
-  cursor: pointer;
-`;
+
 
 const AddButton = styled.button`
   font-weight: bold;

@@ -9,13 +9,17 @@ import { useQuery } from "react-query";
 import { getMyTags, getPosts } from "../api/collection";
 import useAuthStore from "../store/auth";
 import { auth } from "../firebase";
+import { Description, DescriptionBox, DescriptionTitle } from "../shared/MainDescription";
 
 function Main() {
   const [modalOpen, setModalOpen] = useState(false);
   const { data: postData } = useQuery(`fetchPostData`, getPosts, {
     enabled: auth.currentUser !== null
   });
-  const { data: myTags } = useQuery("getMyTags", getMyTags);
+  const { data: myTags } = useQuery("getMyTags", getMyTags, {
+    enabled: auth.currentUser !== null
+  });
+  
   const user = useAuthStore((state) => state.user);
 
   const showModal = () => {
@@ -30,10 +34,16 @@ function Main() {
         <MapContainer>
           <KakaoMap showModal={showModal} postData={postData} user={user}/>
         </MapContainer>
-        <MyList />
+        <MyList postData={postData} myTags={myTags} user={user} />
         <ListContainer>
-          <BestList />
-          <WorstList />
+        <DescriptionBox>
+            <DescriptionTitle>되돌아보세요</DescriptionTitle>
+            <Description>상반된 후기를 작성했던 가게들은 다시 한 번 확인해보세요.</Description>
+          </DescriptionBox>
+          <ListBox>
+          <BestList postData={postData}/>
+          <WorstList postData={postData}/>
+          </ListBox>
         </ListContainer>
       </Container>
     </>
@@ -62,6 +72,17 @@ const MapContainer = styled.div`
 `;
 
 const ListContainer = styled.div`
+  width: 100%;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+
 `;
+
+const ListBox = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0vh 6vw
+`
