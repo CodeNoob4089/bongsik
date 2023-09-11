@@ -10,7 +10,7 @@ import { useQuery } from "react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faComment } from "@fortawesome/free-solid-svg-icons";
 import useAuthStore from "../store/auth";
-
+import { getPublicPosts } from "../api/collection";
 function Intro() {
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
@@ -22,20 +22,10 @@ function Intro() {
       navigate("/signin");
     }
   };
-  const getPublicPosts = async () => {
-    const postsCollectionRef = collection(db, "posts");
-    const querySnapshot = await getDocs(query(postsCollectionRef, where("isPublic", "==", true)));
-    const PublicPosts = querySnapshot.docs.map((postDoc) => {
-      const data = postDoc.data();
-      return {
-        ...data,
-        postId: postDoc.id,
-      };
-    });
-    return PublicPosts;
-  };
+
   const { data: PublicPosts } = useQuery("fetchPublicPosts", getPublicPosts);
   const randomPosts = PublicPosts?.sort(() => 0.4 - Math.random()).slice(0, 4);
+
   return (
     <>
       <TopImage>
@@ -63,7 +53,7 @@ function Intro() {
           <MiddleTitle>지도와 컬렉션</MiddleTitle>
           <MiddleDescription>
             <p>맛집을 기록하면 지도에 색이 칠해집니다.</p>
-            <p>같은 동에서 n개 이상 색을 칠하면 동 전체를 나의 맛집 영역으로 만들 수 있습니다.</p>
+            <p>같은 동에서 3개 이상 색을 칠하면 동 전체를 나의 맛집 영역으로 만들 수 있습니다.</p>
             <p>땅따먹기 게임 같은 재미를 느끼며 지도에 나만의 영역을 넓혀보세요!</p>
             <p>기록들은 컬렉션을 만들어 나만의 맛 기록 모음집처럼 보관할 수 있습니다.</p>
           </MiddleDescription>

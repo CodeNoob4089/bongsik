@@ -3,55 +3,60 @@ export const CommunityPosting = styled.div`
   /* background-color: #bd6767; */
   /* height: 80vh;
   width: 60vw; */
-  margin-bottom: 2.5rem;
-  margin-left: 3.5rem;
+  margin-bottom: 1.5rem;
+  margin-left: 4.2em;
   border-radius: 0.3rem;
   display: flex;
 `;
 export const PostContainer = styled.div`
-  height: 91.10169491525424vh;
-  width: 59.55497382198953vw;
-  border-radius: 0.4rem;
-  background-color: #ffffff;
+  height: 31.5vh;
+  width: 60vw;
+  border-radius: 0.7rem;
+  background-color: white;
+  display: flex;
+  box-shadow: 2px 2px 2px #bbbbbb;
+  cursor: pointer;
 `;
 export const PostImgBox = styled.div`
   /* background-color: black; */
-  height: 54vh;
-  width: 53vw;
+  /* height: 54vh;
+  width: 53vw; */
   display: flex;
-  border-radius: 0.3rem;
-  margin-top: 3rem;
-  margin-left: 1.4rem;
+  border-radius: 0.7rem;
+  margin-top: 1.9rem;
+  margin-left: 2.4rem;
 `;
 export const PostImgUrl = styled.img`
   /* background-color: #3511a3; */
-  height: 53.67231638418079vh;
-  width: 48vw;
-  margin-top: 1.5rem;
-  margin-left: 3.2rem;
-  border-radius: 0.35rem;
+  height: 22vh;
+  width: 13.5vw;
+  margin-top: 2rem;
+  border-radius: 0.7rem;
   display: block;
   margin: 0 auto;
   object-fit: cover;
+  cursor: pointer;
 `;
 export const PostContent = styled.div`
   /* background-color: #5e44ad; */
-  width: 48vw;
-  margin-top: 1.25rem;
-  margin-left: 3.7rem;
+  width: 20vw;
+  margin-top: 3.3rem;
+  margin-left: 1.7rem;
+  h2 {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #2d2d30;
+  }
   p {
-    margin-top: 0.5rem;
+    margin-top: 1rem;
   }
   hr {
-    margin-top: 1.56rem;
+    margin-top: 1.2rem;
   }
 `;
 export const PostBottomBar = styled.div`
   /* background-color: #1f961f; */
-  width: 48vw;
-  margin-left: 3.7rem;
   margin-top: 1rem;
-  margin-bottom: 80px;
 `;
 export const ButtonSet = styled.div`
   display: flex;
@@ -138,17 +143,17 @@ export const CommentWrap = styled.div`
   border-radius: 10px;
 `;
 export const Like = styled.button`
-  padding: 0.5rem;
-  border-radius: 100%;
   cursor: pointer;
+  margin-top: 0.2rem;
   background-color: transparent;
   border: none;
+  margin-right: 0.2rem;
   color: ${(props) => (props.isLiked ? "red" : "black")};
 `;
 export const LikeCount = styled.div`
   width: 0.6rem;
-  margin-top: 0.6rem;
-  margin-right: 0.3rem;
+  margin-top: 0.2rem;
+  margin-right: 0.1rem;
   color: #7c7c89;
 `;
 export const CommentButton = styled.button`
