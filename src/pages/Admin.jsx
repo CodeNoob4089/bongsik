@@ -55,7 +55,7 @@ function Admin() {
       setGreySrcFile(null);
     } catch (error) {
       alert("뱃지 추가에 실패했습니다. 다시 시도해주세요.");
-      console.log("error uploading image", error);
+      console.log("이미지 업로드 에러", error);
     } finally {
       setIsLoading(false);
     }
@@ -106,38 +106,24 @@ function Admin() {
         <h1>뱃지 추가</h1>
         <label>
           이름:
-          <input
-            value={badgeName}
-            onChange={(e) => setBadgeName(e.target.value)}
-          />
+          <input value={badgeName} onChange={(e) => setBadgeName(e.target.value)} />
         </label>
         <label>
           조건:
-          <input
-            value={badgeCondition}
-            onChange={(e) => setBadgeCondition(e.target.value)}
-          />
+          <input value={badgeCondition} onChange={(e) => setBadgeCondition(e.target.value)} />
         </label>
         <label>
           Color Image:
-          <input
-            type="file"
-            onChange={(e) => setColorSrcFile(e.target.files[0])}
-          />
+          <input type="file" onChange={(e) => setColorSrcFile(e.target.files[0])} />
         </label>
         <label>
           Grey Image:
-          <input
-            type="file"
-            onChange={(e) => setGreySrcFile(e.target.files[0])}
-          />
+          <input type="file" onChange={(e) => setGreySrcFile(e.target.files[0])} />
         </label>
         <button onClick={handleAddBadge} disabled={isLoading}>
           {isLoading ? "Adding..." : "Add Badge"}
         </button>
-        <button onClick={handleUpdateAllUserBadges}>
-          모든 유저 뱃지 정보 업데이트
-        </button>
+        <button onClick={handleUpdateAllUserBadges}>모든 유저 뱃지 정보 업데이트</button>
       </Adminbox>
     </>
   ) : null;

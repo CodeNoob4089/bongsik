@@ -1,11 +1,4 @@
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  query,
-  where,
-} from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, query, where } from "firebase/firestore";
 import { db, storage } from "../firebase";
 import { uploadBytesResumable, ref, getDownloadURL } from "firebase/storage";
 
@@ -16,7 +9,7 @@ export const getUserBadges = async (userId) => {
   if (userDoc.exists()) {
     return userDoc.data().ownedBadges || [];
   } else {
-    console.log("No such document!");
+    console.log("검색결과없음");
     return [];
   }
 };
