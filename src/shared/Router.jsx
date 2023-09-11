@@ -8,7 +8,7 @@ import Mypage from "../pages/Mypage";
 import Community from "../pages/Community";
 import Admin from "../pages/Admin";
 import Intro from "../pages/Intro";
-import Dongdong from "../mapFeatureCollection/Dongdong";
+import Dongdong from "../components/Dongdong";
 
 function Router() {
   return (

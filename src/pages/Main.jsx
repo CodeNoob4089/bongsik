@@ -6,11 +6,18 @@ import { useState } from "react";
 import BestList from "../components/BestList";
 import WorstList from "../components/WorstList";
 import { useQuery } from "react-query";
-import { getPosts } from "../api/collection";
+import { getMyTags, getPosts } from "../api/collection";
+import useAuthStore from "../store/auth";
+import { auth } from "../firebase";
 
 function Main() {
   const [modalOpen, setModalOpen] = useState(false);
-  const { data: postData } = useQuery(`fetchPostData`, getPosts);
+  const { data: postData } = useQuery(`fetchPostData`, getPosts, {
+    enabled: auth.currentUser !== null
+  });
+  const { data: myTags } = useQuery("getMyTags", getMyTags);
+  const user = useAuthStore((state) => state.user);
+
   const showModal = () => {
     setModalOpen(true);
     document.body.style.overflow = "hidden";
@@ -18,10 +25,10 @@ function Main() {
 
   return (
     <>
-      {modalOpen && <PostAddModal modalOpen={modalOpen} setModalOpen={setModalOpen} />}
+      {modalOpen && <PostAddModal modalOpen={modalOpen} setModalOpen={setModalOpen} myTags={myTags} />}
       <Container>
         <MapContainer>
-          <KakaoMap showModal={showModal} postData={postData} />
+          <KakaoMap showModal={showModal} postData={postData} user={user}/>
         </MapContainer>
         <MyList />
         <ListContainer>
