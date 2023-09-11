@@ -210,7 +210,8 @@ const MonthlyTitle = styled.p`
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
   z-index: 1;
-  padding: 1.8rem;
+  margin: 1.3rem;
+
   font-weight: bold;
   color: #2d2d30;
 `;

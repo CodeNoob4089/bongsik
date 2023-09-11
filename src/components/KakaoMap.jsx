@@ -31,7 +31,6 @@ function KakaoMap({ showModal, postData, user }) {
     lng: 128.556077,
   });
 
-
   const data = useMapDataStore((state) => state.data);
   const setData = useMapDataStore((state) => state.setData);
   const setClickedData = useClickedDataStore((state) => (state ? state.setClickedData : []));
@@ -168,8 +167,8 @@ function KakaoMap({ showModal, postData, user }) {
       }
       return acc;
     }, {});
-    console.log("user", user);
-    console.log("result", result);
+    // console.log("user", user);
+    // console.log("result", result);
 
     //  const keysOfResult = () => {
     //    if(result)
@@ -185,7 +184,7 @@ function KakaoMap({ showModal, postData, user }) {
       const dongSnap = await getDoc(dongRef);
       const dongCoordinates = dongSnap.data().coordinates;
       const coordinates = JSON.parse(dongCoordinates);
-      console.log("coordinates", coordinates);
+      // console.log("coordinates", coordinates);
       const polygonPath = [];
       const utmk =
         "+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs";

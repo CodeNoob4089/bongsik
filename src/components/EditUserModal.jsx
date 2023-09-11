@@ -47,12 +47,11 @@ function EditUserModal({ isOpen, onCancle }) {
           "state_changed",
           (snapshot) => {},
           (error) => {
-            console.log(error);
             reject();
           },
           () => {
             getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-              console.log("file available at", downloadURL);
+              // console.log("file available at", downloadURL);
               editPhotoURL = downloadURL;
               resolve();
             });
