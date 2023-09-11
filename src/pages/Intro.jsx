@@ -36,7 +36,6 @@ function Intro() {
   };
   const { data: PublicPosts } = useQuery("fetchPublicPosts", getPublicPosts);
   const randomPosts = PublicPosts?.sort(() => 0.4 - Math.random()).slice(0, 4);
-  console.log(randomPosts);
   return (
     <>
       <TopImage>

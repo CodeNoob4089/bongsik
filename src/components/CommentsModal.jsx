@@ -75,7 +75,6 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
       setCommentCount(0); // 초기 댓글 개수 0으로 설정
     },
   });
-  console.log("postComments", PostComments);
 
   // 댓글 추가
   const addCommentMutation = useMutation(
@@ -101,7 +100,6 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
   //  댓글 작성 버튼 핸들러
   const handleSubmit = async (e, postId) => {
     e.preventDefault();
-    console.log(postId);
     const commentInput = e.target.comment;
     const comment = commentInput.value;
 
@@ -196,7 +194,6 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
     if (days < 7) return `${Math.floor(days)}일 전`;
     return `${start.toLocaleDateString()}`;
   };
-  console.log(selectedPost);
   //유저 좋아요 정보 가져오기
   const getUserData = async () => {
     const userDocRef = doc(db, "users", userId);

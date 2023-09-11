@@ -49,8 +49,9 @@ function SignUp() {
         return badgeObj;
       }, {});
       alert("회원가입 완료! 이메일을 인증해주세요.");
+      await signOut(auth);
       navigate("/main");
-      signOut(auth);
+
       await setDoc(doc(db, "users", auth.currentUser.uid), {
         myTags: [],
         userLikes: [],

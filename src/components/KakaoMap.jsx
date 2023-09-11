@@ -149,22 +149,18 @@ function KakaoMap({ showModal, postData }) {
         method: "GET",
       });
 
-      console.log("response", response);
-
       const data = await response.json();
       for (const feature of data.features) {
         if (neighborhoodName === feature.properties.EMD_KOR_NM) {
           return feature.geometry.coordinates;
         }
       }
-      console.log("data", data);
       return false;
     };
 
     const addNeighborhoodPolygon = async () => {
       const neighborhoodName = await findNeighborhood();
       const coordinates = await findNeighborhoodCoordinates(neighborhoodName);
-      console.log("받아왔니 데이터", coordinates);
       const polygonPath = [];
       const utmk =
         "+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs";
@@ -177,7 +173,6 @@ function KakaoMap({ showModal, postData }) {
           polygonPath.push(new window.kakao.maps.LatLng(lati, longi));
         });
       });
-      // console.log("폴리곤데이터!!!",polygonPath);
       const polygon = new window.kakao.maps.Polygon({
         path: polygonPath,
         strokeColor: "#925CE9",

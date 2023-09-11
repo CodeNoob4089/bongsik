@@ -48,12 +48,11 @@ function MyLikePost() {
     }
   }, [user]);
 
-  console.log(likedPosts);
   return (
     <>
       <PostCardsContainer>
         <PostTitle>
-          <FontAwesomeIcon icon={faHeart} style={{ color: "#FF4E50" }} /> 좋아요 {user.userLikes.length}
+          <FontAwesomeIcon icon={faHeart} style={{ color: "#FF4E50" }} /> 좋아요 {user.userLikes?.length}
         </PostTitle>
         <Posts>
           {likedPosts.map((post) => (
