@@ -35,7 +35,6 @@ export const PostImgUrl = styled.img`
   display: block;
   margin: 0 auto;
   object-fit: cover;
-  cursor: pointer;
 `;
 export const PostContent = styled.div`
   /* background-color: #5e44ad; */
@@ -124,7 +123,7 @@ export const SubmitButton = styled.button`
 export const InputBox = styled.input`
   font-weight: bold;
   text-align: center;
-  width: 31rem;
+  width: 30rem;
   height: 2.3rem;
   border-radius: 10px;
   background-color: #f2f2f5;

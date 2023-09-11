@@ -74,6 +74,7 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
       setCommentCount(0); // 초기 댓글 개수 0으로 설정
     },
   });
+  console.log("postComments", PostComments);
 
   // 댓글 추가
   const addCommentMutation = useMutation(
@@ -99,6 +100,8 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
   //  댓글 작성 버튼 핸들러
   const handleSubmit = async (e, postId) => {
     e.preventDefault();
+    console.log(postId);
+
     const commentInput = e.target.comment;
     const comment = commentInput.value;
 
@@ -194,6 +197,7 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
     if (days < 7) return `${Math.floor(days)}일 전`;
     return `${start.toLocaleDateString()}`;
   };
+  console.log(selectedPost);
   //유저 좋아요 정보 가져오기
   const getUserData = async () => {
     const userDocRef = doc(db, "users", userId);
@@ -257,7 +261,24 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
                 </DetailLocation>
               </p>
             </ModalLocation>
-            {selectedPost && <img src={selectedPost.photo} alt="Post" />}
+            {selectedPost && selectedPost?.photo ? (
+              <img src={selectedPost.photo} alt="Post" />
+            ) : (
+              <ModalPhoto>
+                <img
+                  src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%8A%A4%ED%8C%8C%EA%B2%8C%ED%8B%B0%20ETG.png?alt=media&token=a16fadeb-f562-4c12-ad73-c4cc1118a108"
+                  style={{
+                    height: "30vh",
+                    width: "40vw",
+                    borderRadius: "0.7rem",
+
+                    margin: " 0 auto",
+                    objectFit: "cover",
+                  }}
+                  alt="게시글 사진 없을 때 뜨는 이미지"
+                />
+              </ModalPhoto>
+            )}
             <h2>{selectedPost.title}</h2>
             <ContentArea>
               {selectedPost.content} <hr />
@@ -391,4 +412,10 @@ const DetailLocation = styled.span`
 const DateDiv = styled.span`
   color: #5a5a68;
   font-size: 0.9rem;
+`;
+const ModalPhoto = styled.div`
+  width: 40vw;
+  height: 30vh;
+  /* background-color: black; */
+  margin-left: 3rem;
 `;
