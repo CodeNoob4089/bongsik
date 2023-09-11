@@ -55,7 +55,7 @@ function Admin() {
       setGreySrcFile(null);
     } catch (error) {
       alert("뱃지 추가에 실패했습니다. 다시 시도해주세요.");
-      console.log("이미지 업로드 에러", error);
+      // console.log("이미지 업로드 에러", error);
     } finally {
       setIsLoading(false);
     }
@@ -96,7 +96,7 @@ function Admin() {
       alert("모든 유저의 뱃지 정보가 성공적으로 업데이트되었습니다.");
     } catch (error) {
       alert("유저 뱃지 정보 업데이트에 실패했습니다. 다시 시도해주세요.");
-      console.log("error updating user badges", error);
+      // console.log("error updating user badges", error);
     }
   };
 

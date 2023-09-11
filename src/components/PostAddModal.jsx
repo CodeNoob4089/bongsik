@@ -16,10 +16,8 @@ function PostAddModal({ modalOpen, setModalOpen, myTags }) {
   const clickedData = useClickedDataStore((state) => state.clickedData);
   const setClickedData = useClickedDataStore((state) => state.setClickedData);
   const user = useAuthStore((state) => state.user);
-  const setUser = useAuthStore((state) => state.setUser)
-  const [dongCounts, setDongCounts] = useState(user.dongCounts)
-
- 
+  const setUser = useAuthStore((state) => state.setUser);
+  const [dongCounts, setDongCounts] = useState(user.dongCounts);
 
   const clickedCategory =
     clickedData?.category_group_name === "카페"
@@ -50,7 +48,7 @@ function PostAddModal({ modalOpen, setModalOpen, myTags }) {
   const starClickHandler = (index) => {
     if (index + 1 === stars.filter((s) => s === true).length) {
       setInputValue({ ...inputValue, star: 0 });
-      console.log("star",inputValue.star);
+      // console.log("star",inputValue.star);
       setStars(initialStars);
       return;
     }
@@ -81,11 +79,11 @@ function PostAddModal({ modalOpen, setModalOpen, myTags }) {
 
   const mutation = useMutation(
     async () => {
-      const newDongCounts = dongCounts.push(clickedData.dongCode)
-      await setDongCounts(newDongCounts)
-      const usersRef = doc(db, "users", user.uid)
+      const newDongCounts = dongCounts.push(clickedData.dongCode);
+      await setDongCounts(newDongCounts);
+      const usersRef = doc(db, "users", user.uid);
       await addDoc(collection(db, "posts"), inputValue);
-      await updateDoc(usersRef, { postCounts: increment(1), dongCounts: dongCounts});
+      await updateDoc(usersRef, { postCounts: increment(1), dongCounts: dongCounts });
     },
     {
       onSuccess: () => {
