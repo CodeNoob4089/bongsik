@@ -9,8 +9,18 @@ function EditUserModal({ isOpen, onCancle }) {
   const user = useAuthStore((state) => state.user);
   const setUser = useAuthStore((state) => state.setUser);
   const [newDisplayName, setNewDisplayName] = useState(user?.displayName || "");
-  const [newPhotoURL, setNewPhotoURL] = useState(user?.photoUrl || "");
+  const [newPhotoURL, setNewPhotoURL] = useState(
+    user?.photoUrl ||
+      "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/59932b0eb046f9fa3e063b8875032edd_crop.jpeg?alt=media&token=615f79d4-7eef-46e9-ba45-d7127b0597ea"
+  );
   const [selectedFile, setSelectedFile] = useState(null);
+  const handleCancelClick = () => {
+    setNewPhotoURL(
+      user?.photoUrl ||
+        "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/59932b0eb046f9fa3e063b8875032edd_crop.jpeg?alt=media&token=615f79d4-7eef-46e9-ba45-d7127b0597ea"
+    );
+    onCancle();
+  };
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -84,7 +94,7 @@ function EditUserModal({ isOpen, onCancle }) {
         </ContentContainer>
         <ButtonContainer>
           <ConfirmButton onClick={handleConfirmClick}>수정</ConfirmButton>
-          <CancelButton onClick={onCancle}>취소</CancelButton>
+          <CancelButton onClick={handleCancelClick}>취소</CancelButton>
         </ButtonContainer>
       </ModalContainer>
     </ModalBackground>
@@ -174,8 +184,8 @@ const InputField = styled.input`
   }
 `;
 const ProfileImage = styled.img`
-  width: auto;
-  height: auto;
+  width: 5rem;
+  height: 5rem;
   max-width: 200px;
   max-height: 200px;
   border-radius: 50%;

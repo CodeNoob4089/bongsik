@@ -17,38 +17,64 @@ function Heart({ userData, item, selectedPost }) {
   const [isClickProcessing, setIsClickProcessing] = useState(false);
 
   // mutation 함수 정의
-  const mutation = useMutation(async () => {
-    const postIdToUse = item?.postId || selectedPost?.postId;
-    const alreadyLikedUser = userData?.userLikes?.find((like) => like.likePostId === postIdToUse);
 
-    const userDocRef = doc(db, "users", userId);
-    const postDocRef = doc(db, "posts", postIdToUse);
+  const userDocRef = doc(db, "users", userId);
 
-    const postSnapshot = await getDoc(postDocRef);
-    const currentLikeCount = postSnapshot.data().likeCount;
+  const mutation = useMutation(
+    async () => {
+      const postIdToUse = item?.postId || selectedPost?.postId;
+      const alreadyLikedUser = userData?.userLikes?.find((like) => like.likePostId === postIdToUse);
 
-    await updateDoc(postDocRef, {
-      likeCount: alreadyLikedUser ? currentLikeCount - 1 : currentLikeCount + 1,
-    });
+      const postDocRef = doc(db, "posts", postIdToUse);
 
-    queryClient.invalidateQueries("fetchPublicRestaurantPosts");
+      const postSnapshot = await getDoc(postDocRef);
+      const currentLikeCount = postSnapshot.data().likeCount;
 
-    if (alreadyLikedUser) {
-      await updateDoc(userDocRef, {
-        userLikes: userData?.userLikes?.filter((like) => like.likePostId !== postIdToUse),
+      await updateDoc(postDocRef, {
+        likeCount: alreadyLikedUser ? currentLikeCount - 1 : currentLikeCount + 1,
       });
-    } else {
-      await updateDoc(userDocRef, {
-        userLikes: arrayUnion({ likePostId: postIdToUse }),
-      });
+
+      queryClient.invalidateQueries("fetchPublicRestaurantPosts");
+
+      if (alreadyLikedUser) {
+        await updateDoc(userDocRef, {
+          userLikes: userData?.userLikes?.filter((like) => like.likePostId !== postIdToUse),
+        });
+      } else {
+        await updateDoc(userDocRef, {
+          userLikes: arrayUnion({ likePostId: postIdToUse }),
+        });
+      }
+
+      queryClient.invalidateQueries("fetchUserData");
+      const userSnapshot = await getDoc(userDocRef);
+      const updatedUserData = userSnapshot.data();
+
+      return updatedUserData;
+    },
+    {
+      onSuccess: async (updatedUserData) => {
+        if (updatedUserData.userLikes.length >= 1 && !updatedUserData.ownedBadges?.fBQFJ6xzfDovK0N3FedE.isOwned) {
+          await updateDoc(userDocRef, {
+            "ownedBadges.fBQFJ6xzfDovK0N3FedE.isOwned": true,
+          });
+          alert("첫 좋아요 누르기 조건을 달성하여 뱃지를 획득합니다!");
+        }
+        if (updatedUserData.userLikes.length >= 10 && !updatedUserData.ownedBadges?.xplIFBYaDPZfiBUPg8nV.isOwned) {
+          await updateDoc(userDocRef, {
+            "ownedBadges.xplIFBYaDPZfiBUPg8nV.isOwned": true,
+          });
+          alert("좋아요 10개 누르기 조건을 달성하여 뱃지를 획득합니다!");
+        }
+        if (updatedUserData.userLikes.length >= 30 && !updatedUserData.ownedBadges?.wR3TzKNMDzPPwCLA8c1f.isOwned) {
+          await updateDoc(userDocRef, {
+            "ownedBadges.wR3TzKNMDzPPwCLA8c1f.isOwned": true,
+          });
+          alert("좋아요 30개 누르기 조건을 달성하여 뱃지를 획득합니다!");
+        }
+      },
     }
-
-    queryClient.invalidateQueries("fetchUserData");
-    const userSnapshot = await getDoc(userDocRef);
-    const updatedUserData = userSnapshot.data();
-
-    return updatedUserData;
-  });
+  );
   const clickHeart = async () => {
     if (!isLogIn) {
       alert("로그인 후 이용해주세요!");
@@ -61,25 +87,6 @@ function Heart({ userData, item, selectedPost }) {
       setIsClickProcessing(false);
     }, 10);
   };
-
-  // if (updatedUserData.userLikes.length >= 1 && !updatedUserData.ownedBadges?.fBQFJ6xzfDovK0N3FedE.isOwned) {
-  //   await updateDoc(userDocRef, {
-  //     "ownedBadges.fBQFJ6xzfDovK0N3FedE.isOwned": true,
-  //   });
-  //   alert("첫 좋아요 누르기 조건을 달성하여 뱃지를 획득합니다!");
-  // }
-  // if (updatedUserData.userLikes.length >= 10 && !updatedUserData.ownedBadges?.xplIFBYaDPZfiBUPg8nV.isOwned) {
-  //   await updateDoc(userDocRef, {
-  //     "ownedBadges.xplIFBYaDPZfiBUPg8nV.isOwned": true,
-  //   });
-  //   alert("좋아요 10개 누르기 조건을 달성하여 뱃지를 획득합니다!");
-  // }
-  // if (updatedUserData.userLikes.length >= 30 && !updatedUserData.ownedBadges?.wR3TzKNMDzPPwCLA8c1f.isOwned) {
-  //   await updateDoc(userDocRef, {
-  //     "ownedBadges.wR3TzKNMDzPPwCLA8c1f.isOwned": true,
-  //   });
-  //   alert("좋아요 10개 누르기 조건을 달성하여 뱃지를 획득합니다!");
-  // }
 
   return (
     <>
