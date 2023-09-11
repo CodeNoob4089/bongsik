@@ -141,7 +141,7 @@ const LayoutContainer = styled.div`
 const Button = styled.button`
   border: none;
   height: 60px;
-  width: 5rem;
+  width: 7rem;
   color: ${(props) => (props.id === props.currentPage ? "#FF4E50" : "black")};
   background: none;
   cursor: pointer;
@@ -155,13 +155,14 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  height: 3.5rem;
-  padding: 0 6rem;
+  height: 4.2rem;
+  padding: 0 10.5rem;
 `;
 
 const LogoImg = styled.img`
-  height: 1.7rem;
+  height: 2rem;
   cursor: pointer;
+  margin-top: 0.3rem;
 `;
 
 const Footer = styled.div`

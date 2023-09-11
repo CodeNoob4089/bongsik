@@ -35,4 +35,17 @@ const deletePost = async (postID) => {
     console.error("Error deleting post: ", error);
   }
 };
-export { getMyTags, getPosts, deletePost };
+const getPublicPosts = async () => {
+  const postsCollectionRef = collection(db, "posts");
+  const querySnapshot = await getDocs(query(postsCollectionRef, where("isPublic", "==", true)));
+  const PublicPosts = querySnapshot.docs.map((postDoc) => {
+    const data = postDoc.data();
+    return {
+      ...data,
+      postId: postDoc.id,
+    };
+  });
+  return PublicPosts;
+};
+
+export { getMyTags, getPosts, deletePost, getPublicPosts };
