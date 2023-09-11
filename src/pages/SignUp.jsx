@@ -198,7 +198,6 @@ export const SignUpContainer = styled.div`
   justify-content: center;
   align-items: center;
   height: calc(100vh - 20px);
-  border-radius: 1rem;
 `;
 export const SignupTitle = styled.div`
   display: flex;
