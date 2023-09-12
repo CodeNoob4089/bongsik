@@ -63,8 +63,7 @@ function SignUp() {
       await signOut(auth);
       navigate("/main");
     } catch ({ code, message }) {
-      console.log(code, message);
-      alert("뭐지", code, message);
+      console.log(message,code)
     }
   };
   const validateEmail = (email) => {
