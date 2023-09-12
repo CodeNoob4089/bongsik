@@ -168,7 +168,6 @@ export const ImageLogo = styled.img`
 `;
 
 export const StyledForm = styled.form`
-  margin-top: -14rem;
   width: 100%;
   height: 100%;
   display: flex;

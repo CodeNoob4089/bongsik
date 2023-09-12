@@ -48,11 +48,7 @@ function KakaoMap({ showModal, postData, user }) {
 
   const onMapDragged = (map) => {
     const geocoder = new kakao.maps.services.Geocoder();
-    setMapCenterPosition({
-      lat: map.getCenter().getLat(),
-      lng: map.getCenter().getLng(),})
-
-    geocoder.coord2Address(mapCenterPosition.lng, mapCenterPosition.lat, (result, status) => {
+        geocoder.coord2Address(map.getCenter().getLng(), map.getCenter().getLat(), (result, status) => {
       if (status === kakao.maps.services.Status.OK) {
         console.log('도로명 주소:', result[0]);
         setMyAddress(result[0]?.road_address?result[0].road_address.address_name:result[0].address.address_name)
@@ -72,7 +68,6 @@ function KakaoMap({ showModal, postData, user }) {
       });
     });
     
-
     getLocation
       .then((position) => {
         const userLat = position.coords.latitude;
@@ -267,7 +262,10 @@ function KakaoMap({ showModal, postData, user }) {
               }}
               level={5}
               onCreate={setMap}
-              onDragEnd={() => onMapDragged(map) }
+              onDragEnd={(map) =>
+                {console.log("왜 안되니 ㅠㅠ")
+                onMapDragged(map)}
+              }
             >
               <MapMarker
                 position={{
@@ -501,7 +499,7 @@ const SearchMapInput = styled.input`
   height: 1.9rem;
   border: none;
   border-radius: 30px;
-  box-shadow: 1px 1px 1px #e7e7e7;
+  box-shadow: 2px 2px 2px #c8c8c8;
 `;
 
 const SearchButton = styled.button`
@@ -523,7 +521,7 @@ const CurrentLocationContentsWrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0.9rem 1.2rem;
-  box-shadow: 1px 1px 1px #e7e7e7;
+  box-shadow: 2px 2px 2px #c8c8c8;
 
   overflow-y: scroll;
 `;

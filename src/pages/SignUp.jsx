@@ -32,10 +32,12 @@ function SignUp() {
     }));
   };
 
+
   const joinWithVerification = async (name, email, password, photo) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const { user } = userCredential;
+
       await updateProfile(auth.currentUser, {
         displayName: name,
         photoURL: photo,
@@ -60,10 +62,10 @@ function SignUp() {
         dongCounts: [],
       });
       alert("회원가입 완료! 이메일을 인증해주세요.");
-      await signOut(auth);
+      await signOut();
       navigate("/main");
     } catch ({ code, message }) {
-      console.log(message,code)
+      console.log(message, code);
     }
     };
   const validateEmail = (email) => {
@@ -250,8 +252,6 @@ export const ImageLogo = styled.img`
 `;
 
 export const StyledForm = styled.form`
-  margin-top: -8rem;
-  margin-left: 1rem;
   width: 100%;
   height: 100%;
   display: flex;
