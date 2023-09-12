@@ -63,7 +63,7 @@ function SignUp() {
       await signOut(auth);
       navigate("/main");
     } catch ({ code, message }) {
-      console.log(message,code)
+      console.log(message, code);
     }
   };
   const validateEmail = (email) => {
@@ -250,8 +250,6 @@ export const ImageLogo = styled.img`
 `;
 
 export const StyledForm = styled.form`
-  margin-top: -8rem;
-  margin-left: 1rem;
   width: 100%;
   height: 100%;
   display: flex;
