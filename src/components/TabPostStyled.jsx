@@ -73,7 +73,7 @@ export const ModalWrapper = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
+  width: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
@@ -91,7 +91,7 @@ export const ModalContent = styled.div`
   width: 50vw;
   height: 95vh;
   overflow-y: auto;
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
   z-index: 100;
   object-fit: cover;
 
@@ -113,24 +113,25 @@ export const SubmitButton = styled.button`
   color: white;
   font-weight: bold;
   background-color: #ff4e50;
-  width: 3rem;
-  height: 2.3rem;
+  width: 3vw;
+  height: 5vh;
   border: none;
   border-radius: 10px;
   cursor: pointer;
   margin-left: 0.2rem;
   margin: 0.7rem;
+  margin-top: 1.8rem;
 `;
 export const InputBox = styled.input`
   font-weight: bold;
   text-align: center;
-  width: 30rem;
-  height: 2.3rem;
+  width: 31.5vw;
+  height: 5vh;
   border-radius: 10px;
   background-color: #f2f2f5;
   border: none;
   float: left;
-  margin-top: 0.8rem;
+  margin-top: 1.8rem;
 `;
 export const Form = styled.form`
   text-align: center;
@@ -138,9 +139,11 @@ export const Form = styled.form`
 export const CommentWrap = styled.div`
   color: black;
   margin-top: 1rem;
-  width: 45vw;
+  margin-left: 2rem;
+  width: 40vw;
   height: auto;
   border-radius: 10px;
+  /* background-color: red; */
 `;
 export const Like = styled.button`
   cursor: pointer;
@@ -190,9 +193,10 @@ export const CommentInput = styled.input`
 export const ContentArea = styled.div`
   max-width: 40vw;
   height: auto;
-  margin-left: 2.8rem;
+  margin-left: 3rem;
   margin-bottom: 1rem;
   margin-top: 1rem;
+  line-height: 1.5rem;
 
   hr {
     margin-top: 2rem;
@@ -214,7 +218,8 @@ export const UserNameAndLevel = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 63%;
+  width: 30vw;
+  /* background-color: black; */
 `;
 
 export const Nickname = styled.p`
@@ -230,7 +235,7 @@ export const Nickname = styled.p`
 export const ProfileCircle = styled.div`
   width: 70px;
   height: 70px;
-  border-radius: 70%; /*둥그런 원으로 만들기 위함*/
+  border-radius: 70%;
   overflow: hidden;
   text-align: center;
   line-height: center;
@@ -263,6 +268,12 @@ export const ModalLocation = styled.div`
 
 export const InputArea = styled.div`
   display: flex;
+  /* background-color: #d68383; */
+  width: 42vw;
+  margin-left: 2rem;
+  height: 12vh;
+  justify-content: center;
+  align-items: center;
 `;
 export const DetailLocation = styled.span`
   color: #5a5a68;

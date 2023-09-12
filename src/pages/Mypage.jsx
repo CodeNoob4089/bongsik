@@ -11,7 +11,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGear, faHeart, faMedal } from "@fortawesome/free-solid-svg-icons";
 import EditUserModal from "../components/EditUserModal";
 import MyPageList from "../components/MyPageList";
-import { useLocation } from "react-router-dom";
 import getLevelImageUrl from "../shared/LevelImage";
 
 function Mypage() {

@@ -40,7 +40,6 @@ function SignUp() {
         displayName: name,
         photoURL: photo,
       });
-      await sendEmailVerification(auth.currentUser);
       const badges = await getBadgeData();
 
       const userBadgeData = badges.reduce((badgeObj, badge) => {
