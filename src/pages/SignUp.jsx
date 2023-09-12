@@ -30,11 +30,13 @@ function SignUp() {
       emailError: validateEmail(email) ? "" : "잘못된 이메일 형식입니다.",
     }));
   };
+
   const joinWithVerification = async (name, email, password, photo) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
       const { user } = userCredential;
+
       await updateProfile(auth.currentUser, {
         displayName: name,
         photoURL: photo,
@@ -55,8 +57,8 @@ function SignUp() {
         exp: 0,
         dongCounts: [],
       });
-      await auth.signOut();
-      alert("회원가입완료 이메일 인증을 해주세요");
+      alert("회원가입 완료! 이메일을 인증해주세요.");
+      await signOut(auth);
       navigate("/main");
     } catch ({ code, message }) {
       console.log(message, code);
