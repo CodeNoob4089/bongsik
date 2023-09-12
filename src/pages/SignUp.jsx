@@ -66,7 +66,8 @@ function SignUp() {
       signOut(auth);
 
     } catch ({ code, message }) {
-      alert(code);
+      console.log(message,code)
+      // alert(code);
     }
   };
   const validateEmail = (email) => {
