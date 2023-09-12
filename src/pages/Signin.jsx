@@ -63,6 +63,7 @@ function SignIn() {
             postCounts: 0,
             level: 1,
             exp: 0,
+            dongCounts: [],
           },
           { merge: true }
         );

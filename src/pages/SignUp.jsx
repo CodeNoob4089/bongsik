@@ -39,7 +39,6 @@ function SignUp() {
         displayName: name,
         photoURL: photo,
       });
-      await sendEmailVerification(auth.currentUser);
       const badges = await getBadgeData();
 
       const userBadgeData = badges.reduce((badgeObj, badge) => {
@@ -48,9 +47,6 @@ function SignUp() {
         };
         return badgeObj;
       }, {});
-      alert("회원가입 완료! 이메일을 인증해주세요.");
-      await signOut(auth);
-      navigate("/main");
 
       await setDoc(doc(db, "users", auth.currentUser.uid), {
         myTags: [],
@@ -61,10 +57,7 @@ function SignUp() {
         exp: 0,
         dongCounts: [],
       });
-      alert("회원가입 완료! 이메일을 인증해주세요.");
       navigate("/main");
-      signOut(auth);
-
     } catch ({ code, message }) {
       alert(code);
     }

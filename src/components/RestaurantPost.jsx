@@ -48,7 +48,8 @@ function RestaurantPost({ category }) {
       query(
         postsCollectionRef,
 
-        where("isPublic", "==", true) && where("category", "==", category) && orderBy("timestamp", "desc")
+        where("isPublic", "==", true),
+        where("category", "==", category)
       )
     );
 
@@ -81,10 +82,13 @@ function RestaurantPost({ category }) {
 
   const { data: userData } = useQuery("fetchUserData", getUserData);
   const { data: RestaurantPublicPosts } = useQuery("fetchPublicRestaurantPosts", getPublicRestaurantPosts);
+  const RealTimePost = RestaurantPublicPosts?.sort(
+    (a, b) => b.timestamp?.toDate().getTime() - a.timestamp?.toDate().getTime()
+  );
 
   return (
     <>
-      {RestaurantPublicPosts?.map((item) => (
+      {RealTimePost?.map((item) => (
         <CommunityPosting key={item.postId}>
           <PostContainer>
             {item.photo ? (

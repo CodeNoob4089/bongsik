@@ -1,7 +1,19 @@
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { db, auth } from "../firebase";
-import { collection, addDoc, where, query, getDocs, deleteDoc, doc, updateDoc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  where,
+  query,
+  getDocs,
+  deleteDoc,
+  doc,
+  updateDoc,
+  getDoc,
+  orderBy,
+} from "firebase/firestore";
+import getLevelImageUrl from "../shared/LevelImage";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
 import useAuthStore from "../store/auth";
@@ -58,7 +70,9 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
   const getPostComments = async (postId) => {
     const commentsCollectionRef = collection(db, "postComments");
 
-    const querySnapshot = await getDocs(query(commentsCollectionRef, where("postId", "==", postId)));
+    const querySnapshot = await getDocs(
+      query(commentsCollectionRef, where("postId", "==", postId) && orderBy("date", "desc"))
+    );
     const PostComments = querySnapshot.docs.map((commentsDoc) => {
       const data = commentsDoc.data();
       return {
@@ -222,10 +236,19 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
             <CloseButton onClick={handleCloseModal}>X</CloseButton>
             <UserInfo>
               <UserProfile>
-                <ProfileBox photo={selectedPost.userPhoto} />
+                <ProfileBox
+                  photo={
+                    selectedPost.userPhoto
+                      ? selectedPost.userPhoto
+                      : "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%ED%94%84%EB%A1%9C%ED%95%84%20%EC%82%AC%EC%A7%84.png?alt=media&token=59bfa858-c863-4255-8171-e9c4f62a51f3"
+                  }
+                />
                 <UserNameAndLevel>
                   <Nickname>
-                    {selectedPost.userName}&nbsp;Lv.
+                    {selectedPost.userName}&nbsp;Lv.{selectedPost.userLevel ? selectedPost.userLevel : ""}
+                    {/* <Level>
+                      <LevelImg src={getLevelImageUrl(selectedPost.userLevel ? selectedPost.userLevel : "null")} />
+                    </Level> */}
                     <br />
                     <DateDiv>{selectedPost.timestamp?.toDate().toLocaleDateString()}</DateDiv>
                   </Nickname>
@@ -270,7 +293,6 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
                     height: "30vh",
                     width: "40vw",
                     borderRadius: "0.7rem",
-
                     margin: " 0 auto",
                     objectFit: "cover",
                   }}
@@ -300,7 +322,7 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
               <LikeCount>{selectedPost.commentCount}</LikeCount>
             </ButtonSet>
             <InputArea>
-              <ProfileCircle style={{ marginLeft: "2rem" }}>
+              <ProfileCircle style={{ marginRight: "1rem" }}>
                 <ProfileBox style={{ marginTop: "1.5rem" }} photo={user.photoUrl} />
               </ProfileCircle>
               <Form onSubmit={(e) => handleSubmit(e, selectedPost.postId)}>
@@ -312,8 +334,14 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
               (comment) =>
                 comment.postId === selectedPost.postId && (
                   <CommentWrap key={comment.commentId}>
-                    <div style={{ marginLeft: "2rem", display: "flex" }}>
-                      <ProfileBox photo={comment.commentPhoto}></ProfileBox>
+                    <div style={{ display: "flex" }}>
+                      <ProfileBox
+                        photo={
+                          comment.commentPhoto
+                            ? comment.commentPhoto
+                            : "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%ED%94%84%EB%A1%9C%ED%95%84%20%EC%82%AC%EC%A7%84.png?alt=media&token=59bfa858-c863-4255-8171-e9c4f62a51f3"
+                        }
+                      ></ProfileBox>
                       <div style={{ display: "column" }}>
                         <Nickname style={{ marginTop: "1rem", display: "flex" }}>
                           {comment.nickName} &nbsp;
@@ -418,4 +446,15 @@ const ModalPhoto = styled.div`
   height: 30vh;
   /* background-color: black; */
   margin-left: 3rem;
+`;
+const LevelImg = styled.img`
+  height: 5px;
+  width: 5px;
+`;
+const Level = styled.div`
+  display: flex;
+  justify-content: left;
+  margin-left: 0.5rem;
+  margin-top: 1rem;
+  height: 1rem;
 `;
