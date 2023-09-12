@@ -7,7 +7,6 @@ import { getBadgeData } from "../store/BadgeData";
 import { updateUserDoc } from "../store/UserService";
 import { arrayUnion, doc, setDoc } from "firebase/firestore";
 import { signOut } from "firebase/auth";
-
 const initialState = {
   name: "",
   email: "",
@@ -32,10 +31,10 @@ function SignUp() {
     }));
   };
 
-
   const joinWithVerification = async (name, email, password, photo) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
       const { user } = userCredential;
 
       await updateProfile(auth.currentUser, {
@@ -43,14 +42,12 @@ function SignUp() {
         photoURL: photo,
       });
       const badges = await getBadgeData();
-
       const userBadgeData = badges.reduce((badgeObj, badge) => {
         badgeObj[badge.id] = {
           isOwned: false,
         };
         return badgeObj;
       }, {});
-
       await setDoc(doc(db, "users", auth.currentUser.uid), {
         myTags: [],
         userLikes: [],
@@ -61,12 +58,12 @@ function SignUp() {
         dongCounts: [],
       });
       alert("회원가입 완료! 이메일을 인증해주세요.");
-      await signOut();
+      await auth.signOut();
       navigate("/main");
     } catch ({ code, message }) {
       console.log(message, code);
     }
-    };
+  };
   const validateEmail = (email) => {
     const emailRegEx =
       /^([\w-.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
