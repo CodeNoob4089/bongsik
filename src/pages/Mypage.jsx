@@ -170,7 +170,7 @@ export default Mypage;
 
 //스타일컴포넌트
 const Container = styled.div`
-  // min-height: calc(100vh - 6rem-7rem)
+  min-height: 100vh;
 `;
 
 const UserInfo = styled.div`
