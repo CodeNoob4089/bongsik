@@ -34,7 +34,8 @@ function SignUp() {
 
   const joinWithVerification = async (name, email, password, photo) => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const { user } = userCredential;
       await updateProfile(auth.currentUser, {
         displayName: name,
         photoURL: photo,
@@ -48,9 +49,6 @@ function SignUp() {
         };
         return badgeObj;
       }, {});
-      alert("회원가입 완료! 이메일을 인증해주세요.");
-      await signOut(auth);
-      navigate("/main");
 
       await setDoc(doc(db, "users", auth.currentUser.uid), {
         myTags: [],
@@ -62,11 +60,11 @@ function SignUp() {
         dongCounts: [],
       });
       alert("회원가입 완료! 이메일을 인증해주세요.");
+      await signOut(auth);
       navigate("/main");
-      signOut(auth);
-
     } catch ({ code, message }) {
-      alert(code);
+      console.log(code, message);
+      alert("뭐지", code, message);
     }
   };
   const validateEmail = (email) => {

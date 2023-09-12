@@ -103,7 +103,7 @@ function Mypage() {
                 </RightContents>
               </PostContents>
             ) : (
-              <PostContents>
+              <UserPostContents>
                 <UserInfo>
                   <UserProfile>
                     <ProfileCircle>
@@ -149,14 +149,14 @@ function Mypage() {
                     </UserTabButton>
                   </UserTabsBox>
                 </UserInfo>
-                <RightContents>
+                <UserRightContents>
                   {currentUserTab === "like-posts" ? (
                     <MyLikePost />
                   ) : (
                     <Badge badges={badges} ownedBadges={ownedBadges} />
                   )}
-                </RightContents>
-              </PostContents>
+                </UserRightContents>
+              </UserPostContents>
             )}
           </TabContent>
         </>
@@ -170,18 +170,30 @@ export default Mypage;
 
 //스타일컴포넌트
 const Container = styled.div`
+  padding: 3vh 9vw;
+  width: 100%;
   min-height: 100vh;
 `;
 
 const UserInfo = styled.div`
   background-color: white;
   border-radius: 10px;
-  width: 30rem;
-  height: 17rem;
+  width: 24vw;
+  height: 28vh;
   margin: 5vh 9vw;
   padding: 2.5rem;
   display: flex;
   flex-direction: column;
+`;
+const UserPostContents = styled.div`
+  display: flex;
+  margin-left: -9.3vw;
+  margin-top: -2.2vw;
+`;
+const UserRightContents = styled.div`
+  margin-left: -8vw;
+  width: 66.25vw;
+  height: 80vh;
 `;
 
 const UserProfile = styled.div`
@@ -258,18 +270,17 @@ const Line = styled.div`
   background-color: #d0d0de;
 `;
 const TabsBox = styled.div`
-  height: 100px;
-  width: 190px;
-  margin-left: 50px;
-  margin-top: 15px;
+  height: 6rem;
+  width: 13rem;
+  margin-top: 1.7rem;
 `;
 
 const TabButton = styled.button`
   font-weight: bold;
   font-size: 17px;
   color: ${(props) => (props.id === props.currentTab ? "#FF4E50" : "gray")};
-  width: 95px;
-  height: 45px;
+  width: 5.8rem;
+  height: 2.6rem;
   margin-top: 30px;
   border: none;
   border-bottom: ${(props) => (props.id === props.currentTab ? "3px solid #FF4E50" : "2px solid gray")};
@@ -283,19 +294,19 @@ const TabContent = styled.div`
 `;
 
 const PostContents = styled.div`
+  margin-left: -0.5rem;
+  margin-top: -2.6rem;
   display: flex;
   flex-direction: row;
 `;
 
 const MyListBox = styled.div`
-  width: 30vw;
-  height: 80vh;
   margin: 0 auto;
 `;
 
 const RightContents = styled.div`
-  margin-left: 4vw;
-  width: 60rem;
+  margin-left: -2.5vw;
+  width: 66.25vw;
   height: 80vh;
 `;
 const LevelImg = styled.img`
