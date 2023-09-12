@@ -151,8 +151,6 @@ export const InputContainer = styled.div`
 export const SigninTitle = styled.div`
   font-size: 2rem;
   font-weight: 550;
-  margin-top: 11.125rem;
-  margin-left: -16.8rem;
 `;
 
 export const ImageContainer = styled.div`

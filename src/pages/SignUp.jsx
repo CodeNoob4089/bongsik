@@ -220,8 +220,6 @@ export const SignUpContainer = styled.div`
 export const SignupTitle = styled.div`
   font-size: 2rem;
   font-weight: 550;
-  margin-left: 10.9375rem;
-  margin-top: 6.4375rem;
 `;
 
 export const SignUpBox = styled.div`
@@ -231,6 +229,8 @@ export const SignUpBox = styled.div`
 `;
 
 export const InputContainer = styled.div`
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: #ffffff;
