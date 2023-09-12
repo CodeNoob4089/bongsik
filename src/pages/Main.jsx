@@ -75,7 +75,7 @@ const ListContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-
+  margin-bottom: 5vh;
 `;
 
 const ListBox = styled.div`

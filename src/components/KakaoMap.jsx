@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faStar } from "@fortawesome/free-solid-svg-icons";
@@ -10,6 +10,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import Skeleton from "../skeleton/MapSkeleton";
 import { Description, DescriptionBox, DescriptionTitle } from "../shared/MainDescription";
+
 
 const { kakao } = window;
 
@@ -30,7 +31,7 @@ function KakaoMap({ showModal, postData, user }) {
     lat: 35.6632102,
     lng: 128.556077,
   });
-
+  const [myAddress, setMyAddress] = useState("현위치를 가져오는 중입니다...");
   const data = useMapDataStore((state) => state.data);
   const setData = useMapDataStore((state) => state.setData);
   const setClickedData = useClickedDataStore((state) => (state ? state.setClickedData : []));
@@ -45,18 +46,33 @@ function KakaoMap({ showModal, postData, user }) {
     setSearchKeyword(inputValue);
   };
 
+  const onMapDragged = (map) => {
+    const geocoder = new kakao.maps.services.Geocoder();
+        geocoder.coord2Address(map.getCenter().getLng(), map.getCenter().getLat(), (result, status) => {
+      if (status === kakao.maps.services.Status.OK) {
+        console.log('도로명 주소:', result[0]);
+        setMyAddress(result[0]?.road_address?result[0].road_address.address_name:result[0].address.address_name)
+      } else {
+        console.error('주소 변환 실패:', status);
+        return
+      }
+    });
+  }
+
+
   useEffect(() => {
+    const geocoder = new kakao.maps.services.Geocoder();
     const getLocation = new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(resolve, reject, {
         enableHighAccuracy: true,
       });
     });
-
+    
     getLocation
       .then((position) => {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
-
+   
         setUserLocation({
           lat: userLat,
           lng: userLng,
@@ -65,9 +81,22 @@ function KakaoMap({ showModal, postData, user }) {
           lat: userLat,
           lng: userLng,
         });
+ 
+        geocoder.coord2Address(userLng, userLat, (result, status) => {
+          if (status === kakao.maps.services.Status.OK) {
+            console.log('도로명 주소:', result[0].road_address.address_name);
+            setMyAddress(result[0].road_address.address_name)
+          } else {
+            console.error('주소 변환 실패:', status);
+            return
+          }
+        });
+
       })
       .catch((error) => console.error(error))
       .finally(() => setLoadingLocation(false));
+
+
   }, []);
 
   useEffect(() => {
@@ -84,10 +113,11 @@ function KakaoMap({ showModal, postData, user }) {
       location: new kakao.maps.LatLng(mapCenterPosition.lat, mapCenterPosition.lng),
     };
 
-    ps.keywordSearch(
-      searchKeyword,
-      (data, status, pagination) => {
+    // ps.categorySearch('CE7' || 'FD6', placesSearchCB, {useMapBounds:true} )
+     ps.keywordSearch(searchKeyword,(data, status, pagination) => {
         if (status === kakao.maps.services.Status.OK) {
+          // const foodData = data?.filter((d) => d.category_group_code === 'FD6' ||  d.category_group_code === 'CE7' )
+          // console.log("푸드데이터!!!!!!!",foodData)
           // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
           // LatLngBounds 객체에 좌표를 추가합니다.
           const bounds = new kakao.maps.LatLngBounds();
@@ -120,6 +150,9 @@ function KakaoMap({ showModal, postData, user }) {
       },
       options
     );
+    const center = map.getCenter();
+    console.log("center", center)
+
   }, [searchKeyword, map]);
 
   const findNeighborhood = () => {
@@ -143,7 +176,7 @@ function KakaoMap({ showModal, postData, user }) {
       return alert("글을 작성하려면 로그인해주세요!");
     }
     if (d.category_group_name === "음식점" || d.category_group_name === "카페") {
-      await setMapCenterPosition({
+      setMapCenterPosition({
         lat: d.y,
         lng: d.x,
       });
@@ -169,12 +202,6 @@ function KakaoMap({ showModal, postData, user }) {
     }, {});
     // console.log("user", user);
     // console.log("result", result);
-
-    //  const keysOfResult = () => {
-    //    if(result)
-    //     return Object.keys(result)
-    //  }
-
     const keysOfResult = Object.keys(result);
     const coloredDongs = keysOfResult?.filter((key) => result[key] >= 3);
     const polygonList = [];
@@ -214,13 +241,8 @@ function KakaoMap({ showModal, postData, user }) {
     };
   }, [user, map]);
 
-  // if (loadingLocation) return <div>위치 정보를 가져오는 중...</div>;
 
   return (
-    <>
-      {/* {loadingLocation ? (
-        <div>위치 정보를 가져오는 중...</div>
-      ) : ( */}
       <>
         <MapBox>
           <DescriptionBox>
@@ -240,6 +262,10 @@ function KakaoMap({ showModal, postData, user }) {
               }}
               level={5}
               onCreate={setMap}
+              onDragEnd={(map) =>
+                {console.log("왜 안되니 ㅠㅠ")
+                onMapDragged(map)}
+              }
             >
               <MapMarker
                 position={{
@@ -292,10 +318,6 @@ function KakaoMap({ showModal, postData, user }) {
                     strokeStyle={"solid"} // 선의 스타일 입니다
                     fillColor={"#ff694e"} // 채우기 색깔입니다
                     fillOpacity={0.7} // 채우기 불투명도 입니다
-                    // onMouseover={() =>
-                    //   setCurrentMouseOver(post)}
-                    // onMouseout={() =>
-                    //     setCurrentMouseOver()}
                     onMousedown={() => {
                       currentMouseOver === post ? setCurrentMouseOver() : setCurrentMouseOver(post);
                     }}
@@ -346,23 +368,35 @@ function KakaoMap({ showModal, postData, user }) {
               <div>
                 <CurrentLocationInfo>
                   <div>
-                    <p>
-                    <CurrentLocationButton
-                        onClick={() => map.setCenter(new kakao.maps.LatLng(userLocation.lat, userLocation.lng))}
-                      ></CurrentLocationButton>
-                      현재 나의 위치
+                    <p style={{fontSize: "1rem", fontWeight: "bold"}}>
+                      {myAddress}
                     </p>
-                    <p>기록한 가게 | 좋아요 누른 가게</p>
+                    <p
+                    style={{fontSize: "0.8rem", color: "gray", display:"flex", alignItems:"center", cursor: "pointer"}}
+                    onClick={() => {
+                      map.setCenter(new kakao.maps.LatLng(userLocation.lat, userLocation.lng))
+                      onMapDragged(map)
+                    }}
+                    >
+                    <CurrentLocationButton/>
+                      내 위치로</p>
                   </div>
                 </CurrentLocationInfo>
-                <p>최근 리뷰</p>
+                <CurrentLocationReviews>
+                  <p>최근 리뷰</p>
+                </CurrentLocationReviews>
+                <CurrentLocationReviews>
+                  <p>후기가 많은 가게</p>
+                </CurrentLocationReviews>
               </div>
             ) : (
               <>
                 <ResultText className="result-keyword">
                   <p>
                     <CurrentLocationButton
-                      onClick={() => map.setCenter(new kakao.maps.LatLng(userLocation.lat, userLocation.lng))}
+                      onClick={() => {
+                        map.setCenter(new kakao.maps.LatLng(userLocation.lat, userLocation.lng))
+                      }}
                     ></CurrentLocationButton>
                     &nbsp;{searchKeyword}&nbsp; 검색 결과
                   </p>
@@ -407,8 +441,6 @@ function KakaoMap({ showModal, postData, user }) {
           </CurrentLocationContentsWrapper>
         </SearchArea>
       </>
-      {/* )} */}
-    </>
   );
 }
 
@@ -467,7 +499,7 @@ const SearchMapInput = styled.input`
   height: 1.9rem;
   border: none;
   border-radius: 30px;
-  box-shadow: 1px 1px 1px #e7e7e7;
+  box-shadow: 2px 2px 2px #c8c8c8;
 `;
 
 const SearchButton = styled.button`
@@ -489,7 +521,7 @@ const CurrentLocationContentsWrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0.9rem 1.2rem;
-  box-shadow: 1px 1px 1px #e7e7e7;
+  box-shadow: 2px 2px 2px #c8c8c8;
 
   overflow-y: scroll;
 `;
@@ -497,7 +529,6 @@ const CurrentLocationInfo = styled.div`
   display: flex;
   align-items: center;
   height: 4.2rem;
-  border-bottom: 1px solid gray;
   line-height: 1.3rem;
 `;
 
@@ -515,16 +546,6 @@ const CurrentLocationButton = styled.button`
   cursor: pointer;
 `;
 
-const SearchResult = styled.div`
-  width: 100%;
-  height: 53vh;
-  background-color: white;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  padding: 0.7rem;
-  overflow-y: scroll;
-`;
 
 const ResultText = styled.p`
   margin-bottom: 10px;
@@ -589,3 +610,9 @@ const PageNumber = styled.div`
     color: black;
   }
 `;
+
+const CurrentLocationReviews = styled.div`
+  height: 10rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e7e7e7;
+`

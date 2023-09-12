@@ -12,7 +12,7 @@ function WorstList({postData}) {
   return (
     <ListContainer>
       <ListTitle>별로였어요 &nbsp;
-      {starArray.map((s) => <FontAwesomeIcon icon={faStar} color={"gray"}/>)}
+      {starArray.map((s, i) => <FontAwesomeIcon key={i} icon={faStar} color={"gray"}/>)}
       </ListTitle>
       <PostsContainer>
           {bestPosts?.map((post) => {
