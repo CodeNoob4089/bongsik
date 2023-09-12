@@ -270,7 +270,7 @@ const PostCard = styled.div`
   border-radius: 1rem;
   padding-top: 1rem;
   box-sizing: border-box;
-  box-shadow: 3px 3px 3px #bbbbbb;
+  box-shadow: 1px 1px 1px #e7e7e7;
   cursor: pointer;
   transition: transform 0.2s;
   &:hover {
