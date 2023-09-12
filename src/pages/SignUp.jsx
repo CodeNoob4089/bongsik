@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { getBadgeData } from "../store/BadgeData";
 import { updateUserDoc } from "../store/UserService";
 import { arrayUnion, doc, setDoc } from "firebase/firestore";
-
+import { signOut } from "firebase/auth";
 const initialState = {
   name: "",
   email: "",
@@ -58,7 +58,7 @@ function SignUp() {
         dongCounts: [],
       });
       alert("회원가입 완료! 이메일을 인증해주세요.");
-      await signOut(auth);
+      await auth.signOut();
       navigate("/main");
     } catch ({ code, message }) {
       console.log(message, code);
