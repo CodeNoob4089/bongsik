@@ -6,7 +6,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { getBadgeData } from "../store/BadgeData";
 import { updateUserDoc } from "../store/UserService";
 import { arrayUnion, doc, setDoc } from "firebase/firestore";
-import { signOut } from "firebase/auth";
 
 const initialState = {
   name: "",
@@ -31,10 +30,10 @@ function SignUp() {
       emailError: validateEmail(email) ? "" : "잘못된 이메일 형식입니다.",
     }));
   };
-
   const joinWithVerification = async (name, email, password, photo) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
       const { user } = userCredential;
       await updateProfile(auth.currentUser, {
         displayName: name,
@@ -42,14 +41,12 @@ function SignUp() {
       });
       await sendEmailVerification(auth.currentUser);
       const badges = await getBadgeData();
-
       const userBadgeData = badges.reduce((badgeObj, badge) => {
         badgeObj[badge.id] = {
           isOwned: false,
         };
         return badgeObj;
       }, {});
-
       await setDoc(doc(db, "users", auth.currentUser.uid), {
         myTags: [],
         userLikes: [],
@@ -59,8 +56,8 @@ function SignUp() {
         exp: 0,
         dongCounts: [],
       });
-      alert("회원가입 완료! 이메일을 인증해주세요.");
-      await signOut(auth);
+      await auth.signOut();
+      alert("회원가입완료 이메일 인증을 해주세요");
       navigate("/main");
     } catch ({ code, message }) {
       console.log(message, code);
