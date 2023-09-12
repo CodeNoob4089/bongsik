@@ -78,11 +78,12 @@ function SignIn() {
       <SignInContainer>
         <SignInBox>
           <InputContainer>
-            <SigninTitle>Sign in</SigninTitle>
+            <SigninTitle>Login</SigninTitle>
             <StyledForm onSubmit={handleSubmit}>
               <StyledInputDiv>
                 <StyledLabel>이메일</StyledLabel>
                 <StyledInput
+                  placeholder="이메일을 입력해주세요."
                   type="email"
                   name="email"
                   value={email}
@@ -93,6 +94,7 @@ function SignIn() {
               <StyledInputDiv>
                 <StyledLabel>비밀번호</StyledLabel>
                 <StyledInput
+                  placeholder="비밀번호"
                   type="password"
                   name="password"
                   value={password}
@@ -128,14 +130,13 @@ export const SignInContainer = styled.div`
   background-color: #ff4e50;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 20px);
+  height: 100vh;
 `;
 
 export const SignInBox = styled.div`
   display: flex;
-  width: 1000px;
-  max-width: calc(1000px -60px);
-  height: 43.7rem;
+  width: 75vw;
+  height: 85.3vh;
 `;
 
 export const InputContainer = styled.div`
@@ -145,15 +146,13 @@ export const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
 `;
 export const SigninTitle = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  font-size: 42px;
-  font-weight: bold;
-  position: relative;
-  left: 5rem;
-  top: 6rem;
+  font-size: 2rem;
+  font-weight: 550;
+  margin-top: 11.125rem;
+  margin-left: -16.8rem;
 `;
 
 export const ImageContainer = styled.div`
@@ -165,11 +164,12 @@ export const ImageContainer = styled.div`
 `;
 export const ImageLogo = styled.img`
   object-fit: cover;
-  width: 31.2rem;
-  height: 43.7rem;
+  width: 100%;
+  height: 100%;
 `;
 
 export const StyledForm = styled.form`
+  margin-top: -14rem;
   width: 100%;
   height: 100%;
   display: flex;
@@ -179,28 +179,29 @@ export const StyledForm = styled.form`
 `;
 
 export const StyledInputDiv = styled.div`
-  margin-top: 20px;
-  margin-bottom: 10px;
+  margin-top: 0.2rem;
 `;
 
 export const StyledLabel = styled.label`
   display: block;
-  font-size: 14px;
-  margin-bottom: 5px;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
 `;
 
 export const StyledInput = styled.input`
-  border-radius: 5px;
-  width: 20rem;
-  border: 1px solid gray;
-  height: 40px;
-  margin-bottom: 10px;
+  border-radius: 0.5rem;
+  width: 22rem;
+  border: 1px solid #d9d9d9;
+  background-color: #fafafa;
+  height: 2.8rem;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
 `;
 export const SignInButton = styled.button`
   background-color: #ff4e50;
   color: white;
   border: none;
-  width: 20rem;
+  width: 22rem;
   border-radius: 5px;
   padding: 10px 20px;
   margin-top: 20px;
@@ -215,11 +216,10 @@ export const GoogleSignUpButton = styled.button`
   display: flex;
   background-color: #ffffff;
   color: black;
-  width: 20rem;
+  width: 22rem;
   border-top: 1px solid #000000;
   border-radius: 5px;
   padding: 10px;
-  margin-top: 20px;
   transition-duration: 0.3s;
   cursor: pointer;
   &:hover {
@@ -248,6 +248,6 @@ const OrBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 1rem;
-  margin-bottom: -0.5rem;
+  margin-top: 1.2rem;
+  margin-bottom: 1.2rem;
 `;
