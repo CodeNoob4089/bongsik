@@ -9,7 +9,7 @@ function BestList({postData}) {
   return (
     <ListContainer>
       <ListTitle>최고였어요 &nbsp;
-      {starArray.map((s) => <FontAwesomeIcon icon={faStar} color={"#ff4e50"}/>)}
+      {starArray.map((s, i) => <FontAwesomeIcon key={i} icon={faStar} color={"#ff4e50"}/>)}
       </ListTitle>
       <PostsContainer>
           {bestPosts?.map((post) => {

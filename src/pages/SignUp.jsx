@@ -32,10 +32,12 @@ function SignUp() {
     }));
   };
 
+
   const joinWithVerification = async (name, email, password, photo) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const { user } = userCredential;
+
       await updateProfile(auth.currentUser, {
         displayName: name,
         photoURL: photo,
@@ -59,12 +61,12 @@ function SignUp() {
         dongCounts: [],
       });
       alert("회원가입 완료! 이메일을 인증해주세요.");
-      await signOut(auth);
+      await signOut();
       navigate("/main");
     } catch ({ code, message }) {
       console.log(message, code);
     }
-  };
+    };
   const validateEmail = (email) => {
     const emailRegEx =
       /^([\w-.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
