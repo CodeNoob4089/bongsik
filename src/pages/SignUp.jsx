@@ -63,7 +63,7 @@ function SignUp() {
       await signOut(auth);
       navigate("/main");
     } catch ({ code, message }) {
-      console.log(message,code)
+      console.log(message, code);
     }
   };
   const validateEmail = (email) => {
@@ -219,8 +219,6 @@ export const SignUpContainer = styled.div`
 export const SignupTitle = styled.div`
   font-size: 2rem;
   font-weight: 550;
-  margin-left: 10.9375rem;
-  margin-top: 6.4375rem;
 `;
 
 export const SignUpBox = styled.div`
@@ -230,6 +228,8 @@ export const SignUpBox = styled.div`
 `;
 
 export const InputContainer = styled.div`
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: #ffffff;
@@ -250,8 +250,6 @@ export const ImageLogo = styled.img`
 `;
 
 export const StyledForm = styled.form`
-  margin-top: -8rem;
-  margin-left: 1rem;
   width: 100%;
   height: 100%;
   display: flex;
