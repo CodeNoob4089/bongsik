@@ -156,6 +156,7 @@ const PostCardsContainer = styled.div`
   height: 73vh;
   border-radius: 18px;
   background-color: white;
+  box-shadow: 1px 1px 1px 1px #e7e7e7;
 `;
 const MyPostsTitle = styled.div`
   width: 100%;

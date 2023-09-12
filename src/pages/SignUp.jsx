@@ -34,7 +34,8 @@ function SignUp() {
 
   const joinWithVerification = async (name, email, password, photo) => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const { user } = userCredential;
       await updateProfile(auth.currentUser, {
         displayName: name,
         photoURL: photo,
@@ -57,9 +58,11 @@ function SignUp() {
         exp: 0,
         dongCounts: [],
       });
+      alert("회원가입 완료! 이메일을 인증해주세요.");
+      await signOut(auth);
       navigate("/main");
     } catch ({ code, message }) {
-      alert(code);
+      console.log(message, code);
     }
   };
   const validateEmail = (email) => {
@@ -91,21 +94,35 @@ function SignUp() {
       <SignUpContainer>
         <SignUpBox>
           <InputContainer>
-            <SignupTitle>Sign Up</SignupTitle>
+            <SignupTitle>Create Your Account</SignupTitle>
             <StyledForm onSubmit={handleSubmit}>
               <StyledInputDiv>
-                <StyledLabel>닉네임</StyledLabel>
-                <StyledInput type="text" name="name" value={state.name} onChange={handleChange} required />
+                <StyledLabel>이름</StyledLabel>
+                <StyledInput
+                  type="text"
+                  name="name"
+                  value={state.name}
+                  onChange={handleChange}
+                  required
+                  placeholder="이름을 입력해주세요."
+                />
               </StyledInputDiv>
               <StyledInputDiv>
                 <StyledLabel>이메일</StyledLabel>
-                <StyledInput type="email" name="email" value={state.email} onChange={handleEmailChange} />
+                <StyledInput
+                  type="email"
+                  name="email"
+                  value={state.email}
+                  onChange={handleEmailChange}
+                  placeholder="이메일을 입력해주세요."
+                />
 
                 {state.emailError && <ErrorArea>{state.emailError}</ErrorArea>}
               </StyledInputDiv>
               <StyledInputDiv>
                 <StyledLabel>비밀번호</StyledLabel>
                 <StyledInput
+                  placeholder="비밀번호"
                   type="password"
                   name="password"
                   value={state.password}
@@ -136,6 +153,7 @@ function SignUp() {
               <StyledInputDiv>
                 <StyledLabel>비밀번호 확인</StyledLabel>
                 <StyledInput
+                  placeholder="비밀번호를 한 번 더 입력해주세요."
                   type="password"
                   name="confirmPassword"
                   value={state.confirmPassword}
@@ -195,43 +213,39 @@ export const SignUpContainer = styled.div`
   background-color: #ff4e50;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 20px);
+  height: 100vh;
 `;
 export const SignupTitle = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  font-size: 42px;
-  font-weight: bold;
-  position: relative;
-  left: 4rem;
-  top: 4rem;
+  font-size: 2rem;
+  font-weight: 550;
 `;
 
 export const SignUpBox = styled.div`
   display: flex;
-  width: calc(100% - 60px);
-  max-width: calc(1000px - 60px);
-  height: 700px;
+  width: 75vw;
+  height: 85.3vh;
 `;
 
 export const InputContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   background-color: #ffffff;
   flex-basis: 50%;
-  padding-right: 20px;
 `;
 
 export const ImageContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-
   flex-basis: 50%;
   background-color: #f0f0f0;
 `;
 export const ImageLogo = styled.img`
   object-fit: cover;
-  width: 29.4rem;
-  height: 43.7rem;
+  width: 100%;
+  height: 100%;
 `;
 
 export const StyledForm = styled.form`
@@ -248,15 +262,17 @@ export const StyledInputDiv = styled.div`
 `;
 export const StyledLabel = styled.label`
   display: block;
-  font-size: 14px;
+  font-size: 0.9rem;
   margin-bottom: 0.5rem;
 `;
 export const StyledInput = styled.input`
-  border-radius: 5px;
-  width: 20rem;
-  border: 1px solid gray;
-  height: 40px;
-  margin-bottom: 10px;
+  border-radius: 0.5rem;
+  width: 25rem;
+  border: 1px solid #d9d9d9;
+  background-color: #fafafa;
+  height: 2.5rem;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
 `;
 export const SignUpButton = styled.button`
   background-color: #ff4e50;
@@ -275,21 +291,21 @@ const LineLeft = styled.div`
   width: 33%;
   height: 0.1rem;
   margin-right: 0.5rem;
-  background: linear-gradient(to left, gray, #fafafa);
+  background: linear-gradient(to left, #a5a5a5, #fafafa);
 `;
 const LineRight = styled.div`
   width: 33%;
   height: 0.1rem;
   margin-left: 0.5rem;
-  background: linear-gradient(to right, gray, #fafafa);
+  background: linear-gradient(to right, #a5a5a5, #fafafa);
 `;
 const OrBox = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 0.3rem;
-  margin-bottom: 0.2rem;
+  margin-top: 1.2rem;
+  margin-bottom: 1.2rem;
 `;
 const Login = styled.div`
   font-size: 0.8rem;

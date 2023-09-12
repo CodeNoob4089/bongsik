@@ -106,7 +106,7 @@ function MyPageList() {
   return (
     <ListCardsContainer>
       <ListTop>
-        <ListTitle>나의 컬렉션 리스트</ListTitle>
+        <ListTitle>나의 리스트</ListTitle>
         {addActive ? (
           <AddButton onClick={() => setAddActive(false)}>--</AddButton>
         ) : (
@@ -174,12 +174,13 @@ function MyPageList() {
 export default MyPageList;
 
 const ListCardsContainer = styled.div`
-  width: 100%;
-  height: 80vh;
+  width: 22vw;
+  height: 62vh;
   margin: 5vh 4vw 5vh 0vw;
   background-color: white;
-  border-radius: 15px;
-  padding: 20px;
+  border-radius: 1rem;
+  box-shadow: 1px 1px 1px 1px #e7e7e7;
+  padding: 2rem;
 `;
 
 const CardsBox = styled.div`
@@ -197,9 +198,9 @@ const ListTop = styled.div`
 `;
 
 const ListTitle = styled.h1`
-  font-size: 18px;
+  font-size: 1.5rem;
   font-weight: bold;
-  color: #c8c8c8;
+  color: #2d2d30;
 `;
 
 const ListCard = styled.div`
