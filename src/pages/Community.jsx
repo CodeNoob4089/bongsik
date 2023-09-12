@@ -81,7 +81,7 @@ function Community() {
         ))}
       </CommunityLeft>
       <CommunityRight>
-        <SearchArea>
+{/*         <SearchArea>
           <SearchForm>
             <SearchInput
               text="text"
@@ -95,7 +95,7 @@ function Community() {
               <FontAwesomeIcon icon={faMagnifyingGlass} />
             </SearchButton>
           </SearchForm>
-        </SearchArea>
+        </SearchArea> */}
         <MonthlyPost>
           <MonthlyTitle>이 달의 게시글</MonthlyTitle>
           <MonthlyContent>
