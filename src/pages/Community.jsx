@@ -81,7 +81,7 @@ function Community() {
         ))}
       </CommunityLeft>
       <CommunityRight>
-        <SearchArea>
+        {/* <SearchArea>
           <SearchForm>
             <SearchInput
               text="text"
@@ -95,7 +95,7 @@ function Community() {
               <FontAwesomeIcon icon={faMagnifyingGlass} />
             </SearchButton>
           </SearchForm>
-        </SearchArea>
+        </SearchArea> */}
         <MonthlyPost>
           <MonthlyTitle>이 달의 게시글</MonthlyTitle>
           <MonthlyContent>
@@ -210,7 +210,7 @@ const MonthlyTitle = styled.p`
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
   z-index: 1;
-  margin: 1.3rem;
+  margin: 1.5rem;
 
   font-weight: bold;
   color: #2d2d30;

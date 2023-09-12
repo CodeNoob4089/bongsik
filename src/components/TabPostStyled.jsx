@@ -112,24 +112,26 @@ export const SubmitButton = styled.button`
   color: white;
   font-weight: bold;
   background-color: #ff4e50;
-  width: 3rem;
-  height: 2.3rem;
+  width: 3vw;
+  height: 5vh;
   border: none;
   border-radius: 10px;
   cursor: pointer;
   margin-left: 0.2rem;
   margin: 0.7rem;
+  margin-top: 1.8rem;
 `;
 export const InputBox = styled.input`
   font-weight: bold;
   text-align: center;
-  width: 30rem;
-  height: 2.3rem;
+  width: 32vw;
+  height: 5vh;
   border-radius: 10px;
   background-color: #f2f2f5;
   border: none;
   float: left;
-  margin-top: 0.8rem;
+  margin-top: 1.8rem;
+  margin-left: 0.5rem;
 `;
 export const Form = styled.form`
   text-align: center;
@@ -189,7 +191,7 @@ export const CommentInput = styled.input`
 export const ContentArea = styled.div`
   max-width: 40vw;
   height: auto;
-  margin-left: 2.8rem;
+  margin-left: 3rem;
   margin-bottom: 1rem;
   margin-top: 1rem;
 
@@ -229,7 +231,7 @@ export const Nickname = styled.p`
 export const ProfileCircle = styled.div`
   width: 70px;
   height: 70px;
-  border-radius: 70%; /*둥그런 원으로 만들기 위함*/
+  border-radius: 70%;
   overflow: hidden;
   text-align: center;
   line-height: center;
@@ -262,6 +264,9 @@ export const ModalLocation = styled.div`
 
 export const InputArea = styled.div`
   display: flex;
+  /* background-color: black; */
+  width: 45vw;
+  height: 12vh;
 `;
 export const DetailLocation = styled.span`
   color: #5a5a68;

@@ -301,7 +301,7 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
             </ButtonSet>
             <InputArea>
               <ProfileCircle style={{ marginLeft: "2rem" }}>
-                <ProfileBox photo={user.photoUrl} />
+                <ProfileBox style={{ marginTop: "1.5rem" }} photo={user.photoUrl} />
               </ProfileCircle>
               <Form onSubmit={(e) => handleSubmit(e, selectedPost.postId)}>
                 <InputBox name="comment" placeholder="댓글을 작성해주세요"></InputBox>
@@ -390,14 +390,15 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
 
 export default PostingModal;
 const ProfileBox = styled.div`
-  width: 3em;
-  height: 3rem;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background-color: #ffffff;
   background-image: url(${(props) => props.photo});
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
+  margin-left: 1rem;
 `;
 const Place = styled.div`
   float: left;
