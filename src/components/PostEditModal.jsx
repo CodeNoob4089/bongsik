@@ -60,7 +60,6 @@ function PostEditModal({ modalOpen, onRequestClose, postData }) {
       setInputValue({ ...inputValue, photo: downloadURL });
     }
   };
-
   return (
     <>
       <ModalContainer modalOpen={modalOpen} onClick={closeModalOnOutsideClick}></ModalContainer>
@@ -70,31 +69,46 @@ function PostEditModal({ modalOpen, onRequestClose, postData }) {
           게시글 수정
           <CloseButton onClick={closeModal}>✕</CloseButton>
         </ModalTop>
-        <InputField type="text" value={inputValue.place.place_name} readOnly />
-        <ReviewInput
-          value={inputValue.content}
-          onChange={(e) => setInputValue({ ...inputValue, content: e.target.value })}
-        />
-        <div>
-          별점:&nbsp;
-          {stars.map((starState, index) => (
-            <StarSpan onClick={() => starClickHandler(index)}>
-              <FontAwesomeIcon icon={faStar} style={{ color: starState ? "#ff4e50" : "gray" }} />
-            </StarSpan>
-          ))}
-        </div>
-        <FileInput type="file" onChange={(e) => handlePhotoUpload(e)} />
-        <CollectionTagSelect
-          value={inputValue.collectionTag}
-          onChange={(e) => setInputValue({ ...inputValue, collectionTag: e.target.value })}
-        >
-          <option value="">컬렉션 선택안함</option>
-          {myTags?.map((tag) => (
-            <option key={tag.collectionID} value={tag.collectionID}>
-              {tag.title}
-            </option>
-          ))}
-        </CollectionTagSelect>
+        <ModalTitle>
+          <StoreInfo>
+            <span>가게:&nbsp;{inputValue.place.place_name}</span>
+            <span>주소:&nbsp;{inputValue.place.road_address_name}</span>
+          </StoreInfo>
+          <TitleCategory>
+            <SelectBox>
+              <CollectionSelect
+                value={inputValue.collectionTag}
+                onChange={(e) => setInputValue({ ...inputValue, collectionTag: e.target.value })}
+              >
+                <option value="">컬렉션 선택안함</option>
+                {myTags?.map((tag) => (
+                  <option key={tag.collectionID} value={tag.collectionID}>
+                    {tag.title}
+                  </option>
+                ))}
+              </CollectionSelect>
+            </SelectBox>
+            <CategoryDiv>{inputValue.category}</CategoryDiv>
+          </TitleCategory>
+        </ModalTitle>
+        <ModalContents>
+          <div>
+            별점:&nbsp;
+            {stars.map((starState, index) => (
+              <StarSpan onClick={() => starClickHandler(index)}>
+                <FontAwesomeIcon icon={faStar} style={{ color: starState ? "#ff4e50" : "gray" }} />
+              </StarSpan>
+            ))}
+          </div>
+          <ReviewInput
+            value={inputValue.content}
+            onChange={(e) => setInputValue({ ...inputValue, content: e.target.value })}
+          />
+          <BottomContent>
+            <FileInput type="file" onChange={(e) => handlePhotoUpload(e)} />
+            <div>작성자: {user.displayName}</div>
+          </BottomContent>
+        </ModalContents>
         <ModalBottom>
           <SelectBox>
             {inputValue.isPublic ? (
@@ -124,50 +138,91 @@ export default PostEditModal;
 const ModalContainer = styled.div`
   width: 100vw;
   height: 100vh;
-  position: fixed;
   top: 0;
   left: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: ${(props) => (props.modalOpen ? "50" : "-1")};
+  position: fixed;
+  z-index: 50;
+  background-color: rgba(0, 0, 0, 0.8);
 `;
 
 const Modal = styled.div`
-  background-color: white;
-  margin: auto;
-  padding: 2rem;
-  border-radius: 10px;
-  max-width: 500px;
-  width: 80%;
-  position: absolute;
+  padding: 0px 50px;
+  position: fixed;
+  width: 50rem;
+  height: 40rem;
+  z-index: 55;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 51;
+  background-color: white;
+  border-radius: 8px;
 `;
 
 const ModalTop = styled.div`
+  border-bottom: 3px solid #f2f2f5;
+  width: 100%;
+  height: 90px;
   display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const CloseButton = styled.button`
+  position: absolute;
+  right: 50px;
+  font-size: 20px;
+  font-weight: bold;
+  color: gray;
+  width: 40px;
+  height: 40px;
+  background-color: white;
+  border: none;
+  cursor: pointer;
+`;
+const ModalContents = styled.div`
+  padding: 10px 30px;
+  height: calc(100% - 270px);
+  display: flex;
+  flex-direction: column;
+`;
+const ModalTitle = styled.div`
+  width: 100%;
+  height: 80px;
+  border-bottom: 3px solid #f2f2f5;
+  display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
 `;
-
-const CloseButton = styled.span`
-  cursor: pointer;
-  font-size: 30px;
-`;
-const ContentContainer = styled.div`
+const StoreInfo = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding: 30px;
+  line-height: 30px;
+`;
+const TitleCategory = styled.div`
+  display: flex;
+`;
+const CategoryDiv = styled.div`
+  background-color: #f2f2f5;
+  color: gray;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 40px;
+  width: 70px;
+  height: 40px;
+  margin-left: 10px;
+  border-radius: 10px;
+`;
+const BottomContent = styled.div`
+  padding: 10px 20px;
+  height: 15%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
-
-  h2 {
-    margin-bottom: 20px;
-  }
+  margin-top: auto;
 `;
 
 const InputField = styled.input`
@@ -177,10 +232,13 @@ const InputField = styled.input`
 `;
 
 const ReviewInput = styled.textarea`
-  width: 100%;
-  height: 150px;
-  padding: 1rem;
-  margin-bottom: 1rem;
+  margin-top: 10px;
+  height: 85%;
+  border: none;
+  resize: none;
+  padding: 10px;
+  line-height: 20px;
+  font-size: 15px;
 `;
 
 const StarSpan = styled.span`
@@ -199,6 +257,7 @@ const ModalBottom = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 10px 20px;
 `;
 
 const SelectBox = styled.div`
@@ -206,42 +265,39 @@ const SelectBox = styled.div`
   height: 40px;
   display: flex;
   flex-direction: row;
-  padding: 0px13px;
+  padding: 0px 13px;
   justify-content: space-between;
   align-items: center;
   border-radius: 10px;
   background-color: #f2f2f5;
-
-  svg {
-    margin-left: 10px;
-  }
+  border: none;
+  cursor: pointer;
 `;
 
 const PublicSelect = styled.select`
   border: none;
   outline: none;
   background-color: #f2f2f5;
+  width: 100%;
   height: 100%;
   border-radius: 10px;
-  width: 4.5rem;
   font-weight: bold;
-  color: #808080;
+  color: gray;
   text-align: center;
   cursor: pointer;
 `;
 
-const CollectionTagSelect = styled.select`
-  width: 100%;
-  height: 2.3em;
+const CollectionSelect = styled.select`
   border: none;
-  border-radius: 0.25em;
-
-  option {
-    background-color: #f2f2f5;
-    color: #6d6c6c;
-    padding: 0.5em;
-    font-weight: bold;
-  }
+  outline: none;
+  background-color: #f2f2f5;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  font-weight: bold;
+  color: gray;
+  text-align: center;
+  cursor: pointer;
 `;
 
 const UpdateButton = styled.button`
