@@ -84,5 +84,5 @@ const ListBox = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin: 0vh 6vw
+  margin: 0vh 6vw;
 `
