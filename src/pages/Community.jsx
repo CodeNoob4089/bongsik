@@ -84,7 +84,7 @@ function Community() {
           >
             <img
               src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EA%B8%80%EC%93%B0%EA%B8%B0%20%EC%95%84%EC%9D%B4%EC%BD%98.png?alt=media&token=5456a99c-1d58-4d86-9754-e65d60d76d9b"
-              style={{ height: "1.2rem", marginTop: "0.4rem", marginLeft: "0.6rem" }}
+              style={{ height: "1.2rem" }}
             />
             <p> 글쓰기</p>
           </WriteButton>
@@ -257,15 +257,14 @@ const WriteButton = styled.button`
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  /* margin-left: 34.5vw; */
+  align-items: center;
   margin-top: 3.2rem;
-
+  justify-content: center;
   display: flex;
 
   p {
     font-size: 0.96rem;
     font-weight: bold;
-    margin-top: 0.35rem;
     margin-right: 0.1rem;
     margin-left: 0.3rem;
   }
