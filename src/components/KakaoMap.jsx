@@ -82,9 +82,8 @@ function KakaoMap({ showModal, postData, user }) {
 
         geocoder.coord2Address(userLng, userLat, (result, status) => {
           if (status === kakao.maps.services.Status.OK) {
-            setMyAddress(
-              result[0]?.road_address ? result[0].road_address.address_name : result[0].address.address_name
-            );
+            setMyAddress(result[0]?.road_address?result[0].road_address.address_name:result[0].address.address_name)
+
           } else {
             console.error("주소 변환 실패:", status);
             return;
@@ -189,6 +188,7 @@ function KakaoMap({ showModal, postData, user }) {
   // -----------------폴리곤 그려주기-----------------
   useEffect(() => {
     if (!user) return;
+
     const result = user?.dongCounts?.reduce((acc, cur) => {
       if (acc[cur]) {
         acc[cur] += 1;
@@ -215,10 +215,10 @@ function KakaoMap({ showModal, postData, user }) {
       const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
       const transformer = proj4(utmk, wgs84);
 
-      coordinates.forEach((coordinateArray) => {
+      coordinates?.forEach((coordinateArray) => {
         coordinateArray.forEach((coordinate) => {
           const [longi, lati] = transformer.forward(coordinate);
-          polygonPath.push(new window.kakao.maps.LatLng(lati, longi));
+          polygonPath?.push(new window.kakao.maps.LatLng(lati, longi));
         });
       });
       const polygon = new window.kakao.maps.Polygon({
@@ -227,7 +227,7 @@ function KakaoMap({ showModal, postData, user }) {
         fillColor: "#ff694e",
         fillOpacity: 0.7,
       });
-      polygonList.push(polygon);
+      polygonList?.push(polygon );
       polygon.setMap(map);
     });
 
