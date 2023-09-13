@@ -175,7 +175,7 @@ export default MyPageList;
 
 const ListCardsContainer = styled.div`
   width: 22vw;
-  height: 62vh;
+  height: 70%;
   margin: 5vh 4vw 5vh 0vw;
   background-color: white;
   border-radius: 1rem;
@@ -185,8 +185,8 @@ const ListCardsContainer = styled.div`
 
 const CardsBox = styled.div`
   width: 100%;
-  max-height: ${(props) => (props.addActive ? "calc(75vh - 140px)" : "calc(75vh - 40px)")};
-  overflow-y: scroll;
+  height: 90%;
+  overflow-y: auto;
 `;
 
 const ListTop = styled.div`

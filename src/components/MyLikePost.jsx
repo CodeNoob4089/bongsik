@@ -98,6 +98,7 @@ const PostCardsContainer = styled.div`
   border-radius: 18px;
   background-color: white;
   overflow-y: scroll;
+  box-shadow: 1px 1px 1px 1px #e7e7e7;
 `;
 
 const PostTitle = styled.h1`

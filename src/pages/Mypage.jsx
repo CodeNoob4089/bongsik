@@ -183,6 +183,7 @@ const UserInfo = styled.div`
   padding: 2.5rem;
   display: flex;
   flex-direction: column;
+  box-shadow: 1px 1px 1px 1px #e7e7e7;
 `;
 const UserPostContents = styled.div`
   display: flex;
