@@ -91,6 +91,10 @@ export const ModalContent = styled.div`
   width: 50vw;
   height: 95vh;
   overflow-y: auto;
+
+  align-items: center center;
+  display: flex;
+  position: relative;
   /* overflow-x: hidden; */
   z-index: 100;
   object-fit: cover;
@@ -143,6 +147,7 @@ export const CommentWrap = styled.div`
   width: 40vw;
   height: auto;
   border-radius: 10px;
+  line-height: 1.1rem;
   /* background-color: red; */
 `;
 export const Like = styled.button`
@@ -194,6 +199,8 @@ export const ContentArea = styled.div`
   max-width: 40vw;
   height: auto;
   margin-left: 3rem;
+
+  position: center;
   margin-bottom: 1rem;
   margin-top: 1rem;
   line-height: 1.5rem;
@@ -205,7 +212,7 @@ export const ContentArea = styled.div`
 export const UserInfo = styled.div`
   background-color: white;
   border-radius: 10px;
-  margin-left: 2.8rem;
+  /* margin-left: 2.8rem; */
   margin-bottom: 1.5rem;
   flex-direction: column;
 `;
@@ -213,6 +220,7 @@ export const UserInfo = styled.div`
 export const UserProfile = styled.div`
   flex-direction: row;
   display: flex;
+  margin-left: 1rem;
 `;
 export const UserNameAndLevel = styled.div`
   display: flex;
@@ -256,7 +264,7 @@ export const ModalLocation = styled.div`
   border-radius: 0.35rem;
   /* display: block; */
   margin-bottom: 3rem;
-  margin-left: 2.8rem;
+  margin-left: 2rem;
   p {
     margin-left: 1rem;
     margin-top: 1rem;

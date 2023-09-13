@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import RestaurantPost from "../components/RestaurantPost";
 import MonthPost from "../components/MonthPost";
 import { useNavigate } from "react-router-dom";
+
 function Community() {
   const [currentTab, setCurrentTab] = useState(1);
   const [isTopVisible, setIsTopVisible] = useState(false);
@@ -58,7 +59,7 @@ function Community() {
   return (
     <Container>
       <CommunityLeft>
-        <div style={{ display: "flex", width: "60vw" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", width: "60vw" }}>
           <CategoryBar>
             {tabs.map((tab) => (
               <Button
@@ -72,22 +73,23 @@ function Community() {
               </Button>
             ))}
           </CategoryBar>
-          <div style={{ display: "flex", width: "29rem", marginTop: "3.7rem", marginLeft: "4rem" }}>
-            <p style={{ marginLeft: "4.5rem", fontSize: "0.9rem", color: "#7c7c89", fontWeight: "bold" }}>
+          <div style={{ display: "flex " }}>
+            <p style={{ marginTop: "3.8rem", fontSize: "0.9rem", color: "#7c7c89", fontWeight: "bold" }}>
               지도 옆 검색창에서 음식점을 검색하여 글을 작성해보세요!
             </p>
+
+            <WriteButton
+              onClick={() => {
+                navigate("/main");
+              }}
+            >
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EA%B8%80%EC%93%B0%EA%B8%B0%20%EC%95%84%EC%9D%B4%EC%BD%98.png?alt=media&token=5456a99c-1d58-4d86-9754-e65d60d76d9b"
+                style={{ height: "1.2rem" }}
+              />
+              <p> 글쓰기</p>
+            </WriteButton>
           </div>
-          <WriteButton
-            onClick={() => {
-              navigate("/main");
-            }}
-          >
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EA%B8%80%EC%93%B0%EA%B8%B0%20%EC%95%84%EC%9D%B4%EC%BD%98.png?alt=media&token=5456a99c-1d58-4d86-9754-e65d60d76d9b"
-              style={{ height: "1.2rem" }}
-            />
-            <p> 글쓰기</p>
-          </WriteButton>
         </div>
         {tabs.map((tab) => (
           <React.Fragment key={tab.id}>
@@ -252,7 +254,6 @@ const WriteButton = styled.button`
   color: white;
   font-weight: bold;
   background-color: #ff4e50;
-  width: 6.8vw;
   height: 4.8vh;
   border: none;
   border-radius: 10px;
@@ -261,7 +262,7 @@ const WriteButton = styled.button`
   margin-top: 3.2rem;
   justify-content: center;
   display: flex;
-
+  margin-left: 0.5rem;
   p {
     font-size: 0.96rem;
     font-weight: bold;
