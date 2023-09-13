@@ -84,8 +84,8 @@ function KakaoMap({ showModal, postData, user }) {
  
         geocoder.coord2Address(userLng, userLat, (result, status) => {
           if (status === kakao.maps.services.Status.OK) {
-            console.log('도로명 주소:', result[0].road_address.address_name);
-            setMyAddress(result[0].road_address.address_name)
+            setMyAddress(result[0]?.road_address?result[0].road_address.address_name:result[0].address.address_name)
+
           } else {
             console.error('주소 변환 실패:', status);
             return
