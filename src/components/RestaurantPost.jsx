@@ -11,7 +11,7 @@ import {
   DetailLocation,
   PostContainer,
 } from "../components/TabPostStyled";
-import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc, orderBy, or } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import { useQuery } from "react-query";
 import PostingModal from "./CommentsModal";
@@ -45,7 +45,12 @@ function RestaurantPost({ category }) {
     const postsCollectionRef = collection(db, "posts");
 
     const querySnapshot = await getDocs(
-      query(postsCollectionRef, where("isPublic", "==", true) && where("category", "==", category))
+      query(
+        postsCollectionRef,
+
+        where("isPublic", "==", true),
+        where("category", "==", category)
+      )
     );
 
     const RestaurantPublicPosts = querySnapshot.docs.map((postDoc) => {
@@ -77,10 +82,13 @@ function RestaurantPost({ category }) {
 
   const { data: userData } = useQuery("fetchUserData", getUserData);
   const { data: RestaurantPublicPosts } = useQuery("fetchPublicRestaurantPosts", getPublicRestaurantPosts);
+  const RealTimePost = RestaurantPublicPosts?.sort(
+    (a, b) => b.timestamp?.toDate().getTime() - a.timestamp?.toDate().getTime()
+  );
 
   return (
     <>
-      {RestaurantPublicPosts?.map((item) => (
+      {RealTimePost?.map((item) => (
         <CommunityPosting key={item.postId}>
           <PostContainer>
             {item.photo ? (

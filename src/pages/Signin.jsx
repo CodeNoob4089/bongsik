@@ -150,6 +150,8 @@ export const InputContainer = styled.div`
   align-items: center;
 `;
 export const SigninTitle = styled.div`
+  margin-top: 7.5vw;
+  margin-right: 15vw;
   font-size: 2rem;
   font-weight: 550;
 `;
@@ -168,6 +170,8 @@ export const ImageLogo = styled.img`
 `;
 
 export const StyledForm = styled.form`
+  margin-top: -10vw;
+  margin-right: 1vw;
   width: 100%;
   height: 100%;
   display: flex;

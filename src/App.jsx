@@ -19,21 +19,25 @@ function App() {
   const setUser = useAuthStore((state) => state.setUser);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
-      if (authUser) {
-        const userDoc = await getDoc(doc(db, "users", authUser?.uid));
+    onAuthStateChanged(auth, async (authUser) => {
 
-        if (userDoc.exists()) {
-          setUser({ ...authUser, ...userDoc.data() });
-        } else {
-          setUser(authUser);
-        }
-      } else {
-        setUser(null);
-      }
+      if(!authUser)return;
+      const userDoc = await getDoc(doc(db, "users", authUser?.uid));
+      setUser({ ...authUser, ...userDoc.data() })
+
+      // if (authUser) {
+      //   const userDoc = await getDoc(doc(db, "users", authUser?.uid));
+
+      //   if (userDoc.exists()) {
+      //     setUser({ ...authUser, ...userDoc.data() });
+      //   } else {
+      //     setUser(authUser);
+      //   }
+      // } else {
+      //   setUser(null);
+      // }
+      
     });
-
-    return () => unsubscribe();
   }, []);
   return (
     <QueryClientProvider client={queryClient}>
