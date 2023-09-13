@@ -199,7 +199,7 @@ function KakaoMap({ showModal, postData, user }) {
     }, {});
     // console.log("user", user);
     // console.log("result", result);
-    const keysOfResult = Object.keys(result);
+    const keysOfResult = Object.keys(result || {});
     const coloredDongs = keysOfResult?.filter((key) => result[key] >= 3);
     const polygonList = [];
 
