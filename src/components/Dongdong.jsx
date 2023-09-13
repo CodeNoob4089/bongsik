@@ -13,7 +13,6 @@ function Dongdong() {
     const data = await response.json();
     return data.features;
   };
-
   const { data: jsonData } = useQuery("getData", getData);
 
   // console.log("f데이터",jsonData)
