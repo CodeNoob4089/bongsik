@@ -115,6 +115,7 @@ function RestaurantPost({ category }) {
                       display: "block",
                       margin: " 0 auto",
                       objectFit: "cover",
+                      cursor: "pointer",
                     }}
                     alt="게시물 사진 없을 때 뜨는 이미지"
                     onClick={() => {
@@ -125,7 +126,14 @@ function RestaurantPost({ category }) {
               </>
             )}
             <PostContent>
-              <h2>{item.place.place_name}&nbsp;</h2>
+              <h2
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  handlePostClick(item);
+                }}
+              >
+                {item.place.place_name}&nbsp;
+              </h2>
               <p>
                 <DetailLocation
                   style={{ cursor: "pointer" }}
