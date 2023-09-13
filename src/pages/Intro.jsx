@@ -11,7 +11,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faComment } from "@fortawesome/free-solid-svg-icons";
 import useAuthStore from "../store/auth";
 import { getPublicPosts } from "../api/collection";
+import { useState, useEffect } from "react";
+
 function Intro() {
+  const [isTopVisible, setIsTopVisible] = useState(false);
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
   const handlePostcard = () => {
@@ -25,6 +28,24 @@ function Intro() {
 
   const { data: PublicPosts } = useQuery("fetchPublicPosts", getPublicPosts);
   const randomPosts = PublicPosts?.sort(() => 0.4 - Math.random()).slice(0, 4);
+
+  // 페이지 상단으로 부드럽게 스크롤하는 함수
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // 스크롤 이벤트 리스너를 등록
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  //"Top" 버튼
+  const handleScroll = () => {
+    setIsTopVisible(window.scrollY > 300);
+  };
 
   return (
     <>
@@ -142,6 +163,7 @@ function Intro() {
           <ButtonImg src="https://firebasestorage.googleapis.com/v0/b/bongsikmk3.appspot.com/o/%EC%98%A4%EB%A5%B8%EC%AA%BD%20%EB%B2%84%ED%8A%BC.png?alt=media&token=40a874fe-efec-467e-a6a8-a08569236d2b" />
         </MoreButton>
       </MorePostContainer>
+      {isTopVisible && <TopButton onClick={scrollToTop}></TopButton>}
     </>
   );
 }
@@ -341,4 +363,19 @@ const ButtonImg = styled.img`
   width: 1.2rem;
   height: 1.2rem;
   object-fit: cover;
+`;
+
+const TopButton = styled.button`
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 70px;
+  height: 70px;
+  background: url(https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EA%B7%B8%EB%A6%87%20%EB%A1%9C%EA%B3%A0.png?alt=media&token=8d59777d-4691-4c2c-80c4-6ae7a468d0a9)
+    no-repeat center center;
+  background-size: 3.5rem;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  z-index: 4;
 `;
