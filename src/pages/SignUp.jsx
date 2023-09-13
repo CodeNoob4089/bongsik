@@ -217,6 +217,8 @@ export const SignUpContainer = styled.div`
   height: 100vh;
 `;
 export const SignupTitle = styled.div`
+  margin-top: 7vw;
+  margin-right: 7vw;
   font-size: 2rem;
   font-weight: 550;
 `;
@@ -250,6 +252,8 @@ export const ImageLogo = styled.img`
 `;
 
 export const StyledForm = styled.form`
+  margin-top: -4vw;
+  margin-right: 2.5vw;
   width: 100%;
   height: 100%;
   display: flex;

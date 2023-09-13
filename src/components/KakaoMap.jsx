@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faStar } from "@fortawesome/free-solid-svg-icons";
@@ -30,7 +30,7 @@ function KakaoMap({ showModal, postData, user }) {
     lat: 35.6632102,
     lng: 128.556077,
   });
-
+  const [myAddress, setMyAddress] = useState("현위치를 가져오는 중입니다...");
   const data = useMapDataStore((state) => state.data);
   const setData = useMapDataStore((state) => state.setData);
   const setClickedData = useClickedDataStore((state) => (state ? state.setClickedData : []));
@@ -45,7 +45,21 @@ function KakaoMap({ showModal, postData, user }) {
     setSearchKeyword(inputValue);
   };
 
+  const onMapDragged = (map) => {
+    const geocoder = new kakao.maps.services.Geocoder();
+    geocoder.coord2Address(map.getCenter().getLng(), map.getCenter().getLat(), (result, status) => {
+      if (status === kakao.maps.services.Status.OK) {
+        console.log("도로명 주소:", result[0]);
+        setMyAddress(result[0]?.road_address ? result[0].road_address.address_name : result[0].address.address_name);
+      } else {
+        console.error("주소 변환 실패:", status);
+        return;
+      }
+    });
+  };
+
   useEffect(() => {
+    const geocoder = new kakao.maps.services.Geocoder();
     const getLocation = new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(resolve, reject, {
         enableHighAccuracy: true,
@@ -64,6 +78,17 @@ function KakaoMap({ showModal, postData, user }) {
         setMapCenterPosition({
           lat: userLat,
           lng: userLng,
+        });
+
+        geocoder.coord2Address(userLng, userLat, (result, status) => {
+          if (status === kakao.maps.services.Status.OK) {
+            setMyAddress(
+              result[0]?.road_address ? result[0].road_address.address_name : result[0].address.address_name
+            );
+          } else {
+            console.error("주소 변환 실패:", status);
+            return;
+          }
         });
       })
       .catch((error) => console.error(error))
@@ -84,10 +109,13 @@ function KakaoMap({ showModal, postData, user }) {
       location: new kakao.maps.LatLng(mapCenterPosition.lat, mapCenterPosition.lng),
     };
 
+    // ps.categorySearch('CE7' || 'FD6', placesSearchCB, {useMapBounds:true} )
     ps.keywordSearch(
       searchKeyword,
       (data, status, pagination) => {
         if (status === kakao.maps.services.Status.OK) {
+          // const foodData = data?.filter((d) => d.category_group_code === 'FD6' ||  d.category_group_code === 'CE7' )
+          // console.log("푸드데이터!!!!!!!",foodData)
           // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
           // LatLngBounds 객체에 좌표를 추가합니다.
           const bounds = new kakao.maps.LatLngBounds();
@@ -120,6 +148,8 @@ function KakaoMap({ showModal, postData, user }) {
       },
       options
     );
+    const center = map.getCenter();
+    console.log("center", center);
   }, [searchKeyword, map]);
 
   const findNeighborhood = () => {
@@ -143,7 +173,7 @@ function KakaoMap({ showModal, postData, user }) {
       return alert("글을 작성하려면 로그인해주세요!");
     }
     if (d.category_group_name === "음식점" || d.category_group_name === "카페") {
-      await setMapCenterPosition({
+      setMapCenterPosition({
         lat: d.y,
         lng: d.x,
       });
@@ -169,12 +199,6 @@ function KakaoMap({ showModal, postData, user }) {
     }, {});
     // console.log("user", user);
     // console.log("result", result);
-
-    //  const keysOfResult = () => {
-    //    if(result)
-    //     return Object.keys(result)
-    //  }
-
     const keysOfResult = Object.keys(result);
     const coloredDongs = keysOfResult?.filter((key) => result[key] >= 3);
     const polygonList = [];
@@ -214,200 +238,208 @@ function KakaoMap({ showModal, postData, user }) {
     };
   }, [user, map]);
 
-  // if (loadingLocation) return <div>위치 정보를 가져오는 중...</div>;
-
   return (
     <>
-      {/* {loadingLocation ? (
-        <div>위치 정보를 가져오는 중...</div>
-      ) : ( */}
-      <>
-        <MapBox>
-          <DescriptionBox>
-            <DescriptionTitle>다녀온 곳을 검색해보세요.</DescriptionTitle>
-            <Description>검색창에 다녀온 곳을 검색하고 별점과 함께 게시물을 작성해보세요.</Description>
-          </DescriptionBox>
-          {loadingLocation ? (
-            <Skeleton height="60vh" width="100%" />
-          ) : (
-            <Map // 로드뷰를 표시할 Container
-              center={mapCenterPosition}
-              style={{
-                width: "56vw",
-                height: "61vh",
-                position: "relative",
-                borderRadius: "15px",
+      <MapBox>
+        <DescriptionBox>
+          <DescriptionTitle>다녀온 곳을 검색해보세요.</DescriptionTitle>
+          <Description>검색창에 다녀온 곳을 검색하고 별점과 함께 게시물을 작성해보세요.</Description>
+        </DescriptionBox>
+        {loadingLocation ? (
+          <Skeleton height="60vh" width="100%" />
+        ) : (
+          <Map // 로드뷰를 표시할 Container
+            center={mapCenterPosition}
+            style={{
+              width: "56vw",
+              height: "61vh",
+              position: "relative",
+              borderRadius: "15px",
+            }}
+            level={5}
+            onCreate={setMap}
+            onDragEnd={(map) => {
+              console.log("왜 안되니 ㅠㅠ");
+              onMapDragged(map);
+            }}
+          >
+            <MapMarker
+              position={{
+                lat: userLocation.lat,
+                lng: userLocation.lng,
               }}
-              level={5}
-              onCreate={setMap}
-            >
+              image={{
+                src: "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/free-icon-circle-button-458511.png?alt=media&token=a349691b-e938-41f6-95c0-38d20d8b968a", // 마커이미지의 주소입니다
+                size: {
+                  width: 18,
+                  height: 18,
+                }, // 마커이미지의 크기입니다
+                // options: {
+                //   offset: {
+                //     x: 27,
+                //     y: 69,
+                //   }, // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+                // },
+              }}
+            />
+            {markers?.map((marker) => (
               <MapMarker
-                position={{
-                  lat: userLocation.lat,
-                  lng: userLocation.lng,
-                }}
+                key={`marker-${marker.content}-${marker.position.lat},${marker.position.lng}`}
+                position={marker.position}
                 image={{
-                  src: "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/free-icon-circle-button-458511.png?alt=media&token=a349691b-e938-41f6-95c0-38d20d8b968a", // 마커이미지의 주소입니다
+                  src: "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/location-pin%20(3).png?alt=media&token=10ecd6fb-cb31-44cc-9cf1-afc9f53d1428",
                   size: {
-                    width: 18,
-                    height: 18,
+                    width: 40,
+                    height: 40,
                   }, // 마커이미지의 크기입니다
-                  // options: {
-                  //   offset: {
-                  //     x: 27,
-                  //     y: 69,
-                  //   }, // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
-                  // },
                 }}
-              />
-              {markers?.map((marker) => (
-                <MapMarker
-                  key={`marker-${marker.content}-${marker.position.lat},${marker.position.lng}`}
-                  position={marker.position}
-                  image={{
-                    src: "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/location-pin%20(3).png?alt=media&token=10ecd6fb-cb31-44cc-9cf1-afc9f53d1428",
-                    size: {
-                      width: 40,
-                      height: 40,
-                    }, // 마커이미지의 크기입니다
-                  }}
-                  onMouseOver={() => setInfo(marker)}
-                >
-                  {info && info.content === marker.content && <MarkerInfo>{marker.content}</MarkerInfo>}
-                </MapMarker>
-              ))}
-              {postData?.map((post) => (
-                <div>
-                  <Circle
-                    zIndex={500}
-                    key={post.postID}
-                    center={{
-                      lat: post.place.y,
-                      lng: post.place.x,
-                    }}
-                    radius={100}
-                    strokeWeight={2} // 선의 두께입니다
-                    strokeColor={"#ff694e0"} // 선의 색깔입니다
-                    strokeOpacity={1} // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
-                    strokeStyle={"solid"} // 선의 스타일 입니다
-                    fillColor={"#ff694e"} // 채우기 색깔입니다
-                    fillOpacity={0.7} // 채우기 불투명도 입니다
-                    // onMouseover={() =>
-                    //   setCurrentMouseOver(post)}
-                    // onMouseout={() =>
-                    //     setCurrentMouseOver()}
-                    onMousedown={() => {
-                      currentMouseOver === post ? setCurrentMouseOver() : setCurrentMouseOver(post);
-                    }}
-                  />
-                  {post === currentMouseOver ? (
-                    <MapMarker
-                      zIndex={0}
-                      key={currentMouseOver.postID}
-                      position={{
-                        lat: currentMouseOver.place.y,
-                        lng: currentMouseOver.place.x,
-                      }}
-                      image={{
-                        src: "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/location-pin.png?alt=media&token=521f1383-9b3f-453f-b60a-2d747ed36b7d",
-                        size: {
-                          width: 40,
-                          height: 40,
-                        }, // 마커이미지의 크기입니다
-                      }}
-                      onClick={() => {
-                        setCurrentMouseOver();
-                      }}
-                    >
-                      <MarkerInfo>
-                        {currentMouseOver.place.place_name}
-                        <div>
-                          <FontAwesomeIcon icon={faStar} style={{ color: "#ff4e50" }} />
-                          {currentMouseOver.star}
-                        </div>
-                        {currentMouseOver.photo ? <MarkerImage src={currentMouseOver.photo}></MarkerImage> : null}
-                      </MarkerInfo>
-                    </MapMarker>
-                  ) : null}
-                </div>
-              ))}
-            </Map>
-          )}
-        </MapBox>
-        <SearchArea>
-          <SearchForm onSubmit={submitKeyword}>
-            <SearchMapInput value={inputValue} onChange={keywordInputChange} />
-            <SearchButton>
-              <FontAwesomeIcon icon={faMagnifyingGlass} />
-            </SearchButton>
-          </SearchForm>
-          <CurrentLocationContentsWrapper>
-            {!searchKeyword ? (
+                onMouseOver={() => setInfo(marker)}
+              >
+                {info && info.content === marker.content && <MarkerInfo>{marker.content}</MarkerInfo>}
+              </MapMarker>
+            ))}
+            {postData?.map((post) => (
               <div>
-                <CurrentLocationInfo>
-                  <div>
-                    <p>
-                    <CurrentLocationButton
-                        onClick={() => map.setCenter(new kakao.maps.LatLng(userLocation.lat, userLocation.lng))}
-                      ></CurrentLocationButton>
-                      현재 나의 위치
-                    </p>
-                    <p>기록한 가게 | 좋아요 누른 가게</p>
-                  </div>
-                </CurrentLocationInfo>
-                <p>최근 리뷰</p>
+                <Circle
+                  zIndex={500}
+                  key={post.postID}
+                  center={{
+                    lat: post.place.y,
+                    lng: post.place.x,
+                  }}
+                  radius={100}
+                  strokeWeight={2} // 선의 두께입니다
+                  strokeColor={"#ff694e0"} // 선의 색깔입니다
+                  strokeOpacity={1} // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+                  strokeStyle={"solid"} // 선의 스타일 입니다
+                  fillColor={"#ff694e"} // 채우기 색깔입니다
+                  fillOpacity={0.7} // 채우기 불투명도 입니다
+                  onMousedown={() => {
+                    currentMouseOver === post ? setCurrentMouseOver() : setCurrentMouseOver(post);
+                  }}
+                />
+                {post === currentMouseOver ? (
+                  <MapMarker
+                    zIndex={0}
+                    key={currentMouseOver.postID}
+                    position={{
+                      lat: currentMouseOver.place.y,
+                      lng: currentMouseOver.place.x,
+                    }}
+                    image={{
+                      src: "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/location-pin.png?alt=media&token=521f1383-9b3f-453f-b60a-2d747ed36b7d",
+                      size: {
+                        width: 40,
+                        height: 40,
+                      }, // 마커이미지의 크기입니다
+                    }}
+                    onClick={() => {
+                      setCurrentMouseOver();
+                    }}
+                  >
+                    <MarkerInfo>
+                      {currentMouseOver.place.place_name}
+                      <div>
+                        <FontAwesomeIcon icon={faStar} style={{ color: "#ff4e50" }} />
+                        {currentMouseOver.star}
+                      </div>
+                      {currentMouseOver.photo ? <MarkerImage src={currentMouseOver.photo}></MarkerImage> : null}
+                    </MarkerInfo>
+                  </MapMarker>
+                ) : null}
               </div>
-            ) : (
-              <>
-                <ResultText className="result-keyword">
-                  <p>
-                    <CurrentLocationButton
-                      onClick={() => map.setCenter(new kakao.maps.LatLng(userLocation.lat, userLocation.lng))}
-                    ></CurrentLocationButton>
-                    &nbsp;{searchKeyword}&nbsp; 검색 결과
-                  </p>
-                  <button
+            ))}
+          </Map>
+        )}
+      </MapBox>
+      <SearchArea>
+        <SearchForm onSubmit={submitKeyword}>
+          <SearchMapInput value={inputValue} onChange={keywordInputChange} />
+          <SearchButton>
+            <FontAwesomeIcon icon={faMagnifyingGlass} />
+          </SearchButton>
+        </SearchForm>
+        <CurrentLocationContentsWrapper>
+          {!searchKeyword ? (
+            <div>
+              <CurrentLocationInfo>
+                <div>
+                  <p style={{ fontSize: "1rem", fontWeight: "bold" }}>{myAddress}</p>
+                  <p
                     style={{
-                      border: "none",
-                      background: "none",
+                      fontSize: "0.8rem",
+                      color: "gray",
+                      display: "flex",
+                      alignItems: "center",
                       cursor: "pointer",
                     }}
                     onClick={() => {
-                      setSearchKeyword("");
-                      setInputValue("");
-                      setMarkers([]);
+                      map.setCenter(new kakao.maps.LatLng(userLocation.lat, userLocation.lng));
+                      onMapDragged(map);
                     }}
                   >
-                    X
-                  </button>
-                </ResultText>
-                {data?.map((d, index) => (
-                  <ResultList key={d.id}>
-                    <span>{index + 1}</span>
-                    <div onClick={() => window.open(`${d.place_url}`, "_blank")}>
-                      <PlaceData>{d.place_name}</PlaceData>
-                      <PlaceData>{d.road_address_name || d.address_name}</PlaceData>
-                      <PhoneNum>{d.phone}</PhoneNum>
-                    </div>
-                    <ButtonContainer>
-                      <PlaceLinkButton
-                        onClick={() => {
-                          setMapCenterPosition({ lat: d.y, lng: d.x });
-                        }}
-                      >
-                        위치 보기
-                      </PlaceLinkButton>
-                      <PlaceLinkButton onClick={() => onPostAddButtonClick(d)}>기록하기</PlaceLinkButton>
-                    </ButtonContainer>
-                  </ResultList>
-                ))}
-                <PageNumber id="pagination">{console.log(pagination)}</PageNumber>
-              </>
-            )}
-          </CurrentLocationContentsWrapper>
-        </SearchArea>
-      </>
-      {/* )} */}
+                    <CurrentLocationButton />내 위치로
+                  </p>
+                </div>
+              </CurrentLocationInfo>
+              <CurrentLocationReviews>
+                <p>최근 리뷰</p>
+              </CurrentLocationReviews>
+              <CurrentLocationReviews>
+                <p>후기가 많은 가게</p>
+              </CurrentLocationReviews>
+            </div>
+          ) : (
+            <>
+              <ResultText className="result-keyword">
+                <p>
+                  <CurrentLocationButton
+                    onClick={() => {
+                      map.setCenter(new kakao.maps.LatLng(userLocation.lat, userLocation.lng));
+                    }}
+                  ></CurrentLocationButton>
+                  &nbsp;{searchKeyword}&nbsp; 검색 결과
+                </p>
+                <button
+                  style={{
+                    border: "none",
+                    background: "none",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    setSearchKeyword("");
+                    setInputValue("");
+                    setMarkers([]);
+                  }}
+                >
+                  X
+                </button>
+              </ResultText>
+              {data?.map((d, index) => (
+                <ResultList key={d.id}>
+                  <span>{index + 1}</span>
+                  <div onClick={() => window.open(`${d.place_url}`, "_blank")}>
+                    <PlaceData>{d.place_name}</PlaceData>
+                    <PlaceData>{d.road_address_name || d.address_name}</PlaceData>
+                    <PhoneNum>{d.phone}</PhoneNum>
+                  </div>
+                  <ButtonContainer>
+                    <PlaceLinkButton
+                      onClick={() => {
+                        setMapCenterPosition({ lat: d.y, lng: d.x });
+                      }}
+                    >
+                      위치 보기
+                    </PlaceLinkButton>
+                    <PlaceLinkButton onClick={() => onPostAddButtonClick(d)}>기록하기</PlaceLinkButton>
+                  </ButtonContainer>
+                </ResultList>
+              ))}
+              <PageNumber id="pagination">{console.log(pagination)}</PageNumber>
+            </>
+          )}
+        </CurrentLocationContentsWrapper>
+      </SearchArea>
     </>
   );
 }
@@ -418,8 +450,6 @@ const MapBox = styled.div`
   width: 56vw;
   height: 100%;
 `;
-
-
 
 const MarkerInfo = styled.div`
   font-size: 0.8rem;
@@ -467,7 +497,7 @@ const SearchMapInput = styled.input`
   height: 1.9rem;
   border: none;
   border-radius: 30px;
-  box-shadow: 1px 1px 1px #e7e7e7;
+  box-shadow: 2px 2px 2px #c8c8c8;
 `;
 
 const SearchButton = styled.button`
@@ -489,7 +519,7 @@ const CurrentLocationContentsWrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0.9rem 1.2rem;
-  box-shadow: 1px 1px 1px #e7e7e7;
+  box-shadow: 2px 2px 2px #c8c8c8;
 
   overflow-y: scroll;
 `;
@@ -497,7 +527,6 @@ const CurrentLocationInfo = styled.div`
   display: flex;
   align-items: center;
   height: 4.2rem;
-  border-bottom: 1px solid gray;
   line-height: 1.3rem;
 `;
 
@@ -513,17 +542,6 @@ const CurrentLocationButton = styled.button`
   border-radius: 50%;
   margin: 0.2rem;
   cursor: pointer;
-`;
-
-const SearchResult = styled.div`
-  width: 100%;
-  height: 53vh;
-  background-color: white;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  padding: 0.7rem;
-  overflow-y: scroll;
 `;
 
 const ResultText = styled.p`
@@ -588,4 +606,10 @@ const PageNumber = styled.div`
     font-weight: bold;
     color: black;
   }
+`;
+
+const CurrentLocationReviews = styled.div`
+  height: 10rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e7e7e7;
 `;

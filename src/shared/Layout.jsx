@@ -169,7 +169,7 @@ const Footer = styled.div`
   bottom: 0;
   background: white;
   width: 100%;
-  height: 5rem;
+  height: 10rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -182,7 +182,7 @@ const FooterContent = styled.div`
 const FooterButton = styled.button`
   border: none;
   font-size: 30px;
-  color: #452828;
+  color: gray;
   margin-right: 3vw;
   background-color: rgba(0, 0, 0, 0);
   cursor: pointer;

@@ -15,19 +15,23 @@ function PostEditModal({ modalOpen, onRequestClose, postData }) {
   const user = useAuthStore((state) => state.user);
   const { data: myTags } = useQuery("getMyTags", getMyTags);
   const [inputValue, setInputValue] = useState(postData);
-  const initialStars = Array(5)
-    .fill(false)
-    .map((_, i) => i < postData.star);
-  const [stars, setStars] = useState(initialStars);
+  const initialStars = [false, false, false, false, false];
+  const [stars, setStars] = useState(initialStars.map((_, i) => i < postData.star));
   const starClickHandler = (index) => {
+    if (index + 1 === stars.filter((s) => s === true).length) {
+      setInputValue({ ...inputValue, star: 0 });
+      setStars(initialStars);
+      return;
+    }
     setInputValue({ ...inputValue, star: index + 1 });
-    let newStars = [...stars];
-    for (let i = 0; i < newStars.length; i++) {
-      newStars[i] = i <= index;
+
+    let newStars = [...initialStars];
+
+    for (let i = 0; i <= index; i++) {
+      newStars[i] = true;
     }
     setStars(newStars);
   };
-
   const modalRef = useRef();
   const closeModalOnOutsideClick = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
@@ -55,7 +59,6 @@ function PostEditModal({ modalOpen, onRequestClose, postData }) {
     if (image !== undefined) {
       const imageRef = ref(storage, `${user.uid}/${image.name}`);
       await uploadBytes(imageRef, image);
-
       const downloadURL = await getDownloadURL(imageRef);
       setInputValue({ ...inputValue, photo: downloadURL });
     }

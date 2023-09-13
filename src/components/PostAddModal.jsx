@@ -41,6 +41,7 @@ function PostAddModal({ modalOpen, setModalOpen, myTags }) {
     commentCount: 0,
     timestamp: new Date(),
     userPhoto: user.photoUrl ? user.photoUrl : "",
+    userLevel: user.level ? user.level : "",
   });
   const initialStars = [false, false, false, false, false];
   const [stars, setStars] = useState(initialStars);
