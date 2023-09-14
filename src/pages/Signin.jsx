@@ -111,7 +111,7 @@ function SignIn() {
               </OrBox>
               <GoogleSignUpButton type="button" onClick={handleGoogleLogin}>
                 <GoogleLogo src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/Google__G__Logo%201.png?alt=media&token=75b51e58-8a63-44a8-86a6-fcdb851c166a" />
-                <p>Sign up with Google</p>
+                <p>Sign in with Google</p>
               </GoogleSignUpButton>
             </StyledForm>
           </InputContainer>

@@ -23,6 +23,7 @@ function Layout() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
+      authStore.logout();
       navigate("/main");
       alert("정상적으로 로그아웃 되었습니다.");
     } catch (error) {
