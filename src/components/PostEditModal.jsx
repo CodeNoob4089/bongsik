@@ -311,7 +311,7 @@ const UpdateButton = styled.button`
   text-align: center;
   font-weight: bold;
   border: none;
-  border-radius: 0.25em;
+  border-radius: 10px;
   cursor: pointer;
   transition-duration: 0.3s;
   &:hover {
