@@ -52,13 +52,13 @@ function MyLikePost() {
     <>
       <PostCardsContainer>
         <PostTitle>
-          <FontAwesomeIcon icon={faHeart} style={{ color: "#FF4E50" }} /> 좋아요 {user.userLikes?.length}
+          <FontAwesomeIcon icon={faHeart} style={{ color: "#FF4E50" }} />&nbsp;좋아요&nbsp;<span  style={{color: "#D0D0DE"}}>{user.userLikes?.length}</span>
         </PostTitle>
         <Posts>
           {likedPosts.map((post) => (
             <PostContainer key={post.id}>
               <PostImage
-                src={post.photo}
+                src={post.photo || "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%8A%A4%ED%8C%8C%EA%B2%8C%ED%8B%B0%20ETG.png?alt=media&token=a16fadeb-f562-4c12-ad73-c4cc1118a108"}
                 onClick={() => {
                   handlePostClick(post, post.postId);
                 }}
@@ -70,7 +70,7 @@ function MyLikePost() {
                 </div>
                 <LikesCount>
                   <FontAwesomeIcon icon={faHeart} style={{ color: "#FF4E50" }} />
-                  {post.likeCount}
+                   &nbsp;{post.likeCount}
                 </LikesCount>
               </PostDetails>
             </PostContainer>
@@ -90,49 +90,52 @@ function MyLikePost() {
 export default MyLikePost;
 
 const PostCardsContainer = styled.div`
-  margin: 5vh auto;
+  margin: auto auto;
   display: flex;
   flex-direction: column;
   width: 95%;
   height: 100%;
   border-radius: 18px;
   background-color: white;
-  overflow-y: scroll;
   box-shadow: 1px 1px 1px 1px #e7e7e7;
+  overflow-y: scroll;
 `;
 
 const PostTitle = styled.h1`
-  font-size: 20px;
+  font-size: 1rem;
   font-weight: bold;
   padding: 2rem 0rem 1rem 2rem;
 `;
 
 const Posts = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   padding-top: 2rem;
+  width: 100%;
+  height: 100%;
+
 `;
 
 const PostContainer = styled.div`
   display: flex;
-  height: 18rem;
+  flex-direction: row;
+  align-items: center;
+  height: 12rem;
+  width: 100%;
   border: none;
   border-radius: 10px;
-  padding: 10px;
   margin-left: 30px;
-  margin-top: 20px;
+  padding: 1rem;
 `;
 
 const PostImage = styled.img`
-  width: 20rem;
-  height: 100%;
+  width: 15rem;
+  height: 10rem;
   border-radius: 20px;
   object-fit: cover;
 `;
 
 const PostDetails = styled.div`
-  margin-left: 10px;
+  height: 80%;
+  margin-left: 1rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -140,19 +143,17 @@ const PostDetails = styled.div`
 
 const ShopName = styled.h3`
   color: black;
-  font-size: 20px;
+  font-size: 1rem;
   font-weight: bold;
+  margin-bottom: 1rem;
 `;
 
 const ShopAddress = styled.p`
   color: gray;
-  font-size: 18px;
-  margin-top: 20px;
+  font-size: 0.9rem;
 `;
 
 const LikesCount = styled.div`
   color: gray;
-  font-size: 18px;
-  margin-bottom: 1rem;
-  margin-left: 5px;
+  font-size: 0.9rem;
 `;
