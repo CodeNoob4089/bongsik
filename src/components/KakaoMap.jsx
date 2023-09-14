@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faStar } from "@fortawesome/free-solid-svg-icons";
@@ -31,9 +31,14 @@ function KakaoMap({ showModal, postData, user }) {
     lng: 128.556077,
   });
   const [myAddress, setMyAddress] = useState("현위치를 가져오는 중입니다...");
+  const [dongNameList, setDongNameList] = useState([]);
   const data = useMapDataStore((state) => state.data);
   const setData = useMapDataStore((state) => state.setData);
   const setClickedData = useClickedDataStore((state) => (state ? state.setClickedData : []));
+  const RealTimeMyPost = postData?.sort(
+    (a, b) => b.timestamp?.toDate().getTime() - a.timestamp?.toDate().getTime()
+  );
+
 
   const keywordInputChange = (e) => {
     e.preventDefault();
@@ -49,7 +54,6 @@ function KakaoMap({ showModal, postData, user }) {
     const geocoder = new kakao.maps.services.Geocoder();
     geocoder.coord2Address(map.getCenter().getLng(), map.getCenter().getLat(), (result, status) => {
       if (status === kakao.maps.services.Status.OK) {
-        console.log("도로명 주소:", result[0]);
         setMyAddress(result[0]?.road_address ? result[0].road_address.address_name : result[0].address.address_name);
       } else {
         console.error("주소 변환 실패:", status);
@@ -107,16 +111,10 @@ function KakaoMap({ showModal, postData, user }) {
     const options = {
       location: new kakao.maps.LatLng(mapCenterPosition.lat, mapCenterPosition.lng),
     };
-
-    // ps.categorySearch('CE7' || 'FD6', placesSearchCB, {useMapBounds:true} )
     ps.keywordSearch(
       searchKeyword,
       (data, status, pagination) => {
         if (status === kakao.maps.services.Status.OK) {
-          // const foodData = data?.filter((d) => d.category_group_code === 'FD6' ||  d.category_group_code === 'CE7' )
-          // console.log("푸드데이터!!!!!!!",foodData)
-          // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
-          // LatLngBounds 객체에 좌표를 추가합니다.
           const bounds = new kakao.maps.LatLngBounds();
           let markers = [];
           for (let i = 0; i < data.length; i++) {
@@ -147,11 +145,9 @@ function KakaoMap({ showModal, postData, user }) {
       },
       options
     );
-    const center = map.getCenter();
-    console.log("center", center);
   }, [searchKeyword, map]);
 
-  const findNeighborhood = () => {
+  const findNeighborhood = (lng, lat) => {
     return new Promise((resolve, reject) => {
       const geocoder = new window.kakao.maps.services.Geocoder();
 
@@ -163,7 +159,7 @@ function KakaoMap({ showModal, postData, user }) {
         }
       };
 
-      geocoder.coord2RegionCode(mapCenterPosition.lng, mapCenterPosition.lat, callback);
+      geocoder.coord2RegionCode(lng, lat, callback);
     });
   };
 
@@ -176,7 +172,7 @@ function KakaoMap({ showModal, postData, user }) {
         lat: d.y,
         lng: d.x,
       });
-      const neighborhoodName = await findNeighborhood();
+      const neighborhoodName = await findNeighborhood(d.x, d.y);
       const dongCode = neighborhoodName.substr(0, 8);
       setClickedData({ ...d, dongCode });
       showModal();
@@ -197,18 +193,18 @@ function KakaoMap({ showModal, postData, user }) {
       }
       return acc;
     }, {});
-    // console.log("user", user);
-    // console.log("result", result);
     const keysOfResult = Object.keys(result || {});
     const coloredDongs = keysOfResult?.filter((key) => result[key] >= 3);
     const polygonList = [];
+    const dongNameList = [];
 
     coloredDongs?.map(async (dong) => {
       const dongRef = doc(db, "location", dong);
       const dongSnap = await getDoc(dongRef);
       const dongCoordinates = dongSnap.data().coordinates;
+      const dongName = dongSnap.data().dong;
+      setDongNameList([...dongNameList, dongName])
       const coordinates = JSON.parse(dongCoordinates);
-      // console.log("coordinates", coordinates);
       const polygonPath = [];
       const utmk =
         "+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs";
@@ -236,7 +232,7 @@ function KakaoMap({ showModal, postData, user }) {
         polygon.setMap(null);
       });
     };
-  }, [user, map]);
+  }, [user, map, postData]);
 
   return (
     <>
@@ -259,7 +255,6 @@ function KakaoMap({ showModal, postData, user }) {
             level={5}
             onCreate={setMap}
             onDragEnd={(map) => {
-              console.log("왜 안되니 ㅠㅠ");
               onMapDragged(map);
             }}
           >
@@ -273,13 +268,7 @@ function KakaoMap({ showModal, postData, user }) {
                 size: {
                   width: 18,
                   height: 18,
-                }, // 마커이미지의 크기입니다
-                // options: {
-                //   offset: {
-                //     x: 27,
-                //     y: 69,
-                //   }, // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
-                // },
+                },
               }}
             />
             {markers?.map((marker) => (
@@ -291,9 +280,13 @@ function KakaoMap({ showModal, postData, user }) {
                   size: {
                     width: 40,
                     height: 40,
-                  }, // 마커이미지의 크기입니다
+                  },
                 }}
                 onMouseOver={() => setInfo(marker)}
+                onClick={() =>
+                 {const clickedPlaceData = data?.filter((d) => d.place_name === marker.content)[0]
+                  onPostAddButtonClick(clickedPlaceData)
+                }}
               >
                 {info && info.content === marker.content && <MarkerInfo>{marker.content}</MarkerInfo>}
               </MapMarker>
@@ -384,9 +377,16 @@ function KakaoMap({ showModal, postData, user }) {
               </CurrentLocationInfo>
               <CurrentLocationReviews>
                 <p>최근 리뷰</p>
+                {RealTimeMyPost?.slice(0,3).map((post) => 
+                <div>
+                  <img src={post.photo} style={{height: "2rem", width: "2rem"}}/>
+                </div>
+                )}
               </CurrentLocationReviews>
               <CurrentLocationReviews>
-                <p>후기가 많은 가게</p>
+                <p>도장깨기 완료한 동</p>
+                {dongNameList.map((dong) =>
+                <div>{dong}</div>)}
               </CurrentLocationReviews>
             </div>
           ) : (
