@@ -1,6 +1,8 @@
 import { createGlobalStyle } from "styled-components";
 
 export const GlobalStyle = createGlobalStyle`
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+  @import url('https://cdn.rawgit.com/orioncactus/pretendard/1.1.0/dist/web/static/pretendard.css');
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -17,8 +19,6 @@ time, mark, audio, video {
   margin: 0;
   padding: 0;
   border: 0;
-  font-size: 62.5%;
-  font: inherit;
   vertical-align: baseline;
 }
 
@@ -66,7 +66,7 @@ table {
 }
 
 body {
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: 'Pretendard-Regular','Source Sans Pro', sans-serif;
 }
 
 a {
