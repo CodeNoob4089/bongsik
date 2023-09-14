@@ -118,7 +118,9 @@ function Intro() {
           fontSize: "50px",
         }}
       >
-        <div style={{ marginTop: "5rem", color: "white" }}>이용방법</div>
+        <div style={{ marginTop: "5rem", color: "white" }}>
+          <p style={{ paddingTop: "3rem" }}>이용방법</p>
+        </div>
         <img
           style={{ marginTop: "5rem" }}
           src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%9D%B4%EC%9A%A9%EB%B0%A9%EB%B2%95.png?alt=media&token=2cb6dd88-8af0-497b-b4cb-e007e1b30e6d"
@@ -346,7 +348,7 @@ const PostComment = styled.div`
   gap: 0.4rem;
 `;
 const MoreButton = styled.button`
-  margin-top: -3rem;
+  margin-top: 2rem;
   margin-bottom: 5rem;
   width: 30%;
   height: 3rem;
