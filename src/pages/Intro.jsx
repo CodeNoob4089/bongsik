@@ -348,7 +348,7 @@ const PostComment = styled.div`
   gap: 0.4rem;
 `;
 const MoreButton = styled.button`
-  margin-top: 2rem;
+  margin-top: 5rem;
   margin-bottom: 5rem;
   width: 30%;
   height: 3rem;
