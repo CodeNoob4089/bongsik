@@ -61,7 +61,7 @@ const ButtonContainer = styled.div`
 `;
 
 const ConfirmButton = styled.button`
-  width: 8rem;
+  width: 5rem;
   padding: 0.75em;
   color: white;
   background-color: #ff4e50;
@@ -77,7 +77,7 @@ const ConfirmButton = styled.button`
 `;
 
 const CancelButton = styled.button`
-  width: 8rem;
+  width: 5rem;
   padding: 0.75em;
   color: white;
   background-color: #6c757d;
