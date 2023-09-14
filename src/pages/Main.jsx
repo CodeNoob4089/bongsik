@@ -29,7 +29,7 @@ function Main() {
 
   return (
     <>
-      {modalOpen && <PostAddModal modalOpen={modalOpen} setModalOpen={setModalOpen} myTags={myTags} />}
+      {modalOpen && <PostAddModal modalOpen={modalOpen} setModalOpen={setModalOpen} myTags={myTags} user={user} />}
       <Container>
         <MapContainer>
           <KakaoMap showModal={showModal} postData={postData} user={user}/>
