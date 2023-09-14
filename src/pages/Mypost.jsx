@@ -99,7 +99,11 @@ function Mypost() {
                       onClick={() => {
                         handlePostClick(post, post.docID);
                       }}
-                      src={post.photo ? post.photo : ""}
+                      src={
+                        post.photo
+                          ? post.photo
+                          : "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%8A%A4%ED%8C%8C%EA%B2%8C%ED%8B%B0%20ETG.png?alt=media&token=a16fadeb-f562-4c12-ad73-c4cc1118a108"
+                      }
                     />
                     <PostContents>
                       <PostTitle>{post.place.place_name}</PostTitle>

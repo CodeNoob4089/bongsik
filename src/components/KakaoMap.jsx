@@ -145,7 +145,6 @@ function KakaoMap({ showModal, postData, user }) {
       },
       options
     );
-    const center = map.getCenter();
   }, [searchKeyword, map]);
 
   const findNeighborhood = (lng, lat) => {
@@ -233,7 +232,7 @@ function KakaoMap({ showModal, postData, user }) {
         polygon.setMap(null);
       });
     };
-  }, [user, map]);
+  }, [user, map, postData]);
 
   return (
     <>
