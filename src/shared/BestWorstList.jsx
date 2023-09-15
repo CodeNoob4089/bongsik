@@ -4,7 +4,7 @@ export const ListContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1.7rem;
+  padding: 1.7rem 0 1.7rem 1.7rem;
   width: 32.36vw;
   height: 57.5vh;
   background-color: white;
@@ -63,4 +63,5 @@ export const NoBestWorstPost = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-right: 1rem;
 `
