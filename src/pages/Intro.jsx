@@ -1,11 +1,5 @@
-import { faGratipay } from "@fortawesome/free-brands-svg-icons";
-import { faRotate } from "@fortawesome/free-solid-svg-icons";
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import Badge from "../components/Badge";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../firebase";
 import { useQuery } from "react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faComment } from "@fortawesome/free-solid-svg-icons";
@@ -111,7 +105,7 @@ function Intro() {
       </MiddleContentsLeft>
       <div
         style={{
-          widtth: "100px",
+          widtth: "100%",
           height: "700px",
           backgroundColor: "#ff4e50",
           textAlign: "center",
@@ -122,7 +116,7 @@ function Intro() {
           <p style={{ paddingTop: "3rem" }}>이용방법</p>
         </div>
         <img
-          style={{ marginTop: "5rem" }}
+          style={{ marginTop: "5rem", width: "90%"}}
           src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%9D%B4%EC%9A%A9%EB%B0%A9%EB%B2%95.png?alt=media&token=2cb6dd88-8af0-497b-b4cb-e007e1b30e6d"
         />
       </div>
