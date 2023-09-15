@@ -2,13 +2,16 @@ import React from "react";
 import styled from "styled-components";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLock, faLockOpen, faHeart, faRectangleList } from "@fortawesome/free-solid-svg-icons";
+import { faLock, faLockOpen, faRectangleList } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { getPosts } from "../api/collection";
 import PostEditModal from "../components/PostEditModal";
 import { deletePost } from "../api/collection";
 import DeleteModal from "../components/DeleteModal";
 import PostingModal from "../components/CommentsModal";
+import { auth } from "../firebase";
+import { getUserData } from "../api/collection";
+import Heart from "../components/Heart";
 function Mypost() {
   const { data: postData } = useQuery(`fetchPostData`, getPosts);
   const [modalOpen, setModalOpen] = useState(false);
@@ -30,7 +33,7 @@ function Mypost() {
     setSelectedPostId(post.postId);
     setOpenModal(true);
   };
-
+  const userId = auth.currentUser?.uid;
   const mutation = useMutation(deletePost, {
     onSuccess: () => {
       queryClient.invalidateQueries("fetchPostData");
@@ -56,6 +59,7 @@ function Mypost() {
     setModalOpen(true);
   };
   //로그인한 유저 상태확인해서 그걸로 그 유저가 작성한 글만 가져와야함
+  const { data: userData } = useQuery("fetchUserData", getUserData, { enabled: userId !== undefined });
   return (
     <>
       <DeleteModal
@@ -118,7 +122,12 @@ function Mypost() {
                       )}
                       {/* <PostContent>{post.content}</PostContent> */}
                       <LikesCount>
-                        <FontAwesomeIcon icon={faHeart} style={{ color: "gray" }} />
+                        <Heart
+                          userData={userData}
+                          post={post}
+                          setSelectedPost={setSelectedPost}
+                          setSelectedPostId={setSelectedPostId}
+                        />
                         &nbsp;{post.likeCount}
                       </LikesCount>
                     </PostContents>
@@ -142,7 +151,9 @@ function Mypost() {
         selectedPost={selectedPost}
         openModal={openModal}
         setOpenModal={setOpenModal}
-        setSelectedPostId={setSelectedPost}
+        setSelectedPostId={setSelectedPostId}
+        setSelectedPost={setSelectedPost}
+        userData={userData}
       />
     </>
   );
@@ -182,7 +193,6 @@ const CategoryButton = styled.button`
 const PostCards = styled.div`
   overflow-y: scroll;
   padding-top: 2rem;
-
 `;
 const PostCard = styled.div`
   position: relative;

@@ -9,7 +9,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { nanoid } from "nanoid";
 import { getMyTags, getPosts } from "../api/collection";
-
+import PostingModal from "../components/CommentsModal";
+import { getUserData } from "../api/collection";
 const GET_MY_TAGS = "getMyTags";
 
 function MyPageList() {
@@ -24,7 +25,19 @@ function MyPageList() {
     collectionID: nanoid(),
   });
   const [toggleOpen, setToggleOpen] = useState("");
-
+  //모달
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [, setSelectedPostId] = useState(null);
+  //모달 열기
+  const handlePostClick = (post) => {
+    // 배경 페이지 스크롤 막기
+    document.body.style.overflow = "hidden";
+    setSelectedPost(post);
+    setSelectedPostId(post.postId);
+    setOpenModal(true);
+  };
+  const userId = auth.currentUser?.uid;
   const { data: myTags } = useQuery(GET_MY_TAGS, getMyTags);
   const { data: postData } = useQuery(`fetchPostData`, getPosts);
 
@@ -112,81 +125,96 @@ function MyPageList() {
     setAddActive(false);
   };
 
-
+  const { data: userData } = useQuery("fetchUserData", getUserData, { enabled: userId !== undefined });
   return (
-    <ListCardsContainer>
-      <ListTop>
-        <ListTitle>나의 리스트</ListTitle>
+    <>
+      <ListCardsContainer>
+        <ListTop>
+          <ListTitle>나의 리스트</ListTitle>
+          {addActive ? (
+            <AddButton onClick={() => setAddActive(false)}>--</AddButton>
+          ) : (
+            <AddButton onClick={addMyCollection}>+</AddButton>
+          )}
+        </ListTop>
         {addActive ? (
-          <AddButton onClick={() => setAddActive(false)}>--</AddButton>
-        ) : (
-          <AddButton onClick={addMyCollection}>+</AddButton>
-        )}
-      </ListTop>
-      {addActive ? (
-        <ListCard>
-          <NewCollectionCover img={collectionInput.coverImage}
-          onClick={onImageUploadButtonClick}>
-            {collectionInput.coverImage? null : "+"}
-          </NewCollectionCover>
-          <NewCollectionForm onSubmit={onSubmit}>
-            <CollectionTitleInput
-              placeholder="컬렉션 제목"
-              value={collectionInput.title}
-              onChange={(e) => {
-                setCollectionInput({ ...collectionInput, title: e.target.value });
-              }}
-            />
-            <input type="file" style={{ display: "none" }} ref={addImageInput} onChange={onSelectImage} />
-            <CollectionListButtonBox>
-            <CollectionButton  type="button" onClick={onCancel}>
-              취소
-            </CollectionButton>
-            <CollectionButton>
-              확인
-            </CollectionButton>
-            </CollectionListButtonBox>
-          </NewCollectionForm>
-        </ListCard>
-      ) : null}
-      <CardsBox addActive={addActive}>
-        {myTags?.map((tag) => (
-          <>
-            <ListCard key={tag.collectionID}>
-              <ImageBox img={tag.coverImage}></ImageBox>
-              <CardTitle>
-                {tag.title}
-                <ButtonBox>
-                  {toggleOpen !== tag.collectionID ? (
-                    <ToggleButton onClick={() => onToggleOpenButtonClick(tag.collectionID)}>▼</ToggleButton>
+          <ListCard>
+            <NewCollectionCover img={collectionInput.coverImage} onClick={onImageUploadButtonClick}>
+              {collectionInput.coverImage ? null : "+"}
+            </NewCollectionCover>
+            <NewCollectionForm onSubmit={onSubmit}>
+              <CollectionTitleInput
+                placeholder="컬렉션 제목"
+                value={collectionInput.title}
+                onChange={(e) => {
+                  setCollectionInput({ ...collectionInput, title: e.target.value });
+                }}
+              />
+              <input type="file" style={{ display: "none" }} ref={addImageInput} onChange={onSelectImage} />
+              <CollectionListButtonBox>
+                <CollectionButton type="button" onClick={onCancel}>
+                  취소
+                </CollectionButton>
+                <CollectionButton>확인</CollectionButton>
+              </CollectionListButtonBox>
+            </NewCollectionForm>
+          </ListCard>
+        ) : null}
+        <CardsBox addActive={addActive}>
+          {myTags?.map((tag) => (
+            <>
+              <ListCard key={tag.collectionID}>
+                <ImageBox img={tag.coverImage}></ImageBox>
+                <CardTitle>
+                  {tag.title}
+                  <ButtonBox>
+                    {toggleOpen !== tag.collectionID ? (
+                      <ToggleButton onClick={() => onToggleOpenButtonClick(tag.collectionID)}>▼</ToggleButton>
+                    ) : (
+                      <ToggleButton onClick={() => setToggleOpen("")}>▲</ToggleButton>
+                    )}
+                    <DeleteButton onClick={() => onDeleteButtonClick(tag.collectionID)}>
+                      <FontAwesomeIcon icon={faTrashCan} />
+                    </DeleteButton>
+                  </ButtonBox>
+                </CardTitle>
+              </ListCard>
+              {toggleOpen === tag.collectionID ? (
+                <PostLists>
+                  {postData?.filter((post) => post.collectionTag === tag.collectionID).length !== 0 ? (
+                    postData
+                      ?.filter((post) => post.collectionTag === tag.collectionID)
+                      .map((p) => (
+                        <CollectedPosts
+                          key={p.postId}
+                          onClick={() => {
+                            handlePostClick(p, p.postId);
+                          }}
+                        >
+                          <ImageBox img={p.photo}></ImageBox>
+                          <TextBox>
+                            <p>{p.place.place_name}</p>
+                          </TextBox>
+                        </CollectedPosts>
+                      ))
                   ) : (
-                    <ToggleButton onClick={() => setToggleOpen("")}>▲</ToggleButton>
+                    <div>아직 컬렉션에 글이 없어요!</div>
                   )}
-                  <DeleteButton onClick={() => onDeleteButtonClick(tag.collectionID)}>
-                    <FontAwesomeIcon icon={faTrashCan} />
-                  </DeleteButton>
-                </ButtonBox>
-              </CardTitle>
-            </ListCard>
-            {toggleOpen === tag.collectionID ? (
-              <PostLists>
-                {postData?.filter((post) => post.collectionTag === tag.collectionID).length !== 0?
-                  postData?.filter((post) => post.collectionTag === tag.collectionID).map((p) => (
-                    <CollectedPosts key={p.postID}>
-                      <ImageBox img={p.photo}></ImageBox>
-                      <TextBox>
-                        <p>{p.place.place_name}</p>
-                      </TextBox>
-                    </CollectedPosts>
-                  ))
-                : <div>아직 컬렉션에 글이 없어요!</div>
-                }
-              </PostLists>
-            ) : null}
-          </>
-        ))}
-      </CardsBox>
-    </ListCardsContainer>
+                </PostLists>
+              ) : null}
+            </>
+          ))}
+        </CardsBox>
+      </ListCardsContainer>
+      <PostingModal
+        selectedPost={selectedPost}
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+        setSelectedPostId={setSelectedPostId}
+        setSelectedPost={setSelectedPost}
+        userData={userData}
+      />
+    </>
   );
 }
 
@@ -339,7 +367,7 @@ const CollectionListButtonBox = styled.div`
   justify-content: space-between;
   align-items: center;
   padding-top: 0.5rem;
-`
+`;
 
 const NewCollectionForm = styled.form`
   padding: 0.5rem;
