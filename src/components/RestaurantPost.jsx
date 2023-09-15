@@ -12,6 +12,7 @@ import {
   PostContainer,
   CommunityCount,
 } from "../components/TabPostStyled";
+import { getUserData } from "../api/collection";
 import { collection, getDocs, query, where, doc, getDoc, orderBy, or, limit } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import { useQuery } from "react-query";
@@ -66,21 +67,21 @@ function RestaurantPost({ category }) {
     return RestaurantPublicPosts;
   };
 
-  //유저 좋아요 정보 가져오기
-  const getUserData = async () => {
-    const userDocRef = doc(db, "users", userId);
-    const docSnapshot = await getDoc(userDocRef);
-    if (docSnapshot.exists()) {
-      const userData = docSnapshot.data();
-      return {
-        userLikes: userData?.userLikes || [],
-      };
-    } else {
-      return {
-        userLikes: [],
-      };
-    }
-  };
+  // //유저 좋아요 정보 가져오기
+  // const getUserData = async () => {
+  //   const userDocRef = doc(db, "users", userId);
+  //   const docSnapshot = await getDoc(userDocRef);
+  //   if (docSnapshot.exists()) {
+  //     const userData = docSnapshot.data();
+  //     return {
+  //       userLikes: userData?.userLikes || [],
+  //     };
+  //   } else {
+  //     return {
+  //       userLikes: [],
+  //     };
+  //   }
+  // };
 
   const { data: userData } = useQuery("fetchUserData", getUserData, { enabled: userId !== undefined });
   const { data: RestaurantPublicPosts } = useQuery("fetchPublicRestaurantPosts", getPublicRestaurantPosts);
@@ -94,16 +95,16 @@ function RestaurantPost({ category }) {
         />
         {category} 게시글: {Length}개
       </CommunityCount>
-      {RestaurantPublicPosts?.map((item) => (
-        <CommunityPosting key={item.postId}>
+      {RestaurantPublicPosts?.map((post) => (
+        <CommunityPosting key={post.postId}>
           <PostContainer>
-            {item.photo ? (
+            {post.photo ? (
               <>
                 <PostImgBox>
                   <PostImgUrl
-                    src={item.photo}
+                    src={post.photo}
                     onClick={() => {
-                      handlePostClick(item);
+                      handlePostClick(post);
                     }}
                   ></PostImgUrl>
                 </PostImgBox>
@@ -125,7 +126,7 @@ function RestaurantPost({ category }) {
                     }}
                     alt="게시물 사진 없을 때 뜨는 이미지"
                     onClick={() => {
-                      handlePostClick(item);
+                      handlePostClick(post);
                     }}
                   />
                 </PostImgBox>
@@ -135,16 +136,16 @@ function RestaurantPost({ category }) {
               <h2
                 style={{ cursor: "pointer" }}
                 onClick={() => {
-                  handlePostClick(item);
+                  handlePostClick(post);
                 }}
               >
-                {item.place.place_name}&nbsp;
+                {post.place.place_name}&nbsp;
               </h2>
               <p>
                 <DetailLocation
                   style={{ cursor: "pointer" }}
                   onClick={() => {
-                    handlePostClick(item);
+                    handlePostClick(post);
                   }}
                 >
                   <img
@@ -157,7 +158,7 @@ function RestaurantPost({ category }) {
                     }}
                     alt="위치 아이콘"
                   />
-                  {item.place.address_name}
+                  {post.place.address_name}
                 </DetailLocation>
                 <br />
               </p>
@@ -166,11 +167,11 @@ function RestaurantPost({ category }) {
                 <ButtonSet>
                   <Heart
                     userData={userData}
-                    item={item}
+                    post={post}
                     setSelectedPost={setSelectedPost}
                     setSelectedPostId={setSelectedPostId}
                   />
-                  <LikeCount>{item.likeCount}</LikeCount>
+                  <LikeCount>{post.likeCount}</LikeCount>
                   <Button>
                     <commentIcon>
                       <img
@@ -184,12 +185,12 @@ function RestaurantPost({ category }) {
                         }}
                         alt="댓글 아이콘"
                         onClick={() => {
-                          handlePostClick(item);
+                          handlePostClick(post);
                         }}
                       />
                     </commentIcon>
                   </Button>
-                  <LikeCount>{item.commentCount}</LikeCount>
+                  <LikeCount>{post.commentCount}</LikeCount>
                 </ButtonSet>
               </PostBottomBar>
             </PostContent>
@@ -208,4 +209,4 @@ function RestaurantPost({ category }) {
     </>
   );
 }
-export default RestaurantPost;
+export default { RestaurantPost };

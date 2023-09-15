@@ -8,7 +8,7 @@ import { db, auth } from "../firebase";
 import { useMutation } from "react-query";
 import useAuthStore from "../store/auth";
 import { useNavigate } from "react-router";
-function Heart({ userData, item, selectedPost, setSelectedPostId, setSelectedPost }) {
+function Heart({ userData, post, selectedPost, setSelectedPostId, setSelectedPost }) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const authStore = useAuthStore();
@@ -22,7 +22,7 @@ function Heart({ userData, item, selectedPost, setSelectedPostId, setSelectedPos
 
   const mutation = useMutation(
     async () => {
-      const postIdToUse = item?.postId || selectedPost?.postId;
+      const postIdToUse = post?.postId || selectedPost?.postId;
       const alreadyLikedUser = userData?.userLikes?.find((like) => like.likePostId === postIdToUse);
       console.log("alreadyLikedUser", alreadyLikedUser);
       // mutation 함수 내부에서만 userDocRef를 생성합니다.
@@ -104,11 +104,11 @@ function Heart({ userData, item, selectedPost, setSelectedPostId, setSelectedPos
   return (
     <>
       <Like
-        isLiked={userData?.userLikes?.some((like) => like.likePostId === (item?.postId || selectedPost?.postId))}
+        isLiked={userData?.userLikes?.some((like) => like.likePostId === (post?.postId || selectedPost?.postId))}
         onClick={() => {
           clickHeart(
-            item?.postId || selectedPost?.postId,
-            userData?.userLikes?.some((like) => like.likePostId === (item?.postId || selectedPost?.postId))
+            post?.postId || selectedPost?.postId,
+            userData?.userLikes?.some((like) => like.likePostId === (post?.postId || selectedPost?.postId))
           );
         }}
       >

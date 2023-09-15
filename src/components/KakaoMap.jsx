@@ -7,11 +7,13 @@ import useMapDataStore from "../store/mapdata";
 import useClickedDataStore from "../store/modalData";
 import proj4 from "proj4";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { db, auth } from "../firebase";
 import Skeleton from "../skeleton/MapSkeleton";
 import { Description, DescriptionBox, DescriptionTitle } from "../shared/MainDescription";
 import { useNavigate } from "react-router-dom";
-
+import PostingModal from "../components/CommentsModal";
+import { getUserData } from "../api/collection";
+import { useQuery } from "react-query";
 const { kakao } = window;
 
 function KakaoMap({ showModal, postData, user }) {
@@ -34,14 +36,23 @@ function KakaoMap({ showModal, postData, user }) {
   });
   const [myAddress, setMyAddress] = useState("현위치를 가져오는 중입니다...");
   const [dongNameArray, setDongNameArray] = useState([]);
- 
-
+  //모달
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [, setSelectedPostId] = useState(null);
+  //모달 열기
+  const handlePostClick = (post) => {
+    // 배경 페이지 스크롤 막기
+    document.body.style.overflow = "hidden";
+    setSelectedPost(post);
+    setSelectedPostId(post.postId);
+    setOpenModal(true);
+  };
+  const userId = auth.currentUser?.uid;
   const data = useMapDataStore((state) => state.data);
   const setData = useMapDataStore((state) => state.setData);
   const setClickedData = useClickedDataStore((state) => (state ? state.setClickedData : []));
-  const RealTimeMyPost = postData?.sort(
-    (a, b) => b.timestamp?.toDate().getTime() - a.timestamp?.toDate().getTime()
-  );
+  const RealTimeMyPost = postData?.sort((a, b) => b.timestamp?.toDate().getTime() - a.timestamp?.toDate().getTime());
   const dongImgArray = [
     "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/RedDong.png?alt=media&token=eb74b27e-6eba-4711-95bb-4d9a2a5b0c37",
     "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/BlueDong.png?alt=media&token=7aaeb018-8ad8-4ccb-9b46-6b8a5227afca",
@@ -49,7 +60,7 @@ function KakaoMap({ showModal, postData, user }) {
     "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/PinkDong.png?alt=media&token=e2ac44be-6dcc-49d2-ad30-8407fe22aa1d",
     "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/GreenDong.png?alt=media&token=6a0b4088-6fc0-4160-a787-d37feb4bb389",
     "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/PurpleDong.png?alt=media&token=86126453-0c8e-460b-82d7-28074840763b",
-  ]
+  ];
 
   const keywordInputChange = (e) => {
     e.preventDefault();
@@ -97,7 +108,9 @@ function KakaoMap({ showModal, postData, user }) {
 
         geocoder.coord2Address(userLng, userLat, (result, status) => {
           if (status === kakao.maps.services.Status.OK) {
-            setMyAddress(result[0]?.road_address?result[0].road_address.address_name:result[0].address.address_name)
+            setMyAddress(
+              result[0]?.road_address ? result[0].road_address.address_name : result[0].address.address_name
+            );
           } else {
             console.error("주소 변환 실패:", status);
             return;
@@ -111,7 +124,9 @@ function KakaoMap({ showModal, postData, user }) {
   useEffect(() => {
     if (!map || !mapCenterPosition) return;
     map.setCenter(new kakao.maps.LatLng(mapCenterPosition.lat, mapCenterPosition.lng));
-    if(!user){setDongNameArray([])}
+    if (!user) {
+      setDongNameArray([]);
+    }
   }, [map, mapCenterPosition, user]);
 
   useEffect(() => {
@@ -142,7 +157,7 @@ function KakaoMap({ showModal, postData, user }) {
           setMapCenterPosition({
             lat: data[0].y,
             lng: data[0].x,
-          })
+          });
           map.setLevel(4);
         } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
           setData(null);
@@ -173,7 +188,7 @@ function KakaoMap({ showModal, postData, user }) {
     });
   };
 
-// 검색결과 리스트에서 기록하기 버튼 클릭 함수
+  // 검색결과 리스트에서 기록하기 버튼 클릭 함수
   const onPostAddButtonClick = async (d) => {
     if (user === null) {
       return alert("글을 작성하려면 로그인해주세요!");
@@ -195,7 +210,6 @@ function KakaoMap({ showModal, postData, user }) {
   const dongNameLists = [];
   // -----------------폴리곤 그려주기-----------------
   useEffect(() => {
-
     const result = user?.dongCounts?.reduce((acc, cur) => {
       if (acc[cur]) {
         acc[cur] += 1;
@@ -207,7 +221,7 @@ function KakaoMap({ showModal, postData, user }) {
 
     const keysOfResult = Object.keys(result || {});
     const coloredDongs = keysOfResult?.filter((key) => result[key] >= 3);
-    console.log("coloredDongs", coloredDongs)
+    console.log("coloredDongs", coloredDongs);
     const polygonList = [];
 
     coloredDongs?.map(async (dong) => {
@@ -215,10 +229,10 @@ function KakaoMap({ showModal, postData, user }) {
       const dongSnap = await getDoc(dongRef);
       const coordinates = JSON.parse(dongSnap.data().coordinates);
       const dongName = dongSnap.data().dong;
-  
-      // 동 이름 배열추가 
+
+      // 동 이름 배열추가
       dongNameLists.push(dongName);
-      setDongNameArray(dongNameLists)
+      setDongNameArray(dongNameLists);
 
       const polygonPath = [];
       const utmk =
@@ -249,7 +263,7 @@ function KakaoMap({ showModal, postData, user }) {
     };
   }, [postData, map]);
 
-
+  const { data: userData } = useQuery("fetchUserData", getUserData, { enabled: userId !== undefined });
   return (
     <>
       <MapBox>
@@ -299,9 +313,9 @@ function KakaoMap({ showModal, postData, user }) {
                   },
                 }}
                 onMouseOver={() => setInfo(marker)}
-                onClick={() =>
-                 {const clickedPlaceData = data?.filter((d) => d.place_name === marker.content)[0]
-                  onPostAddButtonClick(clickedPlaceData)
+                onClick={() => {
+                  const clickedPlaceData = data?.filter((d) => d.place_name === marker.content)[0];
+                  onPostAddButtonClick(clickedPlaceData);
                 }}
               >
                 {info && info.content === marker.content && <MarkerInfo>{marker.content}</MarkerInfo>}
@@ -324,7 +338,7 @@ function KakaoMap({ showModal, postData, user }) {
                   fillColor={"#f96a23"} // 채우기 색s깔입니다
                   fillOpacity={0.6} // 채우기 불투명도 입니다
                   onMousedown={() => {
-                    if(searchKeyword) return;
+                    if (searchKeyword) return;
                     map.setCenter(new kakao.maps.LatLng(post.place.y, post.place.x));
                     currentMouseOver === post ? setCurrentMouseOver() : setCurrentMouseOver(post);
                   }}
@@ -395,44 +409,53 @@ function KakaoMap({ showModal, postData, user }) {
               </CurrentLocationInfo>
               <CurrentLocationReviews>
                 <RealtTimePostListsTitle onClick={() => navigate("/mypage")}>
-                  <p>최근 리뷰</p><img
-                  src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/right_button.png?alt=media&token=eaf76923-992b-40bf-a90b-aa2c80e8de8f"
-                  style={{width: "1rem"}}
+                  <p>최근 리뷰</p>
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/right_button.png?alt=media&token=eaf76923-992b-40bf-a90b-aa2c80e8de8f"
+                    style={{ width: "1rem" }}
                   />
                 </RealtTimePostListsTitle>
                 <PostsLists>
-                {RealTimeMyPost?.slice(0,3).map((post, idx) => 
-                <RealTimePostCard key={idx} onClick={() => navigate("/mypage")}>
-                  <RealTimePostImg src={post.photo || "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%8A%A4%ED%8C%8C%EA%B2%8C%ED%8B%B0%20ETG.png?alt=media&token=a16fadeb-f562-4c12-ad73-c4cc1118a108"}/>
-                  <p>{post.place.place_name}</p>
-                  <p>
-                  {Array(post.star)
-                      .fill()
-                      .map((_, index) => (
-                        <FontAwesomeIcon key={index} icon={faStar} style={{ color: "#ff4e50" }}/>
-                      ))}
-                    {Array(5 - post.star)
-                      .fill()
-                      .map((_, index) => (
-                        <FontAwesomeIcon key={index} icon={faStar} style={{ color: "gray" }}/>
-                      ))}
-                  </p>
-                </RealTimePostCard>
-                )}
+                  {RealTimeMyPost?.slice(0, 3).map((post, idx) => (
+                    <RealTimePostCard
+                      key={idx}
+                      onClick={() => {
+                        handlePostClick(post, post.postId);
+                      }}
+                    >
+                      <RealTimePostImg
+                        src={
+                          post.photo ||
+                          "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%8A%A4%ED%8C%8C%EA%B2%8C%ED%8B%B0%20ETG.png?alt=media&token=a16fadeb-f562-4c12-ad73-c4cc1118a108"
+                        }
+                      />
+                      <p>{post.place.place_name}</p>
+                      <p>
+                        {Array(post.star)
+                          .fill()
+                          .map((_, index) => (
+                            <FontAwesomeIcon key={index} icon={faStar} style={{ color: "#ff4e50" }} />
+                          ))}
+                        {Array(5 - post.star)
+                          .fill()
+                          .map((_, index) => (
+                            <FontAwesomeIcon key={index} icon={faStar} style={{ color: "gray" }} />
+                          ))}
+                      </p>
+                    </RealTimePostCard>
+                  ))}
                 </PostsLists>
               </CurrentLocationReviews>
               <CurrentLocationReviews>
                 <p>도장깨기 완료한 동</p>
                 {console.log("여기에용", dongNameArray)}
                 <DongLists>
-                {dongNameArray?.slice(0,6).map((dong, i) =>
-                (
-                  <RealTimePostCard key={i}>
-                    <RealTimePostImg src={dongImgArray[i]}/>
-                    <p>{dong}</p>
-                  </RealTimePostCard>
-                  ))
-                  }
+                  {dongNameArray?.slice(0, 6).map((dong, i) => (
+                    <RealTimePostCard key={i}>
+                      <RealTimePostImg src={dongImgArray[i]} />
+                      <p>{dong}</p>
+                    </RealTimePostCard>
+                  ))}
                 </DongLists>
               </CurrentLocationReviews>
             </div>
@@ -445,7 +468,7 @@ function KakaoMap({ showModal, postData, user }) {
                       map.setCenter(new kakao.maps.LatLng(userLocation.lat, userLocation.lng));
                     }}
                   ></CurrentLocationButton>
-                  &nbsp;<span style={{color: "#ff4e50", fontWeight:"600"}}>{searchKeyword}</span>&nbsp; 검색 결과
+                  &nbsp;<span style={{ color: "#ff4e50", fontWeight: "600" }}>{searchKeyword}</span>&nbsp; 검색 결과
                 </p>
                 <button
                   style={{
@@ -462,32 +485,40 @@ function KakaoMap({ showModal, postData, user }) {
                   X
                 </button>
               </ResultText>
-              <div style={{overflowY: "scroll"}}>
-              {data?.map((d, index) => (
-                <ResultList key={d.id}>
-                  <div onClick={() => window.open(`${d.place_url}`, "_blank")}>
-                    <PlaceData>{d.place_name}</PlaceData>
-                    <PlaceAddressData>{d.road_address_name || d.address_name}</PlaceAddressData>
-                    <PhoneNum>{d.phone}</PhoneNum>
-                  </div>
-                  <ButtonContainer>
-                    <PlaceLinkButton
-                      onClick={() => {
-                        setMapCenterPosition({ lat: d.y, lng: d.x });
-                      }}
-                    >
-                      위치보기
-                    </PlaceLinkButton>
-                    <PlaceLinkButton onClick={() => onPostAddButtonClick(d)}>기록하기</PlaceLinkButton>
-                  </ButtonContainer>
-                </ResultList>
-              ))}
-              <PageNumber id="pagination">{console.log(pagination)}</PageNumber>
+              <div style={{ overflowY: "scroll" }}>
+                {data?.map((d, index) => (
+                  <ResultList key={d.id}>
+                    <div onClick={() => window.open(`${d.place_url}`, "_blank")}>
+                      <PlaceData>{d.place_name}</PlaceData>
+                      <PlaceAddressData>{d.road_address_name || d.address_name}</PlaceAddressData>
+                      <PhoneNum>{d.phone}</PhoneNum>
+                    </div>
+                    <ButtonContainer>
+                      <PlaceLinkButton
+                        onClick={() => {
+                          setMapCenterPosition({ lat: d.y, lng: d.x });
+                        }}
+                      >
+                        위치보기
+                      </PlaceLinkButton>
+                      <PlaceLinkButton onClick={() => onPostAddButtonClick(d)}>기록하기</PlaceLinkButton>
+                    </ButtonContainer>
+                  </ResultList>
+                ))}
+                <PageNumber id="pagination">{console.log(pagination)}</PageNumber>
               </div>
             </>
           )}
         </CurrentLocationContentsWrapper>
       </SearchArea>
+      <PostingModal
+        selectedPost={selectedPost}
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+        setSelectedPostId={setSelectedPostId}
+        setSelectedPost={setSelectedPost}
+        userData={userData}
+      />
     </>
   );
 }
@@ -640,7 +671,7 @@ const PlaceAddressData = styled.p`
   text-decoration: none;
   color: gray;
   font-size: 0.85rem;
-`
+`;
 
 const PhoneNum = styled.p`
   text-decoration: none;
@@ -674,19 +705,19 @@ const CurrentLocationReviews = styled.div`
 `;
 
 const RealtTimePostListsTitle = styled.div`
-  display:flex;
+  display: flex;
   justify-content: space-between;
   cursor: pointer;
-`
+`;
 
 const PostsLists = styled.div`
   display: flex;
   flex-direction: row;
-`
+`;
 
 const RealTimePostCard = styled.div`
   margin-top: 0.5rem;
-  display:flex;
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -694,16 +725,16 @@ const RealTimePostCard = styled.div`
   width: 100%;
   line-height: 0.8rem;
   cursor: pointer;
-`
+`;
 const RealTimePostImg = styled.img`
   height: 4.5rem;
   width: 4.5rem;
   object-fit: cover;
   margin-bottom: 0.5rem;
   border-radius: 10px;
-`
+`;
 
 const DongLists = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-`
+`;
