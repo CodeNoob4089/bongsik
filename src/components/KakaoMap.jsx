@@ -192,10 +192,10 @@ function KakaoMap({ showModal, postData, user }) {
     }
   };
 
-  const dongNameLists = [];
+ 
   // -----------------폴리곤 그려주기-----------------
   useEffect(() => {
-
+    const dongNameLists = [];
     const result = user?.dongCounts?.reduce((acc, cur) => {
       if (acc[cur]) {
         acc[cur] += 1;
