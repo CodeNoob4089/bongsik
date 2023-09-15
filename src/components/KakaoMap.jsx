@@ -98,7 +98,6 @@ function KakaoMap({ showModal, postData, user }) {
         geocoder.coord2Address(userLng, userLat, (result, status) => {
           if (status === kakao.maps.services.Status.OK) {
             setMyAddress(result[0]?.road_address?result[0].road_address.address_name:result[0].address.address_name)
-
           } else {
             console.error("주소 변환 실패:", status);
             return;
@@ -122,11 +121,11 @@ function KakaoMap({ showModal, postData, user }) {
     const options = {
       location: new kakao.maps.LatLng(mapCenterPosition.lat, mapCenterPosition.lng),
     };
+    //
     ps.keywordSearch(
       searchKeyword,
       (data, status, pagination) => {
         if (status === kakao.maps.services.Status.OK) {
-          const bounds = new kakao.maps.LatLngBounds();
           let markers = [];
           for (let i = 0; i < data.length; i++) {
             markers.push({
@@ -136,15 +135,15 @@ function KakaoMap({ showModal, postData, user }) {
               },
               content: data[i].place_name,
             });
-            bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
           }
           setData(data);
           setMarkers(markers);
           setPagination(pagination);
-          // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
-          map.setBounds(bounds);
-          // 지도의 크기 level 조절
-          map.setLevel(5);
+          setMapCenterPosition({
+            lat: data[0].y,
+            lng: data[0].x,
+          })
+          map.setLevel(4);
         } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
           setData(null);
           alert("검색 결과가 존재하지 않습니다.");
@@ -174,6 +173,7 @@ function KakaoMap({ showModal, postData, user }) {
     });
   };
 
+// 검색결과 리스트에서 기록하기 버튼 클릭 함수
   const onPostAddButtonClick = async (d) => {
     if (user === null) {
       return alert("글을 작성하려면 로그인해주세요!");
@@ -234,9 +234,9 @@ function KakaoMap({ showModal, postData, user }) {
       });
       const polygon = new window.kakao.maps.Polygon({
         path: polygonPath,
-        strokeColor: "#ff694e",
-        fillColor: "#ff694e",
-        fillOpacity: 0.7,
+        strokeColor: "#f96a23",
+        fillColor: "#f96a23",
+        fillOpacity: 0.6,
       });
       polygonList?.push(polygon);
       polygon.setMap(map);
@@ -280,7 +280,7 @@ function KakaoMap({ showModal, postData, user }) {
                 lng: userLocation.lng,
               }}
               image={{
-                src: "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/free-icon-circle-button-458511.png?alt=media&token=a349691b-e938-41f6-95c0-38d20d8b968a", // 마커이미지의 주소입니다
+                src: "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/free-icon-circle-button-458511.png?alt=media&token=a349691b-e938-41f6-95c0-38d20d8b968a",
                 size: {
                   width: 18,
                   height: 18,
@@ -292,7 +292,7 @@ function KakaoMap({ showModal, postData, user }) {
                 key={`marker-${marker.content}-${marker.position.lat},${marker.position.lng}`}
                 position={marker.position}
                 image={{
-                  src: "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/location-pin%20(3).png?alt=media&token=10ecd6fb-cb31-44cc-9cf1-afc9f53d1428",
+                  src: "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/location-pin%20(10).png?alt=media&token=486aedd9-fe52-41ed-8c57-9c6a83a1a4c7",
                   size: {
                     width: 40,
                     height: 40,
@@ -318,11 +318,11 @@ function KakaoMap({ showModal, postData, user }) {
                   }}
                   radius={100}
                   strokeWeight={2} // 선의 두께입니다
-                  strokeColor={"#ff694e0"} // 선의 색깔입니다
-                  strokeOpacity={1} // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+                  strokeColor={"#f96a23"} // 선의 색깔입니다
+                  strokeOpacity={0} // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
                   strokeStyle={"solid"} // 선의 스타일 입니다
-                  fillColor={"#ff694e"} // 채우기 색s깔입니다
-                  fillOpacity={0.7} // 채우기 불투명도 입니다
+                  fillColor={"#f96a23"} // 채우기 색s깔입니다
+                  fillOpacity={0.6} // 채우기 불투명도 입니다
                   onMousedown={() => {
                     if(searchKeyword) return;
                     map.setCenter(new kakao.maps.LatLng(post.place.y, post.place.x));
@@ -338,7 +338,7 @@ function KakaoMap({ showModal, postData, user }) {
                       lng: currentMouseOver.place.x,
                     }}
                     image={{
-                      src: "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/location-pin.png?alt=media&token=521f1383-9b3f-453f-b60a-2d747ed36b7d",
+                      src: "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/location-pin%20(6).png?alt=media&token=ba55bfb5-4ba2-4196-bc6b-031c6b3d5fdd",
                       size: {
                         width: 40,
                         height: 40,
@@ -445,7 +445,7 @@ function KakaoMap({ showModal, postData, user }) {
                       map.setCenter(new kakao.maps.LatLng(userLocation.lat, userLocation.lng));
                     }}
                   ></CurrentLocationButton>
-                  &nbsp;{searchKeyword}&nbsp; 검색 결과
+                  &nbsp;<span style={{color: "#ff4e50", fontWeight:"600"}}>{searchKeyword}</span>&nbsp; 검색 결과
                 </p>
                 <button
                   style={{
@@ -462,12 +462,12 @@ function KakaoMap({ showModal, postData, user }) {
                   X
                 </button>
               </ResultText>
+              <div style={{overflowY: "scroll"}}>
               {data?.map((d, index) => (
                 <ResultList key={d.id}>
-                  <span>{index + 1}</span>
                   <div onClick={() => window.open(`${d.place_url}`, "_blank")}>
                     <PlaceData>{d.place_name}</PlaceData>
-                    <PlaceData>{d.road_address_name || d.address_name}</PlaceData>
+                    <PlaceAddressData>{d.road_address_name || d.address_name}</PlaceAddressData>
                     <PhoneNum>{d.phone}</PhoneNum>
                   </div>
                   <ButtonContainer>
@@ -483,6 +483,7 @@ function KakaoMap({ showModal, postData, user }) {
                 </ResultList>
               ))}
               <PageNumber id="pagination">{console.log(pagination)}</PageNumber>
+              </div>
             </>
           )}
         </CurrentLocationContentsWrapper>
@@ -499,7 +500,6 @@ const MapBox = styled.div`
 `;
 
 const MarkerInfo = styled.div`
-  border-radius: 10px;
   width: 9rem;
   font-size: 0.8rem;
   line-height: 1rem;
@@ -509,7 +509,7 @@ const MarkerInfo = styled.div`
   justify-content: center;
   align-items: center;
   border: none;
-  box-shadow: 3px 3px 3px 3px gray;
+  box-shadow: 3px 3px 3px 3px #c8c8c8;
 `;
 
 const MarkerImage = styled.img`
@@ -568,8 +568,7 @@ const CurrentLocationContentsWrapper = styled.div`
   flex-direction: column;
   padding: 0.9rem 1.2rem;
   box-shadow: 2px 2px 2px #c8c8c8;
-
-  overflow-y: scroll;
+  overflow: hidden;
 `;
 const CurrentLocationInfo = styled.div`
   display: flex;
@@ -593,50 +592,60 @@ const CurrentLocationButton = styled.button`
 `;
 
 const ResultText = styled.p`
-  margin-bottom: 10px;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e7e7e7;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
 `;
 const ResultList = styled.div`
+  width: 90%;
   display: flex;
   flex-direction: column;
-  margin-bottom: 12px;
-  border-top: 1px solid gray;
-  padding-top: 10px;
-  line-height: 1.5rem;
+  border-bottom: 1px solid #e7e7e7;
+  line-height: 1.4rem;
+  padding-bottom: 0.5rem;
+  margin: 0.5rem auto;
   cursor: pointer;
 `;
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: right;
   align-items: center;
-  height: 15px;
-  margin-top: 5px;
+  height: 100%;
+  margin-top: 0.2rem;
 `;
 
 const PlaceLinkButton = styled.button`
   background-color: white;
-  border: 1px solid #d0d0de;
+  border: 1px solid #c6c6c6;
   border-radius: 30px;
   width: 70px;
   height: 30px;
   margin-left: 5px;
   cursor: pointer;
   &:hover {
-    background-color: #d0d0de;
+    background-color: #f2f2f5;
   }
 `;
 
 const PlaceData = styled.p`
   text-decoration: none;
   color: black;
+  font-size: 1rem;
 `;
+
+const PlaceAddressData = styled.p`
+  text-decoration: none;
+  color: gray;
+  font-size: 0.85rem;
+`
+
 const PhoneNum = styled.p`
   text-decoration: none;
-  color: green;
-  font-size: 15px;
+  color: #ff4e50;
+  font-size: 0.8rem;
 `;
 
 const PageNumber = styled.div`
@@ -673,7 +682,6 @@ const RealtTimePostListsTitle = styled.div`
 const PostsLists = styled.div`
   display: flex;
   flex-direction: row;
-  
 `
 
 const RealTimePostCard = styled.div`
