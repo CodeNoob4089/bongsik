@@ -68,6 +68,10 @@ function MyList({ myTags, postData, user }) {
       await updateDoc(usersRef, {
         myTags: myTags.filter((tag) => tag.collectionID !== key),
       });
+      if(toggleOpen.collectionID === key){
+        setIsMoadlOpen(false)
+        setToggleOpen("")
+      }
     },
     {
       onSuccess: () => {
@@ -120,15 +124,10 @@ function MyList({ myTags, postData, user }) {
     setToggleOpen(tag);
     setIsMoadlOpen(true);
   };
-  const closeModal = () => {
-    setIsMoadlOpen(false);
-    setToggleOpen("");
-  };
 
   const onDeleteButtonClick = (key) => {
     if (window.confirm("컬렉션을 삭제하시겠습니까?")) {
       deleteMutation.mutate(key);
-      alert("컬렉션이 삭제되었습니다!");
     } else {
       return;
     }
@@ -187,16 +186,17 @@ function MyList({ myTags, postData, user }) {
               return (
                 <CollectionCard
                   key={tag.collectionID}
-                  onClick={() => onToggleOpenButtonClick(tag)}
                   style={{ cursor: "pointer" }}
                 >
                   <CollectionImageBox
+                   onClick={() => onToggleOpenButtonClick(tag)}
                     src={
                       tag.coverImage ||
                       "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%8A%A4%ED%8C%8C%EA%B2%8C%ED%8B%B0%20ETG.png?alt=media&token=a16fadeb-f562-4c12-ad73-c4cc1118a108"
                     }
                   ></CollectionImageBox>
-                  <CardContents>
+                  <CardContents
+                   onClick={() => onToggleOpenButtonClick(tag)}>
                     <CardTitle>
                       {tag.title}
                       {/* {toggleOpen !== tag.collectionID ? (
@@ -208,21 +208,21 @@ function MyList({ myTags, postData, user }) {
                     <CollectionDescription>
                       {postData?.filter((p) => p.collectionTag === tag.collectionID).length}개의 글
                     </CollectionDescription>
+                  </CardContents>
                     <ButtonBox>
                       <DeleteButton onClick={() => onDeleteButtonClick(tag.collectionID)}></DeleteButton>
                     </ButtonBox>
-                  </CardContents>
                 </CollectionCard>
               );
             })
           ) : (
             <CollectionCard>
               <NoTagDescription>
-                컬렉션 제목을 입력하고
+                아직 컬렉션이 없어요!
                 <br />
-                엔터를 눌러
-                <br />
-                컬렉션을 추가해보세요!
+                왼쪽에서 추가해보세요
+                <br/>
+                :)
               </NoTagDescription>
             </CollectionCard>
           )}
@@ -234,7 +234,7 @@ function MyList({ myTags, postData, user }) {
           }
         />
       </ListCardsContainer>
-      {isModalOpen ? (
+      {isModalOpen && toggleOpen? (
         <PostLists open={isModalOpen}>
           <CollectionCover img={toggleOpen.coverImage}>{toggleOpen.title}</CollectionCover>
           <CollectionPostsLists>
@@ -323,7 +323,7 @@ const CollectionImageBox = styled.img`
 
 const CardContents = styled.div`
   width: 84%;
-  height: 40%;
+  height: 30%;
 `;
 
 const CardTitle = styled.h2`
@@ -337,20 +337,21 @@ const CardTitle = styled.h2`
 `;
 
 const NoTagDescription = styled.div`
-  width: 84%;
-  height: 50%;
+  background-color: #ff4e5117;
+  border: 1.5px dotted #ff4e50;
+  border-radius: 10px;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-  font-size: 1rem;
+  font-size: 0.9rem;
   line-height: 2rem;
-  font-weight: 600;
 `;
 
 const ButtonBox = styled.div`
-  width: 100%;
-  height: 1rem;
+  width: 90%;
   display: flex;
   justify-content: right;
 `;
@@ -365,15 +366,6 @@ const DeleteButton = styled.button`
   background-size: 1rem;
   background-repeat: no-repeat;
   background-position: center center;
-  cursor: pointer;
-`;
-const ToggleButton = styled.button`
-  font-size: 1.2rem;
-  width: 1rem;
-  height: 1rem;
-  border: none;
-  /* background-color: white; */
-  color: gray;
   cursor: pointer;
 `;
 
@@ -441,7 +433,7 @@ const PostLists = styled.div`
   border-radius: 15px;
   display: flex;
   flex-direction: row;
-  padding: 2rem;
+  padding: 2rem 0 2rem 2rem;
   box-shadow: 1px 1px 1px #e7e7e7;
 `;
 
@@ -471,4 +463,5 @@ const CollectionPostsLists = styled.div`
   flex-direction: column;
   overflow-y: scroll;
   margin-left: 1.5rem;
+  width: 50%;
 `;

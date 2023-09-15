@@ -56,28 +56,35 @@ const Content = styled.p`
 `;
 const ButtonContainer = styled.div`
   display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
+  justify-content: space-evenly;
+  margin-top: 1.2rem;
 `;
 
 const ConfirmButton = styled.button`
-  margin-left: 10px;
-  background-color: #007bff;
+  width: 5rem;
+  padding: 0.75em;
   color: white;
+  background-color: #ff4e50;
+  text-align: center;
+  font-weight: bold;
   border: none;
-  padding: 10px;
+  border-radius: 10px;
   cursor: pointer;
   transition-duration: 0.3s;
   &:hover {
-    background-color: #ff4e50;
+    background-color: #ff3333;
   }
 `;
 
 const CancelButton = styled.button`
-  background-color: #6c757d;
+  width: 5rem;
+  padding: 0.75em;
   color: white;
+  background-color: #6c757d;
+  text-align: center;
+  font-weight: bold;
   border: none;
-  padding: 10px;
+  border-radius: 10px;
   cursor: pointer;
   transition-duration: 0.3s;
   &:hover {

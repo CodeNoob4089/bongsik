@@ -99,7 +99,11 @@ function Mypost() {
                       onClick={() => {
                         handlePostClick(post, post.docID);
                       }}
-                      src={post.photo ? post.photo : ""}
+                      src={
+                        post.photo
+                          ? post.photo
+                          : "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%8A%A4%ED%8C%8C%EA%B2%8C%ED%8B%B0%20ETG.png?alt=media&token=a16fadeb-f562-4c12-ad73-c4cc1118a108"
+                      }
                     />
                     <PostContents>
                       <PostTitle>{post.place.place_name}</PostTitle>
@@ -150,11 +154,11 @@ export default Mypost;
 
 // 스타일컴포넌트
 const PostCardsContainer = styled.div`
-  margin: 5vh auto;
+  margin: auto auto;
   display: flex;
   flex-direction: column;
   width: 95%;
-  height: 73vh;
+  height: 100%;
   border-radius: 18px;
   background-color: white;
   box-shadow: 1px 1px 1px 1px #e7e7e7;
@@ -173,20 +177,22 @@ const CategoryButton = styled.button`
   border: none;
   border-radius: 10px;
   color: ${(props) => (props.id === props.currentCategory ? "white" : "gray")};
-  background-color: ${(props) => (props.id === props.currentCategory ? "#FF4E50" : "#e8e8ef")};
+  background-color: ${(props) => (props.id === props.currentCategory ? "#FF4E50" : "#f2f2f5")};
   cursor: pointer;
 `;
 const PostCards = styled.div`
   overflow-y: scroll;
   padding-top: 2rem;
+
 `;
 const PostCard = styled.div`
   position: relative;
   width: 100%;
-  height: 18rem;
+  height: 15rem;
   display: flex;
   flex-direction: row;
   align-items: center;
+  cursor: pointer;
 `;
 const Post = styled.div`
   height: 100%;
@@ -195,13 +201,13 @@ const Date = styled.div`
   height: 30px;
   line-height: 30px;
   color: gray;
-  font-size: 20px;
+  font-size: 1rem;
 `;
 const ImageAndContents = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
-  padding-top: 10px;
+  padding-top: 0.5rem;
   margin-bottom: 10rem;
   height: 12rem;
 `;
@@ -216,39 +222,40 @@ const TimeLine = styled.div`
 const Circle = styled.div`
   width: 23px;
   height: 23px;
-  background-color: #d0d0de;
+  background-color: #f2f2f5;
   border-radius: 50%;
 `;
 const Line = styled.div`
   width: 3px;
   height: 100%;
-  background-color: #d0d0de;
+  background-color: #f2f2f5;
 `;
 
 const PostTitle = styled.p`
-  font-size: 20px;
+  font-size: 1rem;
   font-weight: bold;
 `;
 
 const IsPublic = styled.div`
   color: gray;
-  font-size: 17px;
+  font-size: 0.9rem;
 `;
 const PostImage = styled.img`
-  width: 20rem;
-  height: 100%;
+  width: 15rem;
+  height: 80%;
   border-radius: 20px;
   object-fit: cover;
 `;
 const LikesCount = styled.div`
-  margin-top: 2.5rem;
+  margin-top: 1rem;
   color: gray;
-  font-size: 18px;
+  font-size: 0.9rem;
 `;
 const PostContents = styled.div`
   position: relative;
-  padding: 15px;
-  line-height: 2rem;
+  padding: 1rem;
+  line-height: 1rem;
+  height: 80%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -256,7 +263,9 @@ const PostContents = styled.div`
 `;
 const EditDeleteButtons = styled.div`
   position: absolute;
-  right: 15px;
+  right: 10%;
+  bottom: 30%;
+  color: gray;
 `;
 const EditButton = styled.button`
   background-color: transparent;

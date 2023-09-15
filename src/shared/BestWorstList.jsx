@@ -4,7 +4,7 @@ export const ListContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1.7rem;
+  padding: 1.7rem 0 1.7rem 1.7rem;
   width: 32.36vw;
   height: 57.5vh;
   background-color: white;
@@ -20,6 +20,7 @@ export const ListTitle = styled.h2`
 
 export const PostsContainer = styled.div`
   width: 100%;
+  height: 100%;
   overflow-y: scroll;
 `
 
@@ -53,4 +54,14 @@ export const PostTitle = styled.h3`
 
 export const PostDescription = styled.p`
   font-size: 0.8rem;
+`
+export const NoBestWorstPost = styled.div`
+  height: 100%;
+  background-color: #ff4e5117;
+  border: 1.5px dotted #ff4e50;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 1rem;
 `
