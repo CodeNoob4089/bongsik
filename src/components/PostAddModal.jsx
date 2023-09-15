@@ -1,14 +1,13 @@
 import { faLock, faLockOpen, faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { addDoc, arrayUnion, collection, doc, getDoc, increment, setDoc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, increment, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { nanoid } from "nanoid";
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import styled from "styled-components";
 import { getPosts } from "../api/collection";
 import { db, storage } from "../firebase";
-import useAuthStore from "../store/auth";
 import useClickedDataStore from "../store/modalData";
 
 function PostAddModal({ modalOpen, setModalOpen, myTags, user }) {

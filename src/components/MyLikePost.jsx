@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRectangleList, faHeart } from "@fortawesome/free-solid-svg-icons";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
 import useAuthStore from "../store/auth";
 import { getDoc, doc } from "@firebase/firestore";
@@ -52,13 +52,17 @@ function MyLikePost() {
     <>
       <PostCardsContainer>
         <PostTitle>
-          <FontAwesomeIcon icon={faHeart} style={{ color: "#FF4E50" }} />&nbsp;좋아요 누른 글&nbsp;<span  style={{color: "#D0D0DE"}}>{user.userLikes?.length}</span>
+          <FontAwesomeIcon icon={faHeart} style={{ color: "#FF4E50" }} />
+          &nbsp;좋아요 누른 글&nbsp;<span style={{ color: "#D0D0DE" }}>{user.userLikes?.length}</span>
         </PostTitle>
         <Posts>
           {likedPosts.map((post) => (
             <PostContainer key={post.id}>
               <PostImage
-                src={post.photo || "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%8A%A4%ED%8C%8C%EA%B2%8C%ED%8B%B0%20ETG.png?alt=media&token=a16fadeb-f562-4c12-ad73-c4cc1118a108"}
+                src={
+                  post.photo ||
+                  "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%8A%A4%ED%8C%8C%EA%B2%8C%ED%8B%B0%20ETG.png?alt=media&token=a16fadeb-f562-4c12-ad73-c4cc1118a108"
+                }
                 onClick={() => {
                   handlePostClick(post, post.postId);
                 }}
@@ -70,7 +74,7 @@ function MyLikePost() {
                 </div>
                 <LikesCount>
                   <FontAwesomeIcon icon={faHeart} style={{ color: "#FF4E50" }} />
-                   &nbsp;{post.likeCount}
+                  &nbsp;{post.likeCount}
                 </LikesCount>
               </PostDetails>
             </PostContainer>

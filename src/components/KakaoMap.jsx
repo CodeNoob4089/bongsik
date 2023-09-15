@@ -23,7 +23,7 @@ function KakaoMap({ showModal, postData, user }) {
   const [info, setInfo] = useState();
   const [markers, setMarkers] = useState([]);
   const [map, setMap] = useState();
-  const [pagination, setPagination] = useState({});
+  const [, setPagination] = useState({});
   const [currentMouseOver, setCurrentMouseOver] = useState();
   const [loadingLocation, setLoadingLocation] = useState(true);
   const [mapCenterPosition, setMapCenterPosition] = useState({
@@ -207,9 +207,9 @@ function KakaoMap({ showModal, postData, user }) {
     }
   };
 
-  const dongNameLists = [];
   // -----------------폴리곤 그려주기-----------------
   useEffect(() => {
+    const dongNameLists = [];
     const result = user?.dongCounts?.reduce((acc, cur) => {
       if (acc[cur]) {
         acc[cur] += 1;
@@ -221,7 +221,7 @@ function KakaoMap({ showModal, postData, user }) {
 
     const keysOfResult = Object.keys(result || {});
     const coloredDongs = keysOfResult?.filter((key) => result[key] >= 3);
-    console.log("coloredDongs", coloredDongs);
+    // console.log("coloredDongs", coloredDongs);
     const polygonList = [];
 
     coloredDongs?.map(async (dong) => {
@@ -231,8 +231,10 @@ function KakaoMap({ showModal, postData, user }) {
       const dongName = dongSnap.data().dong;
 
       // 동 이름 배열추가
-      dongNameLists.push(dongName);
-      setDongNameArray(dongNameLists);
+      if (dongNameArray.length === 0) {
+        dongNameLists.push(dongName);
+        setDongNameArray(dongNameLists);
+      }
 
       const polygonPath = [];
       const utmk =
@@ -505,7 +507,7 @@ function KakaoMap({ showModal, postData, user }) {
                     </ButtonContainer>
                   </ResultList>
                 ))}
-                <PageNumber id="pagination">{console.log(pagination)}</PageNumber>
+                <PageNumber id="pagination"></PageNumber>
               </div>
             </>
           )}

@@ -13,7 +13,7 @@ import {
   getDoc,
   orderBy,
 } from "firebase/firestore";
-import getLevelImageUrl from "../shared/LevelImage";
+// import getLevelImageUrl from "../shared/LevelImage";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
 import useAuthStore from "../store/auth";
@@ -118,7 +118,7 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
   //  댓글 작성 버튼 핸들러
   const handleSubmit = async (e, postId) => {
     e.preventDefault();
-    console.log(postId);
+    // console.log(postId);
 
     const commentInput = e.target.comment;
     const comment = commentInput.value;
@@ -454,14 +454,14 @@ const ModalPhoto = styled.div`
   /* background-color: black; */
   /* margin-left: 3rem; */
 `;
-const LevelImg = styled.img`
-  height: 5px;
-  width: 5px;
-`;
-const Level = styled.div`
-  display: flex;
-  justify-content: left;
-  margin-left: 0.5rem;
-  margin-top: 1rem;
-  height: 1rem;
-`;
+// const LevelImg = styled.img`
+//   height: 5px;
+//   width: 5px;
+// `;
+// const Level = styled.div`
+//   display: flex;
+//   justify-content: left;
+//   margin-left: 0.5rem;
+//   margin-top: 1rem;
+//   height: 1rem;
+// `;

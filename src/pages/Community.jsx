@@ -1,5 +1,3 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
 import React, { useEffect, useState } from "react";
 import RestaurantPost from "../components/RestaurantPost";
@@ -86,6 +84,7 @@ function Community() {
               <img
                 src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EA%B8%80%EC%93%B0%EA%B8%B0%20%EC%95%84%EC%9D%B4%EC%BD%98.png?alt=media&token=5456a99c-1d58-4d86-9754-e65d60d76d9b"
                 style={{ height: "1.2rem" }}
+                alt="글쓰기아이콘"
               />
               <p> 글쓰기</p>
             </WriteButton>
@@ -166,40 +165,40 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
-const SearchArea = styled.div`
-  position: fixed;
-  top: 6rem;
-  width: 18rem;
-  margin-top: 3rem;
-`;
+// const SearchArea = styled.div`
+//   position: fixed;
+//   top: 6rem;
+//   width: 18rem;
+//   margin-top: 3rem;
+// `;
 
-const SearchForm = styled.form`
-  width: 16.5rem;
-  height: 2.5rem;
-`;
+// const SearchForm = styled.form`
+//   width: 16.5rem;
+//   height: 2.5rem;
+// `;
 
-const SearchInput = styled.input`
-  position: absolute;
-  font-size: 17px;
-  z-index: 2;
-  padding-left: 3rem;
-  width: 20vw;
-  height: 2.2rem;
-  border: none;
-  border-radius: 30px;
-  box-shadow: 1px 1px 1px #e7e7e7;
-`;
+// const SearchInput = styled.input`
+//   position: absolute;
+//   font-size: 17px;
+//   z-index: 2;
+//   padding-left: 3rem;
+//   width: 20vw;
+//   height: 2.2rem;
+//   border: none;
+//   border-radius: 30px;
+//   box-shadow: 1px 1px 1px #e7e7e7;
+// `;
 
-const SearchButton = styled.button`
-  position: relative;
-  z-index: 3;
-  color: #696969;
-  cursor: pointer;
-  background: none;
-  border: none;
-  font-size: 18px;
-  margin: 0.4rem 0 0 16.5rem;
-`;
+// const SearchButton = styled.button`
+//   position: relative;
+//   z-index: 3;
+//   color: #696969;
+//   cursor: pointer;
+//   background: none;
+//   border: none;
+//   font-size: 18px;
+//   margin: 0.4rem 0 0 16.5rem;
+// `;
 const CommunityRight = styled.div`
   /* background-color: #63914b; */
   flex-direction: column;

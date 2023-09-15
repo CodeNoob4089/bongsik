@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLock, faLockOpen, faHeart, faRectangleList } from "@fortawesome/free-solid-svg-icons";
+import { faLock, faLockOpen, faRectangleList } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { getPosts } from "../api/collection";
 import PostEditModal from "../components/PostEditModal";
@@ -60,7 +60,6 @@ function Mypost() {
   };
   //로그인한 유저 상태확인해서 그걸로 그 유저가 작성한 글만 가져와야함
   const { data: userData } = useQuery("fetchUserData", getUserData, { enabled: userId !== undefined });
-  const { data: RestaurantPublicPosts } = useQuery("fetchPublicRestaurantPosts");
   return (
     <>
       <DeleteModal

@@ -8,13 +8,14 @@ import { db, auth } from "../firebase";
 import { useMutation } from "react-query";
 import useAuthStore from "../store/auth";
 import { useNavigate } from "react-router";
-function Heart({ userData, post, selectedPost, setSelectedPostId, setSelectedPost }) {
+
+function Heart({ userData, post, selectedPost, setSelectedPost }) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const authStore = useAuthStore();
   const isLogIn = authStore.user !== null;
   const userId = auth.currentUser?.uid;
-  const [isClickProcessing, setIsClickProcessing] = useState(false);
+  const [, setIsClickProcessing] = useState(false);
   // 모달 상태 업데이트
   const updateSelectedLikePost = (updatedPost) => {
     setSelectedPost(updatedPost);
@@ -24,7 +25,7 @@ function Heart({ userData, post, selectedPost, setSelectedPostId, setSelectedPos
     async () => {
       const postIdToUse = post?.postId || selectedPost?.postId;
       const alreadyLikedUser = userData?.userLikes?.find((like) => like.likePostId === postIdToUse);
-      console.log("alreadyLikedUser", alreadyLikedUser);
+      // console.log("alreadyLikedUser", alreadyLikedUser);
       // mutation 함수 내부에서만 userDocRef를 생성합니다.
       const userDocRef = doc(db, "users", userId);
 
@@ -50,7 +51,7 @@ function Heart({ userData, post, selectedPost, setSelectedPostId, setSelectedPos
           userLikes: arrayUnion({ likePostId: postIdToUse }),
         });
       }
-
+      queryClient.invalidateQueries("fetchPostData");
       queryClient.invalidateQueries("fetchUserData");
 
       const userSnapshot = await getDoc(userDocRef);
@@ -97,7 +98,7 @@ function Heart({ userData, post, selectedPost, setSelectedPostId, setSelectedPos
     }
     if (mutation.isLoading) return;
     setIsClickProcessing(true);
-    console.log("clickHeart 함수가 호출");
+    // console.log("clickHeart 함수가 호출");
     mutation.mutate();
   };
 

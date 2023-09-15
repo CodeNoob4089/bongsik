@@ -13,7 +13,7 @@ import {
   CommunityCount,
 } from "../components/TabPostStyled";
 import { getUserData } from "../api/collection";
-import { collection, getDocs, query, where, doc, getDoc, orderBy, or, limit } from "firebase/firestore";
+import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import { useQuery } from "react-query";
 import PostingModal from "./CommentsModal";
@@ -92,6 +92,7 @@ function RestaurantPost({ category }) {
         <img
           src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%85%B8%ED%8A%B8%20%EC%95%84%EC%9D%B4%EC%BD%98.png?alt=media&token=5ef26e88-9fb4-4ef5-bc7c-9d110502f6b4"
           style={{ height: "0.9rem", marginRight: "0.4rem" }}
+          alt="노트아이콘"
         />
         {category} 게시글: {Length}개
       </CommunityCount>
@@ -209,4 +210,4 @@ function RestaurantPost({ category }) {
     </>
   );
 }
-export default { RestaurantPost };
+export default RestaurantPost;

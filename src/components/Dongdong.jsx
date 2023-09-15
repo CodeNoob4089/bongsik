@@ -1,4 +1,4 @@
-import { addDoc, arrayUnion, collection, doc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { useQuery } from "react-query";
 import { db } from "../firebase";
 
