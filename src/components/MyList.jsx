@@ -9,9 +9,25 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { Description, DescriptionBox, DescriptionTitle } from "../shared/MainDescription";
 import { ImageBox, InfoBox, PostCard, PostDescription, PostTitle } from "../shared/BestWorstList";
+import PostingModal from "../components/CommentsModal";
+import { useQuery } from "react-query";
+import { getUserData } from "../api/collection";
 const GET_MY_TAGS = "getMyTags";
 
 function MyList({ myTags, postData, user }) {
+  //모달
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [, setSelectedPostId] = useState(null);
+  //모달 열기
+  const handlePostClick = (post) => {
+    // 배경 페이지 스크롤 막기
+    document.body.style.overflow = "hidden";
+    setSelectedPost(post);
+    setSelectedPostId(post.postId);
+    setOpenModal(true);
+  };
+  const userId = auth.currentUser?.uid;
   const CustomRightArrow = ({ onClick }) => {
     // onMove means if dragging or swiping in progress.
     return <CustomCarouselButton ref={rightButton} onClick={() => onClick()} />;
@@ -68,9 +84,9 @@ function MyList({ myTags, postData, user }) {
       await updateDoc(usersRef, {
         myTags: myTags.filter((tag) => tag.collectionID !== key),
       });
-      if(toggleOpen.collectionID === key){
-        setIsMoadlOpen(false)
-        setToggleOpen("")
+      if (toggleOpen.collectionID === key) {
+        setIsMoadlOpen(false);
+        setToggleOpen("");
       }
     },
     {
@@ -132,133 +148,144 @@ function MyList({ myTags, postData, user }) {
       return;
     }
   };
-
+  const { data: userData } = useQuery("fetchUserData", getUserData, { enabled: userId !== undefined });
   return (
-    <CollectionContainer>
-      <DescriptionBox>
-        <DescriptionTitle>내 컬렉션</DescriptionTitle>
-        <Description>나만의 카테고리를 만들어 게시물을 분류해보세요.</Description>
-      </DescriptionBox>
-      <ListCardsContainer>
-        <CollectionCard>
-          <NewCollectionCover img={collectionInput.coverImage} onClick={onImageUploadButtonClick}>
-            {collectionInput.coverImage ? null : "+"}
-          </NewCollectionCover>
-          <NewCollectionForm onSubmit={onSubmit}>
-            <CollectionTitleInput
-              placeholder="컬렉션 제목"
-              value={collectionInput.title}
-              onChange={(e) => {
-                setCollectionInput({ ...collectionInput, title: e.target.value });
-                setAddActive(true);
-              }}
-            />
-            <input type="file" style={{ display: "none" }} ref={addImageInput} onChange={onSelectImage} />
-            {addActive ? (
-              <div style={{ display: "flex", gap: "0.5rem" }}>
-                <NewCollectionButton type="button" onClick={onCancel}>
-                  취소
-                </NewCollectionButton>
-                <NewCollectionButton>확인</NewCollectionButton>
-              </div>
-            ) : (
-              <CollectionDescription>맛 기록 컬렉션을 만들어보세요</CollectionDescription>
-            )}
-          </NewCollectionForm>
-        </CollectionCard>
-        <CustomCarouselButton
-          onClick={() => leftButton?.current?.click()}
-          img={
-            "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/left_button.png?alt=media&token=87b75d4f-f08f-46a4-950b-bc96ca8963a7"
-          }
-        />
-        <CarouselBox
-          responsive={responsive}
-          infinite={true}
-          removeArrowOnDeviceType={["tablet", "mobile"]}
-          autoPlaySpeed={1000}
-          keyBoardControl={true}
-          customLeftArrow={<CustomLeftArrow />}
-          customRightArrow={<CustomRightArrow />}
-        >
-          {myTags?.length > 0 ? (
-            myTags?.map((tag) => {
-              return (
-                <CollectionCard
-                  key={tag.collectionID}
-                  style={{ cursor: "pointer" }}
-                >
-                  <CollectionImageBox
-                   onClick={() => onToggleOpenButtonClick(tag)}
-                    src={
-                      tag.coverImage ||
-                      "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%8A%A4%ED%8C%8C%EA%B2%8C%ED%8B%B0%20ETG.png?alt=media&token=a16fadeb-f562-4c12-ad73-c4cc1118a108"
-                    }
-                  ></CollectionImageBox>
-                  <CardContents
-                   onClick={() => onToggleOpenButtonClick(tag)}>
-                    <CardTitle>
-                      {tag.title}
-                      {/* {toggleOpen !== tag.collectionID ? (
+    <>
+      <CollectionContainer>
+        <DescriptionBox>
+          <DescriptionTitle>내 컬렉션</DescriptionTitle>
+          <Description>나만의 카테고리를 만들어 게시물을 분류해보세요.</Description>
+        </DescriptionBox>
+        <ListCardsContainer>
+          <CollectionCard>
+            <NewCollectionCover img={collectionInput.coverImage} onClick={onImageUploadButtonClick}>
+              {collectionInput.coverImage ? null : "+"}
+            </NewCollectionCover>
+            <NewCollectionForm onSubmit={onSubmit}>
+              <CollectionTitleInput
+                placeholder="컬렉션 제목"
+                value={collectionInput.title}
+                onChange={(e) => {
+                  setCollectionInput({ ...collectionInput, title: e.target.value });
+                  setAddActive(true);
+                }}
+              />
+              <input type="file" style={{ display: "none" }} ref={addImageInput} onChange={onSelectImage} />
+              {addActive ? (
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <NewCollectionButton type="button" onClick={onCancel}>
+                    취소
+                  </NewCollectionButton>
+                  <NewCollectionButton>확인</NewCollectionButton>
+                </div>
+              ) : (
+                <CollectionDescription>맛 기록 컬렉션을 만들어보세요</CollectionDescription>
+              )}
+            </NewCollectionForm>
+          </CollectionCard>
+          <CustomCarouselButton
+            onClick={() => leftButton?.current?.click()}
+            img={
+              "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/left_button.png?alt=media&token=87b75d4f-f08f-46a4-950b-bc96ca8963a7"
+            }
+          />
+          <CarouselBox
+            responsive={responsive}
+            infinite={true}
+            removeArrowOnDeviceType={["tablet", "mobile"]}
+            autoPlaySpeed={1000}
+            keyBoardControl={true}
+            customLeftArrow={<CustomLeftArrow />}
+            customRightArrow={<CustomRightArrow />}
+          >
+            {myTags?.length > 0 ? (
+              myTags?.map((tag) => {
+                return (
+                  <CollectionCard key={tag.collectionID} style={{ cursor: "pointer" }}>
+                    <CollectionImageBox
+                      onClick={() => onToggleOpenButtonClick(tag)}
+                      src={
+                        tag.coverImage ||
+                        "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%8A%A4%ED%8C%8C%EA%B2%8C%ED%8B%B0%20ETG.png?alt=media&token=a16fadeb-f562-4c12-ad73-c4cc1118a108"
+                      }
+                    ></CollectionImageBox>
+                    <CardContents onClick={() => onToggleOpenButtonClick(tag)}>
+                      <CardTitle>
+                        {tag.title}
+                        {/* {toggleOpen !== tag.collectionID ? (
                           <ToggleButton onClick={() => onToggleOpenButtonClick(tag.collectionID)}>▼</ToggleButton>
                         ) : (
                           <ToggleButton onClick={closeModal}>▲</ToggleButton>
                         )} */}
-                    </CardTitle>
-                    <CollectionDescription>
-                      {postData?.filter((p) => p.collectionTag === tag.collectionID).length}개의 글
-                    </CollectionDescription>
-                  </CardContents>
+                      </CardTitle>
+                      <CollectionDescription>
+                        {postData?.filter((p) => p.collectionTag === tag.collectionID).length}개의 글
+                      </CollectionDescription>
+                    </CardContents>
                     <ButtonBox>
                       <DeleteButton onClick={() => onDeleteButtonClick(tag.collectionID)}></DeleteButton>
                     </ButtonBox>
-                </CollectionCard>
-              );
-            })
-          ) : (
-            <CollectionCard>
-              <NoTagDescription>
-                아직 컬렉션이 없어요!
-                <br />
-                왼쪽에서 추가해보세요
-                <br/>
-                :)
-              </NoTagDescription>
-            </CollectionCard>
-          )}
-        </CarouselBox>
-        <CustomCarouselButton
-          onClick={() => rightButton?.current?.click()}
-          img={
-            "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/right_button.png?alt=media&token=eaf76923-992b-40bf-a90b-aa2c80e8de8f"
-          }
-        />
-      </ListCardsContainer>
-      {isModalOpen && toggleOpen? (
-        <PostLists open={isModalOpen}>
-          <CollectionCover img={toggleOpen.coverImage}>{toggleOpen.title}</CollectionCover>
-          <CollectionPostsLists>
-            {postData
-              ?.filter((post) => post.collectionTag === toggleOpen.collectionID)
-              .map((p) => (
-                <PostCard key={p.postId}>
-                  <ImageBox
-                    src={
-                      p.photo
-                        ? p.photo
-                        : "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%8A%A4%ED%8C%8C%EA%B2%8C%ED%8B%B0%20ETG.png?alt=media&token=a16fadeb-f562-4c12-ad73-c4cc1118a108"
-                    }
-                  />
-                  <InfoBox>
-                    <PostTitle>{p.place.place_name}</PostTitle>
-                    <PostDescription>{p.place.road_address_name || p.place.address_name}</PostDescription>
-                  </InfoBox>
-                </PostCard>
-              ))}
-          </CollectionPostsLists>
-        </PostLists>
-      ) : null}
-    </CollectionContainer>
+                  </CollectionCard>
+                );
+              })
+            ) : (
+              <CollectionCard>
+                <NoTagDescription>
+                  아직 컬렉션이 없어요!
+                  <br />
+                  왼쪽에서 추가해보세요
+                  <br />
+                  :)
+                </NoTagDescription>
+              </CollectionCard>
+            )}
+          </CarouselBox>
+          <CustomCarouselButton
+            onClick={() => rightButton?.current?.click()}
+            img={
+              "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/right_button.png?alt=media&token=eaf76923-992b-40bf-a90b-aa2c80e8de8f"
+            }
+          />
+        </ListCardsContainer>
+        {isModalOpen && toggleOpen ? (
+          <PostLists open={isModalOpen}>
+            <CollectionCover img={toggleOpen.coverImage}>{toggleOpen.title}</CollectionCover>
+            <CollectionPostsLists>
+              {postData
+                ?.filter((post) => post.collectionTag === toggleOpen.collectionID)
+                .map((p) => (
+                  <PostCard
+                    key={p.postId}
+                    onClick={() => {
+                      handlePostClick(p, p.postId);
+                    }}
+                  >
+                    <ImageBox
+                      src={
+                        p.photo
+                          ? p.photo
+                          : "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%8A%A4%ED%8C%8C%EA%B2%8C%ED%8B%B0%20ETG.png?alt=media&token=a16fadeb-f562-4c12-ad73-c4cc1118a108"
+                      }
+                    />
+                    <InfoBox>
+                      <PostTitle>{p.place.place_name}</PostTitle>
+                      <PostDescription>{p.place.road_address_name || p.place.address_name}</PostDescription>
+                    </InfoBox>
+                  </PostCard>
+                ))}
+            </CollectionPostsLists>
+          </PostLists>
+        ) : null}
+      </CollectionContainer>
+      <PostingModal
+        selectedPost={selectedPost}
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+        setSelectedPostId={setSelectedPostId}
+        setSelectedPost={setSelectedPost}
+        userData={userData}
+      />
+    </>
   );
 }
 

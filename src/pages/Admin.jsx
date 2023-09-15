@@ -20,11 +20,11 @@ function Admin() {
     }
   }, [user, navigate]);
 
-  function handleFileChange(e, setFunc) {
-    if (e.target.files[0]) {
-      setFunc(e.target.files[0]);
-    }
-  }
+  // function handleFileChange(e, setFunc) {
+  //   if (e.target.files[0]) {
+  //     setFunc(e.target.files[0]);
+  //   }
+  // }
 
   const handleAddBadge = async () => {
     setIsLoading(true);

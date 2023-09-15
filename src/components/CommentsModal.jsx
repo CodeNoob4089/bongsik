@@ -13,7 +13,7 @@ import {
   getDoc,
   orderBy,
 } from "firebase/firestore";
-import getLevelImageUrl from "../shared/LevelImage";
+// import getLevelImageUrl from "../shared/LevelImage";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
 import useAuthStore from "../store/auth";
@@ -33,7 +33,6 @@ import {
   UserProfile,
   UserNameAndLevel,
   Nickname,
-  ProfileCircle,
   ModalLocation,
   InputArea,
   Button,
@@ -44,7 +43,7 @@ import Heart from "./Heart";
 import { nanoid } from "nanoid";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId }) {
+function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId, setSelectedPost, userData }) {
   const authStore = useAuthStore();
   const displayName = authStore.user?.displayName;
   const isLogIn = authStore.user !== null;
@@ -65,7 +64,10 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
     setOpenModal(false);
     setSelectedPostId(null);
   };
-
+  // 모달 상태 업데이트
+  const updateSelectedPost = (updatedPost) => {
+    setSelectedPost(updatedPost);
+  };
   // //게시물 댓글 가져오기
   const getPostComments = async (postId) => {
     const commentsCollectionRef = collection(db, "postComments");
@@ -101,6 +103,9 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
         const postSnapshot = await getDoc(postDocRef);
         const currentCommentCount = postSnapshot.data().commentCount;
 
+        const updatedPost = { ...selectedPost, commentCount: currentCommentCount + 1 };
+        updateSelectedPost(updatedPost);
+
         // 게시물의 commentCount 업데이트
         await updateDoc(postDocRef, {
           commentCount: currentCommentCount + 1,
@@ -113,7 +118,7 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
   //  댓글 작성 버튼 핸들러
   const handleSubmit = async (e, postId) => {
     e.preventDefault();
-    console.log(postId);
+    // console.log(postId);
 
     const commentInput = e.target.comment;
     const comment = commentInput.value;
@@ -159,6 +164,8 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
     await updateDoc(postDocRef, {
       commentCount: currentCommentCount - 1,
     });
+    const updatedCommentPost = { ...selectedPost, commentCount: currentCommentCount - 1 };
+    updateSelectedPost(updatedCommentPost);
     queryClient.invalidateQueries("fetchPostComments");
     queryClient.invalidateQueries("fetchPublicRestaurantPosts");
   });
@@ -210,23 +217,6 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
     if (days < 7) return `${Math.floor(days)}일 전`;
     return `${start.toLocaleDateString()}`;
   };
-
-  //유저 좋아요 정보 가져오기
-  const getUserData = async () => {
-    const userDocRef = doc(db, "users", userId);
-    const docSnapshot = await getDoc(userDocRef);
-    if (docSnapshot.exists()) {
-      const userData = docSnapshot.data();
-      return {
-        userLikes: userData?.userLikes || [],
-      };
-    } else {
-      return {
-        userLikes: [],
-      };
-    }
-  };
-  const { data: userData } = useQuery("fetchUserData", getUserData);
 
   return (
     <>
@@ -317,8 +307,13 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
                 {selectedPost.content} <hr />
               </ContentArea>
               <ButtonSet style={{ marginLeft: "3rem" }}>
-                <Heart userData={userData} selectedPost={selectedPost} />
-                <LikeCount>{selectedPost.likeCount}</LikeCount>
+                <Heart
+                  userData={userData}
+                  selectedPost={selectedPost}
+                  setSelectedPost={setSelectedPost}
+                  setSelectedPostId={setSelectedPostId}
+                />
+                <LikeCount>{selectedPost?.likeCount}</LikeCount>
                 <Button>
                   <img
                     src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%8C%93%EA%B8%80%20%EC%95%84%EC%9D%B4%EC%BD%98.png?alt=media&token=0f14a325-e157-47ae-aaa9-92adfb4a8434"
@@ -334,9 +329,8 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
                 <LikeCount>{selectedPost.commentCount}</LikeCount>
               </ButtonSet>
               <InputArea>
-                <ProfileCircle style={{ marginRight: "1rem" }}>
-                  <ProfileBox style={{ marginTop: "1.5rem" }} photo={user.photoUrl} />
-                </ProfileCircle>
+                <ProfileBox style={{ marginTop: "1.5rem" }} photo={user.photoUrl} />
+
                 <Form onSubmit={(e) => handleSubmit(e, selectedPost.postId)}>
                   <InputBox name="comment" placeholder="댓글을 작성해주세요"></InputBox>
                   <SubmitButton type="submit">작성</SubmitButton>
@@ -431,7 +425,7 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
 
 export default PostingModal;
 const ProfileBox = styled.div`
-  width: 40px;
+  min-width: 40px;
   height: 40px;
   border-radius: 50%;
   background-color: #ffffff;
@@ -460,14 +454,14 @@ const ModalPhoto = styled.div`
   /* background-color: black; */
   /* margin-left: 3rem; */
 `;
-const LevelImg = styled.img`
-  height: 5px;
-  width: 5px;
-`;
-const Level = styled.div`
-  display: flex;
-  justify-content: left;
-  margin-left: 0.5rem;
-  margin-top: 1rem;
-  height: 1rem;
-`;
+// const LevelImg = styled.img`
+//   height: 5px;
+//   width: 5px;
+// `;
+// const Level = styled.div`
+//   display: flex;
+//   justify-content: left;
+//   margin-left: 0.5rem;
+//   margin-top: 1rem;
+//   height: 1rem;
+// `;

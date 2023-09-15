@@ -8,21 +8,24 @@ import { db, auth } from "../firebase";
 import { useMutation } from "react-query";
 import useAuthStore from "../store/auth";
 import { useNavigate } from "react-router";
-function Heart({ userData, item, selectedPost }) {
+
+function Heart({ userData, post, selectedPost, setSelectedPost }) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const authStore = useAuthStore();
   const isLogIn = authStore.user !== null;
   const userId = auth.currentUser?.uid;
-  const [isClickProcessing, setIsClickProcessing] = useState(false);
-
-  // mutation 함수 정의
+  const [, setIsClickProcessing] = useState(false);
+  // 모달 상태 업데이트
+  const updateSelectedLikePost = (updatedPost) => {
+    setSelectedPost(updatedPost);
+  };
 
   const mutation = useMutation(
     async () => {
-      const postIdToUse = item?.postId || selectedPost?.postId;
+      const postIdToUse = post?.postId || selectedPost?.postId;
       const alreadyLikedUser = userData?.userLikes?.find((like) => like.likePostId === postIdToUse);
-
+      // console.log("alreadyLikedUser", alreadyLikedUser);
       // mutation 함수 내부에서만 userDocRef를 생성합니다.
       const userDocRef = doc(db, "users", userId);
 
@@ -30,13 +33,15 @@ function Heart({ userData, item, selectedPost }) {
 
       const postSnapshot = await getDoc(postDocRef);
       const currentLikeCount = postSnapshot.data().likeCount;
-
+      const updatedLikePost = alreadyLikedUser
+        ? { ...selectedPost, likeCount: currentLikeCount - 1 }
+        : { ...selectedPost, likeCount: currentLikeCount + 1 };
+      updateSelectedLikePost(updatedLikePost);
       await updateDoc(postDocRef, {
         likeCount: alreadyLikedUser ? currentLikeCount - 1 : currentLikeCount + 1,
       });
 
       queryClient.invalidateQueries("fetchPublicRestaurantPosts");
-
       if (alreadyLikedUser) {
         await updateDoc(userDocRef, {
           userLikes: userData?.userLikes?.filter((like) => like.likePostId !== postIdToUse),
@@ -46,7 +51,7 @@ function Heart({ userData, item, selectedPost }) {
           userLikes: arrayUnion({ likePostId: postIdToUse }),
         });
       }
-
+      queryClient.invalidateQueries("fetchPostData");
       queryClient.invalidateQueries("fetchUserData");
 
       const userSnapshot = await getDoc(userDocRef);
@@ -92,20 +97,19 @@ function Heart({ userData, item, selectedPost }) {
       return;
     }
     if (mutation.isLoading) return;
+    setIsClickProcessing(true);
+    // console.log("clickHeart 함수가 호출");
     mutation.mutate();
-    setTimeout(() => {
-      setIsClickProcessing(false);
-    }, 10);
   };
 
   return (
     <>
       <Like
-        isLiked={userData?.userLikes?.some((like) => like.likePostId === (item?.postId || selectedPost?.postId))}
+        isLiked={userData?.userLikes?.some((like) => like.likePostId === (post?.postId || selectedPost?.postId))}
         onClick={() => {
           clickHeart(
-            item?.postId || selectedPost?.postId,
-            userData?.userLikes?.some((like) => like.likePostId === (item?.postId || selectedPost?.postId))
+            post?.postId || selectedPost?.postId,
+            userData?.userLikes?.some((like) => like.likePostId === (post?.postId || selectedPost?.postId))
           );
         }}
       >
