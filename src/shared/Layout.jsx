@@ -9,8 +9,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useQueryClient } from "react-query";
 
 function Layout() {
+  const queryClient = useQueryClient();
   const authStore = useAuthStore();
   const { id } = useParams();
   const isLoggedIn = authStore.user !== null;
@@ -23,6 +25,8 @@ function Layout() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
+      queryClient.invalidateQueries("fetchPostData");
+      queryClient.invalidateQueries("getMyTags");
       authStore.logout();
       navigate("/main");
       alert("정상적으로 로그아웃 되었습니다.");
