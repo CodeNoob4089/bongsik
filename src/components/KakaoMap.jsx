@@ -110,8 +110,8 @@ function KakaoMap({ showModal, postData, user }) {
 
   useEffect(() => {
     if (!map || !mapCenterPosition) return;
-
     map.setCenter(new kakao.maps.LatLng(mapCenterPosition.lat, mapCenterPosition.lng));
+    if(!user){setDongNameArray([])}
   }, [map, mapCenterPosition, user]);
 
   useEffect(() => {
