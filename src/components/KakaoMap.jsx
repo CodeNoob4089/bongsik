@@ -10,10 +10,12 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import Skeleton from "../skeleton/MapSkeleton";
 import { Description, DescriptionBox, DescriptionTitle } from "../shared/MainDescription";
+import { useNavigate } from "react-router-dom";
 
 const { kakao } = window;
 
 function KakaoMap({ showModal, postData, user }) {
+  const navigate = useNavigate();
   const [inputValue, setInputValue] = useState("");
   const [searchKeyword, setSearchKeyword] = useState("");
   const [info, setInfo] = useState();
@@ -31,14 +33,23 @@ function KakaoMap({ showModal, postData, user }) {
     lng: 128.556077,
   });
   const [myAddress, setMyAddress] = useState("현위치를 가져오는 중입니다...");
-  const [dongNameList, setDongNameList] = useState([]);
+  const [dongNameArray, setDongNameArray] = useState([]);
+ 
+
   const data = useMapDataStore((state) => state.data);
   const setData = useMapDataStore((state) => state.setData);
   const setClickedData = useClickedDataStore((state) => (state ? state.setClickedData : []));
   const RealTimeMyPost = postData?.sort(
     (a, b) => b.timestamp?.toDate().getTime() - a.timestamp?.toDate().getTime()
   );
-
+  const dongImgArray = [
+    "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/RedDong.png?alt=media&token=eb74b27e-6eba-4711-95bb-4d9a2a5b0c37",
+    "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/BlueDong.png?alt=media&token=7aaeb018-8ad8-4ccb-9b46-6b8a5227afca",
+    "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/YellowDong.png?alt=media&token=345e360e-74a4-4d53-b28c-0e3b492a257f",
+    "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/PinkDong.png?alt=media&token=e2ac44be-6dcc-49d2-ad30-8407fe22aa1d",
+    "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/GreenDong.png?alt=media&token=6a0b4088-6fc0-4160-a787-d37feb4bb389",
+    "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/PurpleDong.png?alt=media&token=86126453-0c8e-460b-82d7-28074840763b",
+  ]
 
   const keywordInputChange = (e) => {
     e.preventDefault();
@@ -96,13 +107,13 @@ function KakaoMap({ showModal, postData, user }) {
       })
       .catch((error) => console.error(error))
       .finally(() => setLoadingLocation(false));
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (!map || !mapCenterPosition) return;
 
     map.setCenter(new kakao.maps.LatLng(mapCenterPosition.lat, mapCenterPosition.lng));
-  }, [map, mapCenterPosition]);
+  }, [map, mapCenterPosition, user]);
 
   useEffect(() => {
     if (!map) return;
@@ -145,7 +156,7 @@ function KakaoMap({ showModal, postData, user }) {
       },
       options
     );
-  }, [searchKeyword, map]);
+  }, [searchKeyword, map, user]);
 
   const findNeighborhood = (lng, lat) => {
     return new Promise((resolve, reject) => {
@@ -181,9 +192,9 @@ function KakaoMap({ showModal, postData, user }) {
     }
   };
 
+  const dongNameLists = [];
   // -----------------폴리곤 그려주기-----------------
   useEffect(() => {
-    if (!user) return;
 
     const result = user?.dongCounts?.reduce((acc, cur) => {
       if (acc[cur]) {
@@ -193,18 +204,22 @@ function KakaoMap({ showModal, postData, user }) {
       }
       return acc;
     }, {});
+
     const keysOfResult = Object.keys(result || {});
     const coloredDongs = keysOfResult?.filter((key) => result[key] >= 3);
+    console.log("coloredDongs", coloredDongs)
     const polygonList = [];
-    const dongNameList = [];
 
     coloredDongs?.map(async (dong) => {
       const dongRef = doc(db, "location", dong);
       const dongSnap = await getDoc(dongRef);
-      const dongCoordinates = dongSnap.data().coordinates;
+      const coordinates = JSON.parse(dongSnap.data().coordinates);
       const dongName = dongSnap.data().dong;
-      setDongNameList([...dongNameList, dongName])
-      const coordinates = JSON.parse(dongCoordinates);
+  
+      // 동 이름 배열추가 
+      dongNameLists.push(dongName);
+      setDongNameArray(dongNameLists)
+
       const polygonPath = [];
       const utmk =
         "+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs";
@@ -223,7 +238,7 @@ function KakaoMap({ showModal, postData, user }) {
         fillColor: "#ff694e",
         fillOpacity: 0.7,
       });
-      polygonList?.push(polygon );
+      polygonList?.push(polygon);
       polygon.setMap(map);
     });
 
@@ -232,7 +247,8 @@ function KakaoMap({ showModal, postData, user }) {
         polygon.setMap(null);
       });
     };
-  }, [user, map, postData]);
+  }, [postData, map]);
+
 
   return (
     <>
@@ -291,8 +307,8 @@ function KakaoMap({ showModal, postData, user }) {
                 {info && info.content === marker.content && <MarkerInfo>{marker.content}</MarkerInfo>}
               </MapMarker>
             ))}
-            {postData?.map((post) => (
-              <div>
+            {postData?.map((post, idx) => (
+              <div key={idx}>
                 <Circle
                   zIndex={500}
                   key={post.postID}
@@ -305,13 +321,15 @@ function KakaoMap({ showModal, postData, user }) {
                   strokeColor={"#ff694e0"} // 선의 색깔입니다
                   strokeOpacity={1} // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
                   strokeStyle={"solid"} // 선의 스타일 입니다
-                  fillColor={"#ff694e"} // 채우기 색깔입니다
+                  fillColor={"#ff694e"} // 채우기 색s깔입니다
                   fillOpacity={0.7} // 채우기 불투명도 입니다
                   onMousedown={() => {
+                    if(searchKeyword) return;
+                    map.setCenter(new kakao.maps.LatLng(post.place.y, post.place.x));
                     currentMouseOver === post ? setCurrentMouseOver() : setCurrentMouseOver(post);
                   }}
                 />
-                {post === currentMouseOver ? (
+                {post === currentMouseOver && !searchKeyword ? (
                   <MapMarker
                     zIndex={0}
                     key={currentMouseOver.postID}
@@ -376,17 +394,46 @@ function KakaoMap({ showModal, postData, user }) {
                 </div>
               </CurrentLocationInfo>
               <CurrentLocationReviews>
-                <p>최근 리뷰</p>
-                {RealTimeMyPost?.slice(0,3).map((post) => 
-                <div>
-                  <img src={post.photo} style={{height: "2rem", width: "2rem"}}/>
-                </div>
+                <RealtTimePostListsTitle onClick={() => navigate("/mypage")}>
+                  <p>최근 리뷰</p><img
+                  src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/right_button.png?alt=media&token=eaf76923-992b-40bf-a90b-aa2c80e8de8f"
+                  style={{width: "1rem"}}
+                  />
+                </RealtTimePostListsTitle>
+                <PostsLists>
+                {RealTimeMyPost?.slice(0,3).map((post, idx) => 
+                <RealTimePostCard key={idx} onClick={() => navigate("/mypage")}>
+                  <RealTimePostImg src={post.photo || "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%8A%A4%ED%8C%8C%EA%B2%8C%ED%8B%B0%20ETG.png?alt=media&token=a16fadeb-f562-4c12-ad73-c4cc1118a108"}/>
+                  <p>{post.place.place_name}</p>
+                  <p>
+                  {Array(post.star)
+                      .fill()
+                      .map((_, index) => (
+                        <FontAwesomeIcon key={index} icon={faStar} style={{ color: "#ff4e50" }}/>
+                      ))}
+                    {Array(5 - post.star)
+                      .fill()
+                      .map((_, index) => (
+                        <FontAwesomeIcon key={index} icon={faStar} style={{ color: "gray" }}/>
+                      ))}
+                  </p>
+                </RealTimePostCard>
                 )}
+                </PostsLists>
               </CurrentLocationReviews>
               <CurrentLocationReviews>
                 <p>도장깨기 완료한 동</p>
-                {dongNameList.map((dong) =>
-                <div>{dong}</div>)}
+                {console.log("여기에용", dongNameArray)}
+                <DongLists>
+                {dongNameArray?.slice(0,6).map((dong, i) =>
+                (
+                  <RealTimePostCard key={i}>
+                    <RealTimePostImg src={dongImgArray[i]}/>
+                    <p>{dong}</p>
+                  </RealTimePostCard>
+                  ))
+                  }
+                </DongLists>
               </CurrentLocationReviews>
             </div>
           ) : (
@@ -429,7 +476,7 @@ function KakaoMap({ showModal, postData, user }) {
                         setMapCenterPosition({ lat: d.y, lng: d.x });
                       }}
                     >
-                      위치 보기
+                      위치보기
                     </PlaceLinkButton>
                     <PlaceLinkButton onClick={() => onPostAddButtonClick(d)}>기록하기</PlaceLinkButton>
                   </ButtonContainer>
@@ -452,23 +499,24 @@ const MapBox = styled.div`
 `;
 
 const MarkerInfo = styled.div`
+  border-radius: 10px;
+  width: 9rem;
   font-size: 0.8rem;
-  line-height: 1.1rem;
+  line-height: 1rem;
   padding: 0.5rem;
-  width: 13rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border: 3px solid white;
+  border: none;
   box-shadow: 3px 3px 3px 3px gray;
 `;
 
 const MarkerImage = styled.img`
-  width: 11rem;
-  height: 11rem;
+  width: 8rem;
+  height: 8rem;
   object-fit: cover;
-  margin: 0.5rem;
+  border-radius: 10px;
 `;
 
 const SearchArea = styled.div`
@@ -612,4 +660,42 @@ const CurrentLocationReviews = styled.div`
   height: 10rem;
   padding-top: 1rem;
   border-top: 1px solid #e7e7e7;
+  font-size: 0.8rem;
+  font-weight: 600;
 `;
+
+const RealtTimePostListsTitle = styled.div`
+  display:flex;
+  justify-content: space-between;
+  cursor: pointer;
+`
+
+const PostsLists = styled.div`
+  display: flex;
+  flex-direction: row;
+  
+`
+
+const RealTimePostCard = styled.div`
+  margin-top: 0.5rem;
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.7rem;
+  width: 100%;
+  line-height: 0.8rem;
+  cursor: pointer;
+`
+const RealTimePostImg = styled.img`
+  height: 4.5rem;
+  width: 4.5rem;
+  object-fit: cover;
+  margin-bottom: 0.5rem;
+  border-radius: 10px;
+`
+
+const DongLists = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+`

@@ -94,9 +94,7 @@ function Mypage() {
           <TabContent>
             {currentTab === 1 ? (
               <PostContents>
-                <MyListBox>
                   <MyPageList />
-                </MyListBox>
                 <RightContents>
                   <Mypost />
                 </RightContents>
@@ -177,26 +175,27 @@ const Container = styled.div`
 const UserInfo = styled.div`
   background-color: white;
   border-radius: 10px;
-  width: 24vw;
-  height: 28vh;
-  margin: 5vh 9vw;
-  padding: 2.5rem;
+  width: 29vw;
+  height: 15rem;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   box-shadow: 1px 1px 1px 1px #e7e7e7;
 `;
 const UserPostContents = styled.div`
   display: flex;
-  margin-left: -9.3vw;
-  margin-top: -2.2vw;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
 `;
 const UserRightContents = styled.div`
-  margin-left: -8vw;
   width: 66.25vw;
   height: 80vh;
 `;
 
 const UserProfile = styled.div`
+  width: 100%;
+  height: 50%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -205,21 +204,22 @@ const UserNameAndLevel = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 63%;
+  width: 60%;
+  height: 4rem;
+  padding-left: 1rem;
 `;
 
 const Nickname = styled.p`
-  font-size: 24px;
+  font-size: 1rem;
   margin-left: 0.5rem;
   margin-top: 5px;
 `;
 
 const ProfileCircle = styled.div`
-  width: 60px;
-  height: 60px;
+  width: 4rem;
+  height: 4rem;
   border-radius: 50%;
   overflow: hidden;
-  /* display: inline-block; */
 `;
 
 const ProfileImage = styled.img`
@@ -229,28 +229,29 @@ const ProfileImage = styled.img`
   object-position: center;
 `;
 const SettingButton = styled.button`
-  width: 40px;
+  width: 2rem;
+  height: 2rem;
   position: relative;
   color: gray;
   border: none;
-  font-size: 25px;
+  font-size: 1.5rem;
   background-color: rgba(0, 0, 0, 0);
-  padding-bottom: 25px;
   cursor: pointer;
 `;
 
 const UserTabsBox = styled.div`
+  width: 100%;
+  height: 40%;
+  margin-top: 1rem;
   background-color: #f2f2f5;
-  margin-top: 2.5rem;
   border-radius: 1rem;
-  height: 5rem;
   overflow: hidden;
   display: flex;
   flex-direction: row;
   align-items: center;
 `;
 const UserTabButton = styled.button`
-  font-size: 15px;
+  font-size: 0.9rem;
   height: 100%;
   width: 50%;
   line-height: 1.4rem;
@@ -271,15 +272,17 @@ const Line = styled.div`
 `;
 const TabsBox = styled.div`
   height: 6rem;
-  width: 13rem;
+  width: 25vw;
   margin-top: 1.7rem;
+  display:flex;
+  justify-content: center;
 `;
 
 const TabButton = styled.button`
   font-weight: bold;
-  font-size: 17px;
+  font-size: 1rem;
   color: ${(props) => (props.id === props.currentTab ? "#FF4E50" : "gray")};
-  width: 5.8rem;
+  width: 30%;
   height: 2.6rem;
   margin-top: 30px;
   border: none;
@@ -294,31 +297,26 @@ const TabContent = styled.div`
 `;
 
 const PostContents = styled.div`
-  margin-left: -0.5rem;
-  margin-top: -2.6rem;
   display: flex;
   flex-direction: row;
-`;
-
-const MyListBox = styled.div`
-  margin: 0 auto;
+  width: 100%;
 `;
 
 const RightContents = styled.div`
-  margin-left: -2.5vw;
   width: 66.25vw;
   height: 80vh;
 `;
 const LevelImg = styled.img`
-  width: 25px;
-  height: 25px;
+  width: 1.5rem;
+  height: 1.5rem;
   overflow: hidden;
 `;
 
 const Level = styled.div`
-  font-size: 20px;
+  font-size: 1rem;
   display: flex;
   justify-content: left;
+  align-items: center;
   margin-left: 0.5rem;
   margin-top: 1rem;
 `;
