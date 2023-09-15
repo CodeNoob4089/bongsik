@@ -97,7 +97,6 @@ function MyPageList() {
   const onDeleteButtonClick = (key) => {
     if (window.confirm("컬렉션을 삭제하시겠습니까?")) {
       deleteMutation.mutate(key);
-      alert("컬렉션이 삭제되었습니다!");
     } else {
       return;
     }

@@ -128,8 +128,6 @@ function MyList({ myTags, postData, user }) {
   const onDeleteButtonClick = (key) => {
     if (window.confirm("컬렉션을 삭제하시겠습니까?")) {
       deleteMutation.mutate(key);
-      alert("컬렉션이 삭제되었습니다!");
-     
     } else {
       return;
     }
@@ -435,7 +433,7 @@ const PostLists = styled.div`
   border-radius: 15px;
   display: flex;
   flex-direction: row;
-  padding: 2rem;
+  padding: 2rem 0 2rem 2rem;
   box-shadow: 1px 1px 1px #e7e7e7;
 `;
 
@@ -465,4 +463,5 @@ const CollectionPostsLists = styled.div`
   flex-direction: column;
   overflow-y: scroll;
   margin-left: 1.5rem;
+  width: 50%;
 `;
