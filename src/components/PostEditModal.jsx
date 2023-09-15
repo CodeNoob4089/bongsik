@@ -48,7 +48,7 @@ function PostEditModal({ modalOpen, onRequestClose, postData }) {
     try {
       const postRef = doc(db, "posts", postData.docID);
       await updateDoc(postRef, inputValue);
-      alert("게시글이 수정되었습니다!");
+      // alert("게시글이 수정되었습니다!");
       closeModal();
     } catch (e) {
       console.error("문서 업데이트 실패 오류:", e);
