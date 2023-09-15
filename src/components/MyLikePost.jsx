@@ -52,7 +52,7 @@ function MyLikePost() {
     <>
       <PostCardsContainer>
         <PostTitle>
-          <FontAwesomeIcon icon={faHeart} style={{ color: "#FF4E50" }} />&nbsp;좋아요&nbsp;<span  style={{color: "#D0D0DE"}}>{user.userLikes?.length}</span>
+          <FontAwesomeIcon icon={faHeart} style={{ color: "#FF4E50" }} />&nbsp;좋아요 누른 글&nbsp;<span  style={{color: "#D0D0DE"}}>{user.userLikes?.length}</span>
         </PostTitle>
         <Posts>
           {likedPosts.map((post) => (
@@ -98,7 +98,6 @@ const PostCardsContainer = styled.div`
   border-radius: 18px;
   background-color: white;
   box-shadow: 1px 1px 1px 1px #e7e7e7;
-  overflow-y: scroll;
 `;
 
 const PostTitle = styled.h1`
@@ -111,7 +110,7 @@ const Posts = styled.div`
   padding-top: 2rem;
   width: 100%;
   height: 100%;
-
+  overflow-y: scroll;
 `;
 
 const PostContainer = styled.div`
@@ -119,11 +118,11 @@ const PostContainer = styled.div`
   flex-direction: row;
   align-items: center;
   height: 12rem;
-  width: 100%;
   border: none;
   border-radius: 10px;
   margin-left: 30px;
   padding: 1rem;
+  cursor: pointer;
 `;
 
 const PostImage = styled.img`

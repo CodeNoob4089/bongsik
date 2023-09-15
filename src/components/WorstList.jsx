@@ -4,7 +4,6 @@ import { ImageBox, InfoBox, ListContainer, ListTitle, NoBestWorstPost, PostCard,
 
 function WorstList({postData}) {
   const worstPosts = postData?.filter((post) => post.star === 0);
-  console.log("worst", worstPosts)
   const starArray = [0, 1, 2, 3, 4]
   return (
     <ListContainer>

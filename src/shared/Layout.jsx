@@ -53,7 +53,7 @@ function Layout() {
                   setCurrentPage("intro");
                   navigate("/");
                 }}
-                currentPage={currentPage}
+                currentpage={currentPage}
               >
                 About
               </Button>
@@ -63,7 +63,7 @@ function Layout() {
                   setCurrentPage("community");
                   navigate("/community");
                 }}
-                currentPage={currentPage}
+                currentpage={currentPage}
               >
                 Community
               </Button>
@@ -73,7 +73,7 @@ function Layout() {
                   setCurrentPage("mypage");
                   navigate("/mypage");
                 }}
-                currentPage={currentPage}
+                currentpage={currentPage}
               >
                 My page
               </Button>
@@ -90,7 +90,7 @@ function Layout() {
                 setCurrentPage("intro");
                 navigate("/");
               }}
-              currentPage={currentPage}
+              currentpage={currentPage}
             >
               About
             </Button>
@@ -100,7 +100,7 @@ function Layout() {
                 setCurrentPage("signin");
                 navigate("/signin");
               }}
-              currentPage={currentPage}
+              currentpage={currentPage}
             >
               Login
             </Button>
@@ -110,7 +110,7 @@ function Layout() {
                 setCurrentPage("signup");
                 navigate("/signup");
               }}
-              currentPage={currentPage}
+              currentpage={currentPage}
             >
               Signup
             </Button>
@@ -143,7 +143,7 @@ const Button = styled.button`
   border: none;
   height: 60px;
   width: 7rem;
-  color: ${(props) => (props.id === props.currentPage ? "#FF4E50" : "black")};
+  color: ${(props) => (props.id === props.currentpage ? "#FF4E50" : "black")};
   background: none;
   cursor: pointer;
 `;

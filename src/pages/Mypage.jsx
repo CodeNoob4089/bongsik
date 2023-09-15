@@ -174,9 +174,8 @@ const Container = styled.div`
 
 const UserInfo = styled.div`
   background-color: white;
-  margin: 5vh 4vw 5vh 0vw;
   border-radius: 10px;
-  width: 29.75vw;
+  width: 29vw;
   height: 15rem;
   padding: 2rem;
   display: flex;
@@ -273,7 +272,7 @@ const Line = styled.div`
 `;
 const TabsBox = styled.div`
   height: 6rem;
-  width: 21vw;
+  width: 25vw;
   margin-top: 1.7rem;
   display:flex;
   justify-content: center;
@@ -281,9 +280,9 @@ const TabsBox = styled.div`
 
 const TabButton = styled.button`
   font-weight: bold;
-  font-size: 17px;
+  font-size: 1rem;
   color: ${(props) => (props.id === props.currentTab ? "#FF4E50" : "gray")};
-  width: 50%;
+  width: 30%;
   height: 2.6rem;
   margin-top: 30px;
   border: none;

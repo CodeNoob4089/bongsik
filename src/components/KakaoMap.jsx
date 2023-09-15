@@ -33,7 +33,8 @@ function KakaoMap({ showModal, postData, user }) {
     lng: 128.556077,
   });
   const [myAddress, setMyAddress] = useState("현위치를 가져오는 중입니다...");
-  const [dongNameLists, setDongNameLists] = useState([]);
+  const [dongNameArray, setDongNameArray] = useState([]);
+ 
 
   const data = useMapDataStore((state) => state.data);
   const setData = useMapDataStore((state) => state.setData);
@@ -191,9 +192,9 @@ function KakaoMap({ showModal, postData, user }) {
     }
   };
 
+  const dongNameLists = [];
   // -----------------폴리곤 그려주기-----------------
   useEffect(() => {
-    if (!user) return;
 
     const result = user?.dongCounts?.reduce((acc, cur) => {
       if (acc[cur]) {
@@ -206,24 +207,19 @@ function KakaoMap({ showModal, postData, user }) {
 
     const keysOfResult = Object.keys(result || {});
     const coloredDongs = keysOfResult?.filter((key) => result[key] >= 3);
+    console.log("coloredDongs", coloredDongs)
     const polygonList = [];
-
-    console.log("result", coloredDongs)
 
     coloredDongs?.map(async (dong) => {
       const dongRef = doc(db, "location", dong);
       const dongSnap = await getDoc(dongRef);
       const coordinates = JSON.parse(dongSnap.data().coordinates);
       const dongName = dongSnap.data().dong;
-      const newDongNameLists = [...dongNameLists, dongName];
-      // const newDongNameLists = dongNameLists.push(dongName);
-      setDongNameLists(newDongNameLists);
+  
+      // 동 이름 배열추가 
+      dongNameLists.push(dongName);
+      setDongNameArray(dongNameLists)
 
-      console.log("newDongNameLists", newDongNameLists)
-      // setDongNameLists(...new Set(newDongNameLists))
-      
-      console.log("배열에 동 넣어준 후", dongNameLists)
-      
       const polygonPath = [];
       const utmk =
         "+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs";
@@ -246,13 +242,14 @@ function KakaoMap({ showModal, postData, user }) {
       polygon.setMap(map);
     });
 
-
     return () => {
       polygonList.forEach((polygon) => {
         polygon.setMap(null);
       });
     };
-  }, [user, map, postData]);
+  }, [postData, map]);
+
+
   return (
     <>
       <MapBox>
@@ -310,8 +307,8 @@ function KakaoMap({ showModal, postData, user }) {
                 {info && info.content === marker.content && <MarkerInfo>{marker.content}</MarkerInfo>}
               </MapMarker>
             ))}
-            {postData?.map((post) => (
-              <div>
+            {postData?.map((post, idx) => (
+              <div key={idx}>
                 <Circle
                   zIndex={500}
                   key={post.postID}
@@ -404,8 +401,8 @@ function KakaoMap({ showModal, postData, user }) {
                   />
                 </RealtTimePostListsTitle>
                 <PostsLists>
-                {RealTimeMyPost?.slice(0,3).map((post) => 
-                <RealTimePostCard onClick={() => navigate("/mypage")}>
+                {RealTimeMyPost?.slice(0,3).map((post, idx) => 
+                <RealTimePostCard key={idx} onClick={() => navigate("/mypage")}>
                   <RealTimePostImg src={post.photo || "https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%8A%A4%ED%8C%8C%EA%B2%8C%ED%8B%B0%20ETG.png?alt=media&token=a16fadeb-f562-4c12-ad73-c4cc1118a108"}/>
                   <p>{post.place.place_name}</p>
                   <p>
@@ -426,13 +423,16 @@ function KakaoMap({ showModal, postData, user }) {
               </CurrentLocationReviews>
               <CurrentLocationReviews>
                 <p>도장깨기 완료한 동</p>
-                {console.log("여기에용", dongNameLists)}
+                {console.log("여기에용", dongNameArray)}
                 <DongLists>
-                {dongNameLists?.slice(0,6).map((dong, i) =>
-                  <RealTimePostCard>
-                  <RealTimePostImg src={dongImgArray[i]}/>
-                  <p>{dong}</p>
-                  </RealTimePostCard>)}
+                {dongNameArray?.slice(0,6).map((dong, i) =>
+                (
+                  <RealTimePostCard key={i}>
+                    <RealTimePostImg src={dongImgArray[i]}/>
+                    <p>{dong}</p>
+                  </RealTimePostCard>
+                  ))
+                  }
                 </DongLists>
               </CurrentLocationReviews>
             </div>
