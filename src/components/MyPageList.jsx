@@ -194,9 +194,8 @@ function MyPageList() {
 export default MyPageList;
 
 const ListCardsContainer = styled.div`
-  width: 29.75vw;
+  width: 29vw;
   height: 70vh;
-  margin: 5vh 4vw 5vh 0vw;
   background-color: white;
   border-radius: 10px;
   box-shadow: 1px 1px 1px 1px #e7e7e7;
