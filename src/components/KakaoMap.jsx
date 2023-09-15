@@ -217,8 +217,9 @@ function KakaoMap({ showModal, postData, user }) {
       const dongName = dongSnap.data().dong;
   
       // 동 이름 배열추가 
-      dongNameLists.push(dongName);
-      setDongNameArray(dongNameLists)
+      if(dongNameArray.length === 0)
+      {dongNameLists.push(dongName);
+      setDongNameArray(dongNameLists)}
 
       const polygonPath = [];
       const utmk =
