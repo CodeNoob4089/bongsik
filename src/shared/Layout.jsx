@@ -1,9 +1,8 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useAuthStore from "../store/auth";
 import { Outlet } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
-import { useParams } from "react-router-dom";
 import { styled } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
@@ -14,7 +13,6 @@ import { useQueryClient } from "react-query";
 function Layout() {
   const queryClient = useQueryClient();
   const authStore = useAuthStore();
-  const { id } = useParams();
   const isLoggedIn = authStore.user !== null;
   const displayName = authStore.user?.displayName;
   const [currentPage, setCurrentPage] = useState("");

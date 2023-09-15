@@ -10,8 +10,10 @@ import {
   LikeCount,
   DetailLocation,
   PostContainer,
+  CommunityCount,
 } from "../components/TabPostStyled";
-import { collection, getDocs, query, where, doc, getDoc, orderBy, or } from "firebase/firestore";
+import { getUserData } from "../api/collection";
+import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import { useQuery } from "react-query";
 import PostingModal from "./CommentsModal";
@@ -49,7 +51,8 @@ function RestaurantPost({ category }) {
         postsCollectionRef,
 
         where("isPublic", "==", true),
-        where("category", "==", category)
+        where("category", "==", category),
+        orderBy("timestamp", "desc")
       )
     );
 
@@ -64,40 +67,45 @@ function RestaurantPost({ category }) {
     return RestaurantPublicPosts;
   };
 
-  //유저 좋아요 정보 가져오기
-  const getUserData = async () => {
-    const userDocRef = doc(db, "users", userId);
-    const docSnapshot = await getDoc(userDocRef);
-    if (docSnapshot.exists()) {
-      const userData = docSnapshot.data();
-      return {
-        userLikes: userData?.userLikes || [],
-      };
-    } else {
-      return {
-        userLikes: [],
-      };
-    }
-  };
+  // //유저 좋아요 정보 가져오기
+  // const getUserData = async () => {
+  //   const userDocRef = doc(db, "users", userId);
+  //   const docSnapshot = await getDoc(userDocRef);
+  //   if (docSnapshot.exists()) {
+  //     const userData = docSnapshot.data();
+  //     return {
+  //       userLikes: userData?.userLikes || [],
+  //     };
+  //   } else {
+  //     return {
+  //       userLikes: [],
+  //     };
+  //   }
+  // };
 
-  const { data: userData } = useQuery("fetchUserData", getUserData);
+  const { data: userData } = useQuery("fetchUserData", getUserData, { enabled: userId !== undefined });
   const { data: RestaurantPublicPosts } = useQuery("fetchPublicRestaurantPosts", getPublicRestaurantPosts);
-  const RealTimePost = RestaurantPublicPosts?.sort(
-    (a, b) => b.timestamp?.toDate().getTime() - a.timestamp?.toDate().getTime()
-  );
-
+  const Length = RestaurantPublicPosts?.length;
   return (
     <>
-      {RealTimePost?.map((item) => (
-        <CommunityPosting key={item.postId}>
+      <CommunityCount>
+        <img
+          src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%85%B8%ED%8A%B8%20%EC%95%84%EC%9D%B4%EC%BD%98.png?alt=media&token=5ef26e88-9fb4-4ef5-bc7c-9d110502f6b4"
+          style={{ height: "0.9rem", marginRight: "0.4rem" }}
+          alt="노트아이콘"
+        />
+        {category} 게시글: {Length}개
+      </CommunityCount>
+      {RestaurantPublicPosts?.map((post) => (
+        <CommunityPosting key={post.postId}>
           <PostContainer>
-            {item.photo ? (
+            {post.photo ? (
               <>
                 <PostImgBox>
                   <PostImgUrl
-                    src={item.photo}
+                    src={post.photo}
                     onClick={() => {
-                      handlePostClick(item);
+                      handlePostClick(post);
                     }}
                   ></PostImgUrl>
                 </PostImgBox>
@@ -119,7 +127,7 @@ function RestaurantPost({ category }) {
                     }}
                     alt="게시물 사진 없을 때 뜨는 이미지"
                     onClick={() => {
-                      handlePostClick(item);
+                      handlePostClick(post);
                     }}
                   />
                 </PostImgBox>
@@ -129,16 +137,16 @@ function RestaurantPost({ category }) {
               <h2
                 style={{ cursor: "pointer" }}
                 onClick={() => {
-                  handlePostClick(item);
+                  handlePostClick(post);
                 }}
               >
-                {item.place.place_name}&nbsp;
+                {post.place.place_name}&nbsp;
               </h2>
               <p>
                 <DetailLocation
                   style={{ cursor: "pointer" }}
                   onClick={() => {
-                    handlePostClick(item);
+                    handlePostClick(post);
                   }}
                 >
                   <img
@@ -151,15 +159,20 @@ function RestaurantPost({ category }) {
                     }}
                     alt="위치 아이콘"
                   />
-                  {item.place.address_name}
+                  {post.place.address_name}
                 </DetailLocation>
                 <br />
               </p>
               <hr />
               <PostBottomBar>
                 <ButtonSet>
-                  <Heart userData={userData} item={item} />
-                  <LikeCount>{item.likeCount}</LikeCount>
+                  <Heart
+                    userData={userData}
+                    post={post}
+                    setSelectedPost={setSelectedPost}
+                    setSelectedPostId={setSelectedPostId}
+                  />
+                  <LikeCount>{post.likeCount}</LikeCount>
                   <Button>
                     <commentIcon>
                       <img
@@ -173,12 +186,12 @@ function RestaurantPost({ category }) {
                         }}
                         alt="댓글 아이콘"
                         onClick={() => {
-                          handlePostClick(item);
+                          handlePostClick(post);
                         }}
                       />
                     </commentIcon>
                   </Button>
-                  <LikeCount>{item.commentCount}</LikeCount>
+                  <LikeCount>{post.commentCount}</LikeCount>
                 </ButtonSet>
               </PostBottomBar>
             </PostContent>
@@ -189,8 +202,10 @@ function RestaurantPost({ category }) {
         selectedPost={selectedPost}
         openModal={openModal}
         setOpenModal={setOpenModal}
-        setSelectedPostId={setSelectedPost}
+        setSelectedPost={setSelectedPost}
+        setSelectedPostId={setSelectedPostId}
         RestaurantPublicPosts={RestaurantPublicPosts}
+        userData={userData}
       />
     </>
   );
