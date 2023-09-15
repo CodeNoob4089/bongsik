@@ -10,8 +10,9 @@ import {
   LikeCount,
   DetailLocation,
   PostContainer,
+  CommunityCount,
 } from "../components/TabPostStyled";
-import { collection, getDocs, query, where, doc, getDoc, orderBy, or } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc, orderBy, or, limit } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import { useQuery } from "react-query";
 import PostingModal from "./CommentsModal";
@@ -49,7 +50,8 @@ function RestaurantPost({ category }) {
         postsCollectionRef,
 
         where("isPublic", "==", true),
-        where("category", "==", category)
+        where("category", "==", category),
+        orderBy("timestamp", "desc")
       )
     );
 
@@ -80,15 +82,19 @@ function RestaurantPost({ category }) {
     }
   };
 
-  const { data: userData } = useQuery("fetchUserData", getUserData);
+  const { data: userData } = useQuery("fetchUserData", getUserData, { enabled: userId !== undefined });
   const { data: RestaurantPublicPosts } = useQuery("fetchPublicRestaurantPosts", getPublicRestaurantPosts);
-  const RealTimePost = RestaurantPublicPosts?.sort(
-    (a, b) => b.timestamp?.toDate().getTime() - a.timestamp?.toDate().getTime()
-  );
-
+  const Length = RestaurantPublicPosts?.length;
   return (
     <>
-      {RealTimePost?.map((item) => (
+      <CommunityCount>
+        <img
+          src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EB%85%B8%ED%8A%B8%20%EC%95%84%EC%9D%B4%EC%BD%98.png?alt=media&token=5ef26e88-9fb4-4ef5-bc7c-9d110502f6b4"
+          style={{ height: "0.9rem", marginRight: "0.4rem" }}
+        />
+        {category} 게시글: {Length}개
+      </CommunityCount>
+      {RestaurantPublicPosts?.map((item) => (
         <CommunityPosting key={item.postId}>
           <PostContainer>
             {item.photo ? (
@@ -158,7 +164,12 @@ function RestaurantPost({ category }) {
               <hr />
               <PostBottomBar>
                 <ButtonSet>
-                  <Heart userData={userData} item={item} />
+                  <Heart
+                    userData={userData}
+                    item={item}
+                    setSelectedPost={setSelectedPost}
+                    setSelectedPostId={setSelectedPostId}
+                  />
                   <LikeCount>{item.likeCount}</LikeCount>
                   <Button>
                     <commentIcon>
@@ -189,8 +200,10 @@ function RestaurantPost({ category }) {
         selectedPost={selectedPost}
         openModal={openModal}
         setOpenModal={setOpenModal}
-        setSelectedPostId={setSelectedPost}
+        setSelectedPost={setSelectedPost}
+        setSelectedPostId={setSelectedPostId}
         RestaurantPublicPosts={RestaurantPublicPosts}
+        userData={userData}
       />
     </>
   );

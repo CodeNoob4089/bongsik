@@ -128,12 +128,14 @@ export const SubmitButton = styled.button`
 export const InputBox = styled.input`
   font-weight: bold;
   text-align: center;
-  width: 31.5vw;
+  width: 30vw;
   height: 5vh;
   border-radius: 10px;
+  margin-right: 1rem;
   background-color: #f2f2f5;
   border: none;
   float: left;
+
   margin-top: 1.8rem;
 `;
 export const Form = styled.form`
@@ -143,7 +145,7 @@ export const CommentWrap = styled.div`
   color: black;
   margin-top: 1rem;
   margin-left: 2rem;
-  width: 40vw;
+  max-width: 38vw;
   height: auto;
   border-radius: 10px;
   line-height: 1.1rem;
@@ -195,10 +197,9 @@ export const CommentInput = styled.input`
   margin-left: 1rem;
 `;
 export const ContentArea = styled.div`
-  max-width: 40vw;
+  max-width: 38vw;
   height: auto;
   margin-left: 3rem;
-
   position: center;
   margin-bottom: 1rem;
   margin-top: 1rem;
@@ -255,6 +256,7 @@ export const ProfileImage = styled.img`
   background-position: center center;
   background-size: 3rem;
   margin: 0 auto;
+  object-fit: none;
 `;
 export const ModalLocation = styled.div`
   width: 40vw;
@@ -263,7 +265,7 @@ export const ModalLocation = styled.div`
   border-radius: 0.35rem;
   /* display: block; */
   margin-bottom: 3rem;
-  margin-left: 2rem;
+  margin-left: 1rem;
   p {
     margin-left: 1rem;
     margin-top: 1rem;
@@ -276,10 +278,10 @@ export const ModalLocation = styled.div`
 export const InputArea = styled.div`
   display: flex;
   /* background-color: #d68383; */
-  width: 42vw;
+  width: 40vw;
   margin-left: 2rem;
   height: 12vh;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
 `;
 export const DetailLocation = styled.span`
@@ -290,4 +292,10 @@ export const DetailLocation = styled.span`
 `;
 export const Place = styled.div`
   float: left;
+`;
+export const CommunityCount = styled.p`
+  margin-left: 5em;
+  color: #5a5a68;
+  font-size: 0.9rem;
+  margin-bottom: 0.2rem;
 `;

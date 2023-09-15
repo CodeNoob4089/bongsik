@@ -8,21 +8,23 @@ import { db, auth } from "../firebase";
 import { useMutation } from "react-query";
 import useAuthStore from "../store/auth";
 import { useNavigate } from "react-router";
-function Heart({ userData, item, selectedPost }) {
+function Heart({ userData, item, selectedPost, setSelectedPostId, setSelectedPost }) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const authStore = useAuthStore();
   const isLogIn = authStore.user !== null;
   const userId = auth.currentUser?.uid;
   const [isClickProcessing, setIsClickProcessing] = useState(false);
-
-  // mutation 함수 정의
+  // 모달 상태 업데이트
+  const updateSelectedLikePost = (updatedPost) => {
+    setSelectedPost(updatedPost);
+  };
 
   const mutation = useMutation(
     async () => {
       const postIdToUse = item?.postId || selectedPost?.postId;
       const alreadyLikedUser = userData?.userLikes?.find((like) => like.likePostId === postIdToUse);
-
+      console.log("alreadyLikedUser", alreadyLikedUser);
       // mutation 함수 내부에서만 userDocRef를 생성합니다.
       const userDocRef = doc(db, "users", userId);
 
@@ -30,13 +32,15 @@ function Heart({ userData, item, selectedPost }) {
 
       const postSnapshot = await getDoc(postDocRef);
       const currentLikeCount = postSnapshot.data().likeCount;
-
+      const updatedLikePost = alreadyLikedUser
+        ? { ...selectedPost, likeCount: currentLikeCount - 1 }
+        : { ...selectedPost, likeCount: currentLikeCount + 1 };
+      updateSelectedLikePost(updatedLikePost);
       await updateDoc(postDocRef, {
         likeCount: alreadyLikedUser ? currentLikeCount - 1 : currentLikeCount + 1,
       });
 
       queryClient.invalidateQueries("fetchPublicRestaurantPosts");
-
       if (alreadyLikedUser) {
         await updateDoc(userDocRef, {
           userLikes: userData?.userLikes?.filter((like) => like.likePostId !== postIdToUse),
@@ -92,10 +96,9 @@ function Heart({ userData, item, selectedPost }) {
       return;
     }
     if (mutation.isLoading) return;
+    setIsClickProcessing(true);
+    console.log("clickHeart 함수가 호출");
     mutation.mutate();
-    setTimeout(() => {
-      setIsClickProcessing(false);
-    }, 10);
   };
 
   return (

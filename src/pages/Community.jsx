@@ -150,7 +150,6 @@ const CommunityLeft = styled.div`
 const CategoryBar = styled.div`
   width: 14vw;
   display: flex;
-  margin-bottom: 0.8rem;
   margin-left: 4.3rem;
   height: 7vh;
   margin-top: 3rem;

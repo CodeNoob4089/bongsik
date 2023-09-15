@@ -81,7 +81,8 @@ function MyLikePost() {
         selectedPost={selectedPost}
         openModal={openModal}
         setOpenModal={setOpenModal}
-        setSelectedPostId={setSelectedPost}
+        setSelectedPostId={setSelectedPostId}
+        setSelectedPost={setSelectedPost}
       />
     </>
   );
