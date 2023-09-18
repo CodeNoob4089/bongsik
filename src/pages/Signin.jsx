@@ -51,7 +51,7 @@ function SignIn() {
         }, {});
 
         const userRef = doc(db, "users", user.uid);
-        if(userRef)return;
+        if (userRef) return;
         await setDoc(
           userRef,
           {
@@ -116,7 +116,12 @@ function SignIn() {
             </StyledForm>
           </InputContainer>
           <ImageContainer>
-            <ImageLogo src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/Frame%201321317750.png?alt=media&token=d9cd2da8-d246-47d6-b7e9-1f936956a485" />
+            <ImageLogo
+              onClick={() => {
+                navigate("/main");
+              }}
+              src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/Frame%201321317750.png?alt=media&token=d9cd2da8-d246-47d6-b7e9-1f936956a485"
+            />
           </ImageContainer>
         </SignInBox>
       </SignInContainer>
@@ -164,6 +169,7 @@ export const ImageContainer = styled.div`
   background-color: #f0f0f0;
 `;
 export const ImageLogo = styled.img`
+  cursor: pointer;
   object-fit: cover;
   width: 100%;
   height: 100%;
