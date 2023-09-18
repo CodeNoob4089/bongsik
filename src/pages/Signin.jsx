@@ -103,6 +103,16 @@ function SignIn() {
                   required
                 />
               </StyledInputDiv>
+              <Login>
+                <p>아직 회원이 아니신가요?</p>
+                <Logintag
+                  onClick={() => {
+                    navigate("/signup");
+                  }}
+                >
+                  회원가입
+                </Logintag>
+              </Login>
               <SignInButton type="submit">Sign In</SignInButton>
               <OrBox>
                 <LineLeft />
@@ -155,10 +165,10 @@ export const InputContainer = styled.div`
   align-items: center;
 `;
 export const SigninTitle = styled.div`
-  margin-top: 5vw;
-  margin-right: 17vw;
-  font-size: 2rem;
-  font-weight: 550;
+  margin-top: 3vw;
+  width: 22rem;
+  font-size: 1.5rem;
+  font-weight: 600;
 `;
 
 export const ImageContainer = styled.div`
@@ -258,4 +268,15 @@ const OrBox = styled.div`
   align-items: center;
   margin-top: 1.2rem;
   margin-bottom: 1.2rem;
+`;
+
+const Login = styled.div`
+  font-size: 0.8rem;
+  display: flex;
+`;
+const Logintag = styled.p`
+  text-decoration: underline;
+  color: #ff4e50;
+  cursor: pointer;
+  margin-left: 0.2rem;
 `;

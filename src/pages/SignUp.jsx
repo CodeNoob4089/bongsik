@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { sendEmailVerification, updateProfile } from "firebase/auth";
+import { GoogleAuthProvider, sendEmailVerification, signInWithPopup, updateProfile } from "firebase/auth";
 import { auth, db } from "../firebase";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -58,7 +58,7 @@ function SignUp() {
       });
       alert("회원가입 완료! 이메일을 인증해주세요.");
       await signOut(auth);
-      navigate("/main");
+      navigate("/signin");
     } catch ({ code, message }) {
       // console.log(message, code);
     }
@@ -84,6 +84,48 @@ function SignUp() {
       joinWithVerification(state.name, state.email, state.password, state.photoURL);
     } else {
       alert("입력값을 확인해주세요.");
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+
+      navigate("/main");
+
+      const user = result.user;
+      if (user) {
+        const badges = await getBadgeData();
+
+        const userBadgeData = badges.reduce((badgeObj, badge) => {
+          badgeObj[badge.id] = {
+            isOwned: false,
+          };
+          return badgeObj;
+        }, {});
+
+        const userRef = doc(db, "users", user.uid);
+        if (userRef) return;
+        await setDoc(
+          userRef,
+          {
+            name: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL,
+            myTags: [],
+            ownedBadges: userBadgeData,
+            postCounts: 0,
+            level: 1,
+            exp: 0,
+            dongCounts: [],
+          },
+          { merge: true }
+        );
+      }
+    } catch (error) {
+      console.error(error.message);
+      alert("구글 로그인에 실패하였습니다.");
     }
   };
 
@@ -174,6 +216,10 @@ function SignUp() {
                 {state.confirmPasswordError && <ErrorArea>{state.confirmPasswordError}</ErrorArea>}
               </StyledInputDiv>
               <SignUpButton type="submit">Sign Up</SignUpButton>{" "}
+              <GoogleSignUpButton type="button" onClick={handleGoogleLogin}>
+                <GoogleLogo src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/Google__G__Logo%201.png?alt=media&token=75b51e58-8a63-44a8-86a6-fcdb851c166a" />
+                <p>Sign in with Google</p>
+              </GoogleSignUpButton>
               <OrBox>
                 <LineLeft />
                 OR
@@ -220,9 +266,9 @@ export const SignUpContainer = styled.div`
 `;
 export const SignupTitle = styled.div`
   margin-top: 3vw;
-  margin-right: 8vw;
-  font-size: 2rem;
-  font-weight: 550;
+  width: 25rem;
+  font-size: 1.5rem;
+  font-weight: 600;
 `;
 
 export const SignUpBox = styled.div`
@@ -274,7 +320,7 @@ export const StyledLabel = styled.label`
 `;
 export const StyledInput = styled.input`
   border-radius: 0.5rem;
-  width: 25rem;
+  width: 22rem;
   border: 1px solid #d9d9d9;
   background-color: #fafafa;
   height: 2.5rem;
@@ -285,10 +331,10 @@ export const SignUpButton = styled.button`
   background-color: #ff4e50;
   color: white;
   border: none;
-  width: 20rem;
+  width: 22rem;
   border-radius: 5px;
   padding: 10px 20px;
-  margin-top: 20px;
+  margin-top: 0.7rem;
   cursor: pointer;
   &:hover {
     background-color: #ff2e30;
@@ -323,4 +369,26 @@ const Logintag = styled.p`
   color: #ff4e50;
   cursor: pointer;
   margin-left: 0.2rem;
+`;
+
+const GoogleSignUpButton = styled.button`
+  justify-content: center;
+  display: flex;
+  background-color: #ffffff;
+  color: black;
+  width: 22rem;
+  border-top: 1px solid #000000;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 0.5rem;
+  transition-duration: 0.3s;
+  cursor: pointer;
+  &:hover {
+    color: #4285f4;
+  }
+`;
+const GoogleLogo = styled.img`
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
 `;
