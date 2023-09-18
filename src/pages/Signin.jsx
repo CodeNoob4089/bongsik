@@ -52,17 +52,21 @@ function SignIn() {
 
         const userRef = doc(db, "users", user.uid);
         if (userRef) return;
-        await setDoc(userRef, {
-          name: user.displayName,
-          email: user.email,
-          photoURL: user.photoURL,
-          myTags: [],
-          ownedBadges: userBadgeData,
-          postCounts: 0,
-          level: 1,
-          exp: 0,
-          dongCounts: [],
-        });
+        await setDoc(
+          userRef,
+          {
+            name: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL,
+            myTags: [],
+            ownedBadges: userBadgeData,
+            postCounts: 0,
+            level: 1,
+            exp: 0,
+            dongCounts: [],
+          },
+          { merge: true }
+        );
       }
     } catch (error) {
       console.error(error.message);
