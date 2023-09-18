@@ -51,32 +51,18 @@ function SignIn() {
         }, {});
 
         const userRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(userRef);
-        if (!docSnap.exists()) {
-          await setDoc(userRef, {
-            name: user.displayName,
-            email: user.email,
-            photoURL: user.photoURL,
-            myTags: [],
-            ownedBadges: userBadgeData,
-            postCounts: 0,
-            level: 1,
-            exp: 0,
-            dongCounts: [],
-          });
-        } else {
-          await updateDoc(userRef, {
-            name: user.displayName || docSnap.data().name,
-            email: user.email || docSnap.data().email,
-            photoURL: user.photoURL || docSnap.data().photoURL,
-            myTags: [],
-            ownedBadges: userBadgeData || docSnap.data().ownedBadges,
-            postCounts: 0 || docSnap.data().postCounts,
-            level: 1 || docSnap.data().level,
-            exp: 0 || docSnap.data().exp,
-            dongCounts: [] || docSnap.data().dongCounts,
-          });
-        }
+        if (userRef) return;
+        await setDoc(userRef, {
+          name: user.displayName,
+          email: user.email,
+          photoURL: user.photoURL,
+          myTags: [],
+          ownedBadges: userBadgeData,
+          postCounts: 0,
+          level: 1,
+          exp: 0,
+          dongCounts: [],
+        });
       }
     } catch (error) {
       console.error(error.message);
@@ -126,7 +112,12 @@ function SignIn() {
             </StyledForm>
           </InputContainer>
           <ImageContainer>
-            <ImageLogo src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/Frame%201321317750.png?alt=media&token=d9cd2da8-d246-47d6-b7e9-1f936956a485" />
+            <ImageLogo
+              onClick={() => {
+                navigate("/main");
+              }}
+              src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/Frame%201321317750.png?alt=media&token=d9cd2da8-d246-47d6-b7e9-1f936956a485"
+            />
           </ImageContainer>
         </SignInBox>
       </SignInContainer>
@@ -174,6 +165,7 @@ export const ImageContainer = styled.div`
   background-color: #f0f0f0;
 `;
 export const ImageLogo = styled.img`
+  cursor: pointer;
   object-fit: cover;
   width: 100%;
   height: 100%;
