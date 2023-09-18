@@ -51,10 +51,9 @@ function SignIn() {
         }, {});
 
         const userRef = doc(db, "users", user.uid);
-
-        await setDoc(
-          userRef,
-          {
+        const docSnap = await getDoc(userRef);
+        if (!docSnap.exists()) {
+          await setDoc(userRef, {
             name: user.displayName,
             email: user.email,
             photoURL: user.photoURL,
@@ -64,9 +63,20 @@ function SignIn() {
             level: 1,
             exp: 0,
             dongCounts: [],
-          },
-          { merge: true }
-        );
+          });
+        } else {
+          await updateDoc(userRef, {
+            name: user.displayName || docSnap.data().name,
+            email: user.email || docSnap.data().email,
+            photoURL: user.photoURL || docSnap.data().photoURL,
+            myTags: [],
+            ownedBadges: userBadgeData || docSnap.data().ownedBadges,
+            postCounts: 0 || docSnap.data().postCounts,
+            level: 1 || docSnap.data().level,
+            exp: 0 || docSnap.data().exp,
+            dongCounts: [] || docSnap.data().dongCounts,
+          });
+        }
       }
     } catch (error) {
       console.error(error.message);
