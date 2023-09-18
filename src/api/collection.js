@@ -48,4 +48,20 @@ const getPublicPosts = async () => {
   return PublicPosts;
 };
 
-export { getMyTags, getPosts, deletePost, getPublicPosts };
+const getUserData = async () => {
+  const userId = auth.currentUser?.uid;
+  const userDocRef = doc(db, "users", userId);
+  const docSnapshot = await getDoc(userDocRef);
+  if (docSnapshot.exists()) {
+    const userData = docSnapshot.data();
+    return {
+      userLikes: userData?.userLikes || [],
+    };
+  } else {
+    return {
+      userLikes: [],
+    };
+  }
+};
+
+export { getMyTags, getPosts, deletePost, getPublicPosts, getUserData };

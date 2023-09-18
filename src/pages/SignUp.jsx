@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
+import { sendEmailVerification, updateProfile } from "firebase/auth";
 import { auth, db } from "../firebase";
 import styled from "styled-components";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getBadgeData } from "../store/BadgeData";
-import { updateUserDoc } from "../store/UserService";
-import { arrayUnion, doc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 
 const initialState = {
@@ -34,8 +33,6 @@ function SignUp() {
 
   const joinWithVerification = async (name, email, password, photo) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const { user } = userCredential;
       await updateProfile(auth.currentUser, {
         displayName: name,
         photoURL: photo,
@@ -63,7 +60,7 @@ function SignUp() {
       await signOut(auth);
       navigate("/main");
     } catch ({ code, message }) {
-      console.log(message, code);
+      // console.log(message, code);
     }
   };
   const validateEmail = (email) => {

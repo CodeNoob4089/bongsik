@@ -22,14 +22,14 @@ export const PostsContainer = styled.div`
   width: 100%;
   height: 100%;
   overflow-y: scroll;
-`
+`;
 
 export const PostCard = styled.div`
- width: 100%;
- display: flex;
- flex-direction: row;
- align-items: center;
- 
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
 `;
 export const InfoBox = styled.div`
   display: flex;
@@ -54,7 +54,7 @@ export const PostTitle = styled.h3`
 
 export const PostDescription = styled.p`
   font-size: 0.8rem;
-`
+`;
 export const NoBestWorstPost = styled.div`
   height: 100%;
   background-color: #ff4e5117;
@@ -64,4 +64,4 @@ export const NoBestWorstPost = styled.div`
   justify-content: center;
   align-items: center;
   margin-right: 1rem;
-`
+`;
