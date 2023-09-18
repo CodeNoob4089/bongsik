@@ -51,7 +51,7 @@ function SignIn() {
         }, {});
 
         const userRef = doc(db, "users", user.uid);
-
+        if(userRef)return;
         await setDoc(
           userRef,
           {
