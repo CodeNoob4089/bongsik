@@ -286,21 +286,23 @@ function PostingModal({ openModal, setOpenModal, selectedPost, setSelectedPostId
                 </p>
               </ModalLocation>
               {selectedPost && selectedPost?.photo ? (
-                <img src={selectedPost.photo} alt="Post" />
+                <img src={selectedPost.photo}
+                style={{
+                  borderRadius: "0.7rem",
+                  margin: " 0 auto",
+                  objectFit: "cover"}}
+                  alt="Post" />
               ) : (
-                <ModalPhoto>
-                  <img
-                    src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%8A%A4%ED%8C%8C%EA%B2%8C%ED%8B%B0%20ETG.png?alt=media&token=a16fadeb-f562-4c12-ad73-c4cc1118a108"
-                    style={{
-                      height: "30vh",
-                      width: "40vw",
-                      borderRadius: "0.7rem",
-                      margin: " 0 auto",
-                      objectFit: "cover",
-                    }}
-                    alt="게시글 사진 없을 때 뜨는 이미지"
-                  />
-                </ModalPhoto>
+                <ModalPhoto
+                  src="https://firebasestorage.googleapis.com/v0/b/kimbongsik-69c45.appspot.com/o/%EC%8A%A4%ED%8C%8C%EA%B2%8C%ED%8B%B0%20ETG.png?alt=media&token=a16fadeb-f562-4c12-ad73-c4cc1118a108"
+                  style={{
+                  height: "30vh",
+                  width: "40vw",
+                  borderRadius: "0.7rem",
+                  margin: " 0 auto",
+                  objectFit: "cover",
+                }}
+                 alt="게시글 사진 없을 때 뜨는 이미지"/>
               )}
               <h2>{selectedPost.title}</h2>
               <ContentArea>
@@ -448,9 +450,10 @@ const DateDiv = styled.span`
   color: #5a5a68;
   font-size: 0.9rem;
 `;
-const ModalPhoto = styled.div`
+const ModalPhoto = styled.img`
   width: 40vw;
   height: 30vh;
+  object-fit: cover;
   /* background-color: black; */
   /* margin-left: 3rem; */
 `;
